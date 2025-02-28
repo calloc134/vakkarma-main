@@ -85,7 +85,7 @@ docker compose -f docker-compose.dev.yml up -d
 
 ```bash
 pnpm install # 依存関係のインストール
-sudo npm run dev # 開発サーバーの起動
+sudo pnpm run dev # 開発サーバーの起動
 ```
 
 Vite が 80 ポートで起動します。
