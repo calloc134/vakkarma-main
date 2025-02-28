@@ -1,0 +1,84 @@
+version: "3.8"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.app
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      - TRUSTED_PROXY_ID=${TRUSTED_PROXY_ID}
+    networks:
+      - all_network
+    depends_on:
+      - db
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.app.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.app.entrypoints=web"
+      - "traefik.http.services.app.loadbalancer.server.port=3000"
+      - "traefik.http.routers.app.middlewares=custom-proxy-id"
+      # プロキシの識別子をカスタムヘッダーに設定するミドルウェア
+      - "traefik.http.middlewares.custom-proxy-id.headers.customrequestheaders.X-Custom-ProxyID=${TRUSTED_PROXY_ID}"
+
+  proxy:
+    image: traefik:3.3.4
+    ports:
+      - "80:80"
+      - "8080:8080"
+    command:
+      - "--global.checkNewVersion=true"
+      - "--global.sendAnonymousUsage=false"
+      - "--log.level=INFO"
+      - "--entryPoints.web.address=:80"
+      - "--providers.docker.endpoint=unix:///var/run/docker.sock"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.watch=true"
+      # 信頼できる IP アドレスの設定
+      - "--entrypoints.web.forwardedHeaders.trustedIPs=172.16.0.0/12"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - all_network
+    labels:
+      - "traefik.enable=true"
+
+  db:
+    image: postgres:17.4
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    volumes:
+      - postgres_data_prod:/var/lib/postgresql/data
+    networks:
+      - all_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  migration:
+    image: amacneil/dbmate:latest
+    environment:
+      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?sslmode=disable
+    volumes:
+      - ./db/migrations:/db/migrations
+    command: --migrations-dir /db/migrations up
+    networks:
+      - all_network
+    depends_on:
+      db:
+        condition: service_healthy # db のヘルスチェックが成功するのを待つ
+
+networks:
+  frontend:
+  backend:
+  migration:
+  all_network:
+
+volumes:
+  postgres_data_prod:

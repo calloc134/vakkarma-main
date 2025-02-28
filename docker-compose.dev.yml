@@ -1,0 +1,44 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:17.4
+    environment:
+      - POSTGRES_USER=${VITE_POSTGRES_USER}
+      - POSTGRES_PASSWORD=${VITE_POSTGRES_PASSWORD}
+      - POSTGRES_DB=${VITE_POSTGRES_DB}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+    networks:
+      - all_network
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${VITE_POSTGRES_USER} -d ${VITE_POSTGRES_DB}",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  migration:
+    image: amacneil/dbmate:latest
+    environment:
+      - DATABASE_URL=postgres://${VITE_POSTGRES_USER}:${VITE_POSTGRES_PASSWORD}@db:5432/${VITE_POSTGRES_DB}?sslmode=disable
+    volumes:
+      - ./db/migrations:/db/migrations
+    command: --migrations-dir /db/migrations up
+    networks:
+      - all_network
+    depends_on:
+      db:
+        condition: service_healthy
+
+networks:
+  all_network:
+
+volumes:
+  postgres_data_dev:
