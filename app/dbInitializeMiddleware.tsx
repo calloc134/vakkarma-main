@@ -1,18 +1,23 @@
-import { env } from "hono/adapter";
+import { env, getRuntimeKey } from "hono/adapter";
 import { createMiddleware } from "hono/factory";
 
 import { sql, initSql } from "./db";
 
 export const dbInitializeMiddleware = createMiddleware(async (c, next) => {
-  if (sql === null) {
+  const isCloudflareWorkers = getRuntimeKey() === "workerd";
+
+  // Cloudflare Workersの場合は毎回DBに接続する
+  // それ以外でもsqlがnullの場合はDBに接続する
+  if (isCloudflareWorkers || !sql) {
     // 本番環境と開発環境に対応
     const databaseUrl =
       // 本番環境の場合
-      env<{ DATABASE_URL: string }>(c).DATABASE_URL ??
+      env<{ DATABASE_URL: string | undefined }>(c).DATABASE_URL ||
       // 開発環境の場合
       // prettier-ignore
-      `postgresql://${import.meta.env.VITE_POSTGRES_USER}:${import.meta.env.VITE_POSTGRES_PASSWORD}@localhost:5432/${import.meta.env.VITE_POSTGRES_DB}?sslmode=disable` ??
-      "";
+      `postgresql://${import.meta.env.VITE_POSTGRES_USER}:${import.meta.env.VITE_POSTGRES_PASSWORD}@localhost:5432/${import.meta.env.VITE_POSTGRES_DB}?sslmode=disable`;
+
+    console.log("databaseUrl", databaseUrl);
 
     const result = initSql(databaseUrl);
     if (result.isErr()) {
