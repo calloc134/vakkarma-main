@@ -1,4 +1,3 @@
-// import build from "@hono/vite-build/cloudflare-pages";
 import build from "@hono/vite-build/cloudflare-workers";
 // import build from "@hono/vite-build/bun";
 import adapter from "@hono/vite-dev-server/cloudflare";
@@ -20,7 +19,7 @@ export default defineConfig(({ mode }) => {
   }
   return {
     ssr: {
-      external: ["iconv-lite", "encoding-japanese"],
+      external: ["iconv-lite", "encoding-japanese", "postgres"],
     },
     server: {
       port: 80,
