@@ -19,7 +19,9 @@ export const dbInitializeMiddleware = createMiddleware(async (c, next) => {
 
     console.log("databaseUrl", databaseUrl);
 
-    const result = initSql(databaseUrl);
+    const max = isCloudflareWorkers ? 1 : 10;
+
+    const result = initSql(databaseUrl, max);
     if (result.isErr()) {
       return c.render(
         <div>DBに接続できませんでした。管理者にお問い合わせください。</div>
