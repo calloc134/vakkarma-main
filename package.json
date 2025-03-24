@@ -3,9 +3,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build --mode client && vite build",
-    "preview": "wrangler pages dev ./dist",
-    "deploy": "$npm_execpath run build && wrangler deploy",
+    "build:workers": "vite build --mode client && vite build --mode workers",
+    "build:bun": "vite build --mode client && vite build --mode bun",
+    "preview": "wrangler dev",
+    "deploy": "$npm_execpath run build:workers && wrangler deploy",
     "typecheck": "tsc --noEmit",
     "lint": "DISABLE_SAFEQL=true eslint .",
     "migrateup": "dbmate up",
