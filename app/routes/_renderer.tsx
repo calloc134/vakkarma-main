@@ -14,6 +14,7 @@ export default jsxRenderer(async ({ children }) => {
   });
 
   if (configResult.isErr()) {
+    console.error(configResult.error.message);
     return <ErrorMessage error={configResult.error} />;
   }
 

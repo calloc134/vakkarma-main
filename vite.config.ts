@@ -1,5 +1,5 @@
-// import build from "@hono/vite-build/cloudflare-pages";
-import build from "@hono/vite-build/bun";
+import buildBun from "@hono/vite-build/bun";
+import buildWorkers from "@hono/vite-build/cloudflare-workers";
 import adapter from "@hono/vite-dev-server/cloudflare";
 import tailwindcss from "@tailwindcss/vite";
 import honox from "honox/vite";
@@ -17,9 +17,16 @@ export default defineConfig(({ mode }) => {
       plugins: [tailwindcss()],
     };
   }
+
+  if (mode !== "workers" && mode !== "bun") {
+    throw new Error(`Invalid mode: ${mode}`);
+  }
+
+  const build = mode === "workers" ? buildWorkers : buildBun;
+
   return {
     ssr: {
-      external: ["iconv-lite", "encoding-japanese"],
+      external: ["iconv-lite", "encoding-japanese", "postgres"],
     },
     server: {
       port: 80,

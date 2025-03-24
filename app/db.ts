@@ -8,10 +8,13 @@ import type { Sql } from "postgres";
 export let sql: Sql | null = null;
 
 export const initSql = (
-  databaseUrl: string
+  databaseUrl: string,
+  max: number
 ): Result<undefined, DatabaseError> => {
   try {
-    sql = postgres(databaseUrl);
+    sql = postgres(databaseUrl, {
+      max,
+    });
     return ok(undefined);
   } catch (e) {
     const message = e instanceof Error ? e.message : "Unknown error";
