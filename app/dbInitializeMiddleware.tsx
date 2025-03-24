@@ -17,8 +17,6 @@ export const dbInitializeMiddleware = createMiddleware(async (c, next) => {
       // prettier-ignore
       `postgresql://${import.meta.env.VITE_POSTGRES_USER}:${import.meta.env.VITE_POSTGRES_PASSWORD}@localhost:5432/${import.meta.env.VITE_POSTGRES_DB}?sslmode=disable`;
 
-    console.log("databaseUrl", databaseUrl);
-
     const max = isCloudflareWorkers ? 1 : 10;
 
     const result = initSql(databaseUrl, max);
