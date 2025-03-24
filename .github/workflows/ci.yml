@@ -32,5 +32,7 @@ jobs:
         run: pnpm run typecheck
       - name: Lint
         run: pnpm run lint
-      - name: Build
-        run: pnpm run build
+      - name: Build Bun
+        run: pnpm run build:bun
+      - name: Build Workers
+        run: pnpm run build:workers
