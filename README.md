@@ -23,9 +23,52 @@ VakKarma は、2 ちゃんねる風のスレッドフロート型 BBS です。
 
 ## インストール
 
-### 本番環境
+### 本番環境 (Cloudflare Workers)
 
-本番環境では、以下のコンテナが起動します。
+当システムは Cloudflare Workers にデプロイすることができます。
+
+まず依存関係をインストールします。
+
+```bash
+pnpm install
+```
+
+必要となるデータベースを用意します。ここでは Neon を利用しますが、PostgreSQL 互換のデータベースであれば何でも構いません。
+[この](https://neon.tech/docs/get-started-with-neon/signing-up)ガイドに従って、Neon のアカウントを作成し、データベースを作成してください。その際、データベースへの接続情報を取得する必要があります。
+
+```bash
+postgrest://username:password@hostname:port/database
+```
+
+次に、dbmate を用いてデータベースのマイグレーションを行います。dbmate は、データベースのスキーマを管理するためのツールです。
+
+```bash
+pnpm dbmate up --url (取得した接続情報)
+```
+
+Cloudflare Workers のアカウントを作成してください。[こちら](https://dash.cloudflare.com/sign-up)からアカウントを作成できます。すでに存在する場合は、ログインしてください。
+
+デプロイを行ないます。内部で wrangler を使用しています。
+
+```bash
+pnpm run deploy:workers
+```
+
+デプロイが完了すると、デプロイされた URL が表示されます。
+
+最後に、データベース接続情報を環境変数として設定します。
+
+```bash
+pnpm wrangler secret put DATABASE_URL
+```
+
+データベース接続情報を受け付けるプロンプトが表示されるので、入力してください。正常に設定されると、再度デプロイされます。
+
+完了後、デプロイされた URL にアクセスできるようになります。
+
+### 本番環境 (ローカル環境・Docker)
+
+Docker における本番環境では、以下のコンテナが起動します。
 
 | サービス   | 概要                              |
 | ---------- | --------------------------------- |
@@ -56,6 +99,7 @@ docker compose -f docker-compose.prod.yml up -d
 ```
 
 アプリケーションは 80 ポートで起動します。
+データベースへのマイグレーションは自動で行われます。
 
 ### 開発環境
 
