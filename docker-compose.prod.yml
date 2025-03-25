@@ -8,6 +8,7 @@ services:
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
       - TRUSTED_PROXY_ID=${TRUSTED_PROXY_ID}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
     networks:
       - all_network
     depends_on:
