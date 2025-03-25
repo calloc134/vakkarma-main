@@ -17,14 +17,12 @@ export const POST = createRoute(async (c) => {
   const localRule = body.localRule;
   const nanashiName = body.nanashiName;
   const maxContentLength = body.maxResponseLength;
-  const adminPassword = body.adminPassword;
 
   if (
     typeof boardName !== "string" ||
     typeof localRule !== "string" ||
     typeof nanashiName !== "string" ||
-    typeof maxContentLength !== "string" ||
-    typeof adminPassword !== "string"
+    typeof maxContentLength !== "string"
   ) {
     return c.render(
       <ErrorMessage error={new Error("すべての項目を入力してください")} />
@@ -37,7 +35,6 @@ export const POST = createRoute(async (c) => {
       localRuleRaw: localRule,
       nanashiNameRaw: nanashiName,
       maxContentLengthRaw: Number(maxContentLength),
-      inputPasswordRaw: adminPassword,
     }
   );
   if (updateConfigResult.isErr()) {
@@ -122,20 +119,6 @@ export default createRoute(async (c) => {
                 id="maxResponseLength"
                 name="maxResponseLength"
                 value={configResult.value.maxContentLength}
-                className="border border-gray-400 rounded py-2 px-3 focus:outline-none focus:shadow-outline"
-              />
-            </div>
-            <div className="flex flex-col">
-              <label
-                htmlFor="adminPassword"
-                className="text-gray-700 text-sm font-bold mb-1"
-              >
-                管理者パスワード
-              </label>
-              <input
-                type="password"
-                id="adminPassword"
-                name="adminPassword"
                 className="border border-gray-400 rounded py-2 px-3 focus:outline-none focus:shadow-outline"
               />
             </div>

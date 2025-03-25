@@ -1,7 +1,6 @@
 import { err, ok } from "neverthrow";
 
 import { createConfig } from "../domain/write_model/Config";
-import { getPasswordHashConfigRepository } from "../repositories/getPasswordHashConfigRepository";
 import { updateConfigRepository } from "../repositories/updateConfigRepository";
 
 import type { DbContext } from "../types/DbContext";
@@ -14,13 +13,11 @@ export const updateConfigUsecase = async (
     localRuleRaw,
     nanashiNameRaw,
     maxContentLengthRaw,
-    inputPasswordRaw,
   }: {
     boardNameRaw: string;
     localRuleRaw: string;
     nanashiNameRaw: string;
     maxContentLengthRaw: number;
-    inputPasswordRaw: string;
   }
 ): Promise<Result<undefined, Error>> => {
   // 今回は値オブジェクトはないので、そのまま
@@ -29,17 +26,8 @@ export const updateConfigUsecase = async (
     localRule: localRuleRaw,
     maxContentLength: maxContentLengthRaw,
     nanashiName: nanashiNameRaw,
-    inputPassword: inputPasswordRaw,
-    getCurrentPasswordHash: async () => {
-      const currentPasswordResult = await getPasswordHashConfigRepository(
-        dbContext
-      );
-      if (currentPasswordResult.isErr()) {
-        return err(currentPasswordResult.error);
-      }
-      return ok(currentPasswordResult.value);
-    },
   });
+
   if (config.isErr()) {
     return err(config.error);
   }

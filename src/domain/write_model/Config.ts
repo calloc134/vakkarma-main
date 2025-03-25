@@ -1,7 +1,4 @@
-import { compare } from "bcrypt-ts";
-import { err, ok, type Result } from "neverthrow";
-
-import { PasswordDoesNotMatchError } from "../../types/Error";
+import { ok, type Result } from "neverthrow";
 
 // 掲示板の設定
 export type Config = {
@@ -19,26 +16,12 @@ export const createConfig = async ({
   localRule,
   nanashiName,
   maxContentLength,
-  inputPassword,
-  getCurrentPasswordHash,
 }: {
   boardName: string;
   localRule: string;
   maxContentLength: number;
   nanashiName: string;
-  // 指定されたパスワード
-  inputPassword: string;
-  // 現在のパスワードのハッシュを返す関数
-  getCurrentPasswordHash: () => Promise<Result<string, Error>>;
 }): Promise<Result<Config, Error>> => {
-  const currentPasswordHash = await getCurrentPasswordHash();
-  if (currentPasswordHash.isErr()) {
-    return err(currentPasswordHash.error);
-  }
-  if ((await compare(inputPassword, currentPasswordHash.value)) === false) {
-    return err(new PasswordDoesNotMatchError("パスワードが一致しません"));
-  }
-
   return ok({
     _type: "Config",
     boardName,
