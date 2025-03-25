@@ -4,7 +4,7 @@ import { createHashId } from "../domain/value_object/HashId";
 import { createMail } from "../domain/value_object/Mail";
 import { createPostedAt } from "../domain/value_object/PostedAt";
 import { createReadAuthorName } from "../domain/value_object/ReadAuthorName";
-import { createResponseContent } from "../domain/value_object/ResponseContent";
+import { createReadResponseContent } from "../domain/value_object/ReadResponseContent";
 import { createResponseId } from "../domain/value_object/ResponseId";
 import { createResponseNumber } from "../domain/value_object/ResponseNumber";
 import { type ThreadId, createThreadId } from "../domain/value_object/ThreadId";
@@ -153,7 +153,7 @@ export const getLatest10ThreadsWithResponsesRepository = async (
       const postedAtResult = createPostedAt(response.posted_at);
       if (postedAtResult.isErr()) return err(postedAtResult.error);
 
-      const responseContentResult = createResponseContent(
+      const responseContentResult = createReadResponseContent(
         response.response_content
       );
       if (responseContentResult.isErr())

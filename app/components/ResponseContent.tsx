@@ -1,4 +1,4 @@
-import type { ResponseContent } from "../../src/domain/value_object/ResponseContent";
+import type { ReadResponseContent } from "../../src/domain/value_object/ReadResponseContent";
 import type { ThreadId } from "../../src/domain/value_object/ThreadId";
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -41,7 +41,7 @@ export const ResponseContentComponent = ({
   responseContent,
 }: {
   threadId: ThreadId;
-  responseContent: ResponseContent;
+  responseContent: ReadResponseContent;
 }) => {
   const lines = responseContent.val.split("\n");
   return (
