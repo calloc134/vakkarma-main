@@ -3,7 +3,7 @@ import { err, ok } from "neverthrow";
 import { generateHashId } from "../domain/value_object/HashId";
 import { createMail } from "../domain/value_object/Mail";
 import { generateCurrentPostedAt } from "../domain/value_object/PostedAt";
-import { createResponseContent } from "../domain/value_object/ResponseContent";
+import { createReadResponseContent } from "../domain/value_object/ReadResponseContent";
 import { createThreadTitle } from "../domain/value_object/ThreadTitle";
 import { createWriteAuthorName } from "../domain/value_object/WriteAuthorName";
 import { createResponse } from "../domain/write_model/Response";
@@ -13,6 +13,7 @@ import { createThreadRepository } from "../repositories/createThreadRepository";
 import { getNanashiConfigRepository } from "../repositories/getNanashiConfigRepository";
 
 import type { DbContext } from "../types/DbContext";
+import { createWriteResponseContent } from "../domain/value_object/WriteResponseContent";
 
 // スレッドを投稿する際のユースケース
 export const postThreadUsecase = async (
@@ -54,7 +55,7 @@ export const postThreadUsecase = async (
     return err(mailResult.error);
   }
   // レス内容生成
-  const responseContentResult = createResponseContent(responseContentRaw);
+  const responseContentResult = createWriteResponseContent(responseContentRaw);
   if (responseContentResult.isErr()) {
     return err(responseContentResult.error);
   }

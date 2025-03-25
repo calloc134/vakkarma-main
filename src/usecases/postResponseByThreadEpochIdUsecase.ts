@@ -4,9 +4,9 @@ import { generateHashId } from "../domain/value_object/HashId";
 import { createMail } from "../domain/value_object/Mail";
 import { generateCurrentPostedAt } from "../domain/value_object/PostedAt";
 import { createReadAuthorName } from "../domain/value_object/ReadAuthorName";
-import { createResponseContent } from "../domain/value_object/ResponseContent";
 import { createThreadEpochId } from "../domain/value_object/ThreadEpochId";
 import { createWriteAuthorName } from "../domain/value_object/WriteAuthorName";
+import { createWriteResponseContent } from "../domain/value_object/WriteResponseContent";
 import { createResponse } from "../domain/write_model/Response";
 import { createResponseRepository } from "../repositories/createResponseRepository";
 import { getThreadIdByThreadEpochIdRepository } from "../repositories/getThreadIdByThreadEpochIdRepository";
@@ -53,7 +53,7 @@ export const postResponseByThreadEpochIdUsecase = async (
     return err(mailResult.error);
   }
   // レス内容生成
-  const responseContentResult = createResponseContent(responseContentRaw);
+  const responseContentResult = createWriteResponseContent(responseContentRaw);
   if (responseContentResult.isErr()) {
     return err(responseContentResult.error);
   }

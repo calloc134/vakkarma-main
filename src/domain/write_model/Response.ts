@@ -3,7 +3,6 @@ import { ok } from "neverthrow";
 import { type HashId } from "../value_object/HashId";
 import { type Mail } from "../value_object/Mail";
 import { type PostedAt } from "../value_object/PostedAt";
-import { type ResponseContent } from "../value_object/ResponseContent";
 import {
   generateResponseId,
   type ResponseId,
@@ -11,6 +10,7 @@ import {
 import { type ThreadId } from "../value_object/ThreadId";
 
 import type { WriteAuthorName } from "../value_object/WriteAuthorName";
+import type { WriteResponseContent } from "../value_object/WriteResponseContent";
 import type { Result } from "neverthrow";
 
 // レスポンス
@@ -22,7 +22,7 @@ export type Response = {
   readonly authorName: WriteAuthorName;
   readonly mail: Mail;
   readonly postedAt: PostedAt;
-  readonly responseContent: ResponseContent;
+  readonly responseContent: WriteResponseContent;
   readonly hashId: HashId;
   readonly threadId: ThreadId;
 };
@@ -39,7 +39,7 @@ export const createResponse = ({
   threadId: ThreadId;
   authorName: WriteAuthorName;
   mail: Mail;
-  responseContent: ResponseContent;
+  responseContent: WriteResponseContent;
   hashId: HashId;
   postedAt: PostedAt;
 }): Result<Response, never> => {
