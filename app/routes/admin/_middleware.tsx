@@ -1,5 +1,5 @@
 import { createRoute } from "honox/factory";
 
-import { jwtCookieMiddleware } from "../../jwtCookieMiddleware";
+import { jwtAuthMiddleware } from "../../jwtCookieMiddleware";
 
-export default createRoute(jwtCookieMiddleware());
+export default createRoute(jwtAuthMiddleware());
