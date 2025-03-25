@@ -18,10 +18,6 @@ export default defineConfig(({ mode }) => {
     };
   }
 
-  if (mode !== "workers" && mode !== "bun") {
-    throw new Error(`Invalid mode: ${mode}`);
-  }
-
   const build = mode === "workers" ? buildWorkers : buildBun;
 
   return {
