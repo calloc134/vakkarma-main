@@ -115,7 +115,7 @@ export default createRoute(async (c) => {
                 htmlFor="maxResponseLength"
                 className="text-gray-700 text-sm font-bold mb-1"
               >
-                最大文字数 (現在実装中)
+                最大文字数
               </label>
               <input
                 type="number"
