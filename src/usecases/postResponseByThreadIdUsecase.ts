@@ -8,6 +8,7 @@ import { createWriteAuthorName } from "../domain/value_object/WriteAuthorName";
 import { createWriteResponseContent } from "../domain/value_object/WriteResponseContent";
 import { createResponse } from "../domain/write_model/Response";
 import { createResponseRepository } from "../repositories/createResponseRepository";
+import { getMaxLenContentConfigRepository } from "../repositories/getMaxLenContentConfigRepository";
 import { getNanashiConfigRepository } from "../repositories/getNanashiConfigRepository";
 import { updateThreadUpdatedAtRepository } from "../repositories/updateThreadUpdatedAtRepository";
 
@@ -52,7 +53,13 @@ export const postResponseByThreadIdUsecase = async (
     return err(mailResult.error);
   }
   // レス内容生成
-  const responseContentResult = createWriteResponseContent(responseContentRaw);
+  const responseContentResult = await createWriteResponseContent(
+    responseContentRaw,
+    async () => {
+      const result = await getMaxLenContentConfigRepository(dbContext);
+      return result;
+    }
+  );
   if (responseContentResult.isErr()) {
     return err(responseContentResult.error);
   }

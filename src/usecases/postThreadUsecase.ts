@@ -3,17 +3,17 @@ import { err, ok } from "neverthrow";
 import { generateHashId } from "../domain/value_object/HashId";
 import { createMail } from "../domain/value_object/Mail";
 import { generateCurrentPostedAt } from "../domain/value_object/PostedAt";
-import { createReadResponseContent } from "../domain/value_object/ReadResponseContent";
 import { createThreadTitle } from "../domain/value_object/ThreadTitle";
 import { createWriteAuthorName } from "../domain/value_object/WriteAuthorName";
+import { createWriteResponseContent } from "../domain/value_object/WriteResponseContent";
 import { createResponse } from "../domain/write_model/Response";
 import { createThread } from "../domain/write_model/Thread";
 import { createResponseRepository } from "../repositories/createResponseRepository";
 import { createThreadRepository } from "../repositories/createThreadRepository";
+import { getMaxLenContentConfigRepository } from "../repositories/getMaxLenContentConfigRepository";
 import { getNanashiConfigRepository } from "../repositories/getNanashiConfigRepository";
 
 import type { DbContext } from "../types/DbContext";
-import { createWriteResponseContent } from "../domain/value_object/WriteResponseContent";
 
 // スレッドを投稿する際のユースケース
 export const postThreadUsecase = async (
@@ -55,7 +55,13 @@ export const postThreadUsecase = async (
     return err(mailResult.error);
   }
   // レス内容生成
-  const responseContentResult = createWriteResponseContent(responseContentRaw);
+  const responseContentResult = await createWriteResponseContent(
+    responseContentRaw,
+    async () => {
+      const result = await getMaxLenContentConfigRepository(dbContext);
+      return result;
+    }
+  );
   if (responseContentResult.isErr()) {
     return err(responseContentResult.error);
   }
