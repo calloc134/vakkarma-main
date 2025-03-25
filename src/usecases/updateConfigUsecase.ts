@@ -1,7 +1,7 @@
 import { err, ok } from "neverthrow";
 
 import { createConfig } from "../domain/write_model/Config";
-import { getCurrentPasswordConfigRepository } from "../repositories/getCurrentPasswordConfigRepository";
+import { getPasswordHashConfigRepository } from "../repositories/getPasswordHashConfigRepository";
 import { updateConfigRepository } from "../repositories/updateConfigRepository";
 
 import type { DbContext } from "../types/DbContext";
@@ -31,7 +31,7 @@ export const updateConfigUsecase = async (
     nanashiName: nanashiNameRaw,
     inputPassword: inputPasswordRaw,
     getCurrentPasswordHash: async () => {
-      const currentPasswordResult = await getCurrentPasswordConfigRepository(
+      const currentPasswordResult = await getPasswordHashConfigRepository(
         dbContext
       );
       if (currentPasswordResult.isErr()) {
