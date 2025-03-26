@@ -17,14 +17,12 @@ export const POST = createRoute(async (c) => {
   const localRule = body.localRule;
   const nanashiName = body.nanashiName;
   const maxContentLength = body.maxResponseLength;
-  const adminPassword = body.adminPassword;
 
   if (
     typeof boardName !== "string" ||
     typeof localRule !== "string" ||
     typeof nanashiName !== "string" ||
-    typeof maxContentLength !== "string" ||
-    typeof adminPassword !== "string"
+    typeof maxContentLength !== "string"
   ) {
     return c.render(
       <ErrorMessage error={new Error("すべての項目を入力してください")} />
@@ -37,7 +35,6 @@ export const POST = createRoute(async (c) => {
       localRuleRaw: localRule,
       nanashiNameRaw: nanashiName,
       maxContentLengthRaw: Number(maxContentLength),
-      inputPasswordRaw: adminPassword,
     }
   );
   if (updateConfigResult.isErr()) {
@@ -60,7 +57,7 @@ export default createRoute(async (c) => {
   // フォームの形にする
   return c.render(
     <main className="container mx-auto flex-grow py-8 px-4">
-      <section className="bg-white rounded-lg shadow-md p-6">
+      <section className="bg-white rounded-lg shadow-md p-10">
         <h1 className="text-2xl font-bold text-gray-800 mb-6">管理者画面</h1>
         <h2 className="text-xl font-semibold text-gray-700 mb-4">設定</h2>
         <form method="post" action="/admin" className="w-full">
@@ -125,28 +122,19 @@ export default createRoute(async (c) => {
                 className="border border-gray-400 rounded py-2 px-3 focus:outline-none focus:shadow-outline"
               />
             </div>
-            <div className="flex flex-col">
-              <label
-                htmlFor="adminPassword"
-                className="text-gray-700 text-sm font-bold mb-1"
-              >
-                管理者パスワード
-              </label>
-              <input
-                type="password"
-                id="adminPassword"
-                name="adminPassword"
-                className="border border-gray-400 rounded py-2 px-3 focus:outline-none focus:shadow-outline"
-              />
-            </div>
           </div>
-          <div className="mt-6">
+          <div className="mt-6 flex justify-end">
             <button
               type="submit"
-              className="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              className="w-60 bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
             >
               更新
             </button>
+          </div>
+          <div className="mt-4 flex justify-end">
+            <a href="/admin/password" className="text-blue-500 underline">
+              パスワード変更
+            </a>
           </div>
         </form>
       </section>

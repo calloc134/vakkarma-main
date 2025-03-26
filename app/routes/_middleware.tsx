@@ -4,4 +4,4 @@ import { createRoute } from "honox/factory";
 
 import { dbInitializeMiddleware } from "../dbInitializeMiddleware";
 
-export default createRoute(logger(), csrf(), dbInitializeMiddleware);
+export default createRoute(logger(), csrf(), dbInitializeMiddleware());

@@ -24,8 +24,8 @@ export const createMail = (
   // 簡単なメールアドレス形式チェック (厳密なものではない)
   if (
     value !== "" &&
-    !regexMail.test(value) &&
-    value.toLowerCase() !== "sage"
+    value.toLowerCase() !== "sage" &&
+    !regexMail.test(value)
   ) {
     return err(new ValidationError("不正なメールアドレス形式です"));
   }
