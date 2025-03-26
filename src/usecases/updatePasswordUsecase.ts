@@ -5,10 +5,9 @@ import {
   createPassword,
   generatePasswordHash,
 } from "../domain/value_object/WritePassword";
+import { getPasswordHashConfigRepository } from "../repositories/getPasswordHashConfigRepository";
 import { updatePasswordRepository } from "../repositories/updatePasswordRepository";
 import { ValidationError } from "../types/Error";
-
-import { getPasswordHashConfigUsecase } from "./getPasswordHashConfigUsecase";
 
 import type { DbContext } from "../types/DbContext";
 
@@ -26,7 +25,7 @@ export const updatePasswordUsecase = async (
     );
   }
 
-  const storedHashResult = await getPasswordHashConfigUsecase(dbContext);
+  const storedHashResult = await getPasswordHashConfigRepository(dbContext);
   if (storedHashResult.isErr()) {
     return err(storedHashResult.error);
   }
