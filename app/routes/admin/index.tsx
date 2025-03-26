@@ -57,7 +57,7 @@ export default createRoute(async (c) => {
   // フォームの形にする
   return c.render(
     <main className="container mx-auto flex-grow py-8 px-4">
-      <section className="bg-white rounded-lg shadow-md p-6">
+      <section className="bg-white rounded-lg shadow-md p-10">
         <h1 className="text-2xl font-bold text-gray-800 mb-6">管理者画面</h1>
         <h2 className="text-xl font-semibold text-gray-700 mb-4">設定</h2>
         <form method="post" action="/admin" className="w-full">
@@ -123,13 +123,18 @@ export default createRoute(async (c) => {
               />
             </div>
           </div>
-          <div className="mt-6">
+          <div className="mt-6 flex justify-end">
             <button
               type="submit"
-              className="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              className="w-60 bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
             >
               更新
             </button>
+          </div>
+          <div className="mt-4 flex justify-end">
+            <a href="/admin/password" className="text-blue-500 underline">
+              パスワード変更
+            </a>
           </div>
         </form>
       </section>
