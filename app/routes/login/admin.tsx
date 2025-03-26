@@ -58,6 +58,16 @@ export const POST = createRoute(async (c) => {
     );
   }
 
+  // Get secret key for JWT creation from environment
+  const secret =
+    env<{ JWT_SECRET_KEY?: string }>(c).JWT_SECRET_KEY ||
+    import.meta.env.VITE_JWT_SECRET_KEY;
+  if (!secret) {
+    return c.render(
+      <ErrorMessage error={new Error("JWT_SECRET_KEYが設定されていません。")} />
+    );
+  }
+
   const body = await c.req.parseBody();
   const inputPassword = body.adminPassword;
   if (typeof inputPassword !== "string") {
@@ -71,15 +81,6 @@ export const POST = createRoute(async (c) => {
     return c.render(<ErrorMessage error={result.error} />);
   }
 
-  // Get secret key for JWT creation from environment
-  const secret =
-    env<{ JWT_SECRET_KEY?: string }>(c).JWT_SECRET_KEY ||
-    import.meta.env.VITE_JWT_SECRET_KEY;
-  if (!secret) {
-    return c.render(
-      <ErrorMessage error={new Error("JWT_SECRET_KEYが設定されていません。")} />
-    );
-  }
   const exp = Math.floor(Date.now() / 1000) + 60 * 60;
   const jwtPayload = { exp };
   const token = await sign(jwtPayload, secret);
