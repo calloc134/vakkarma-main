@@ -3,7 +3,7 @@ import { ok, err } from "neverthrow";
 
 import { ValidationError } from "../../../types/Error";
 
-import type { Password } from "./WritePassword";
+import type { WritePassword } from "./WritePassword";
 import type { Result } from "neverthrow";
 
 export type WritePasswordHash = {
@@ -12,7 +12,7 @@ export type WritePasswordHash = {
 };
 
 export const generatePasswordHash = async (
-  password: Password
+  password: WritePassword
 ): Promise<Result<WritePasswordHash, ValidationError>> => {
   try {
     const hashedPassword = await hash(password.val, 10);
