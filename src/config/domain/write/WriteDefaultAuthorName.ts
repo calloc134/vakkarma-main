@@ -9,7 +9,7 @@ export type WriteDefaultAuthorName = {
   readonly val: string;
 };
 
-export const createDefaultAuthorName = (
+export const createWriteDefaultAuthorName = (
   value: string
 ): Result<WriteDefaultAuthorName, ValidationError> => {
   if (value.length === 0) {

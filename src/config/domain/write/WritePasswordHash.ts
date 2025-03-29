@@ -11,7 +11,7 @@ export type WritePasswordHash = {
   readonly val: string;
 };
 
-export const generatePasswordHash = async (
+export const generateWritePasswordHash = async (
   password: WritePassword
 ): Promise<Result<WritePasswordHash, ValidationError>> => {
   try {

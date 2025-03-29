@@ -12,7 +12,7 @@ export type WritePassword = {
 // const passwordRegex =
 //   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
 
-export const createPassword = async (
+export const createWritePassword = async (
   value: string
   //   getIsPasswordStrength: () => Promise<Result<boolean, Error>>
 ): Promise<Result<WritePassword, ValidationError>> => {

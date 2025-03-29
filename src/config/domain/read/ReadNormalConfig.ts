@@ -8,27 +8,28 @@ import type { Result } from "neverthrow";
 
 export type ReadNormalConfig = {
   readonly _type: "ReadNormalConfig";
-  readonly val: {
-    readonly boardName: ReadBoardName;
-    readonly localRule: ReadLocalRule;
-    readonly defaultAuthorName: ReadDefaultAuthorName;
-    readonly maxContentLength: ReadMaxContentLength;
-  };
+  readonly boardName: ReadBoardName;
+  readonly localRule: ReadLocalRule;
+  readonly defaultAuthorName: ReadDefaultAuthorName;
+  readonly maxContentLength: ReadMaxContentLength;
 };
 
-export const createReadNormalConfig = (
-  boardName: ReadBoardName,
-  localRule: ReadLocalRule,
-  defaultAuthorName: ReadDefaultAuthorName,
-  maxContentLength: ReadMaxContentLength
-): Result<ReadNormalConfig, Error> => {
+export const createReadNormalConfig = ({
+  boardName,
+  localRule,
+  defaultAuthorName,
+  maxContentLength,
+}: {
+  boardName: ReadBoardName;
+  localRule: ReadLocalRule;
+  defaultAuthorName: ReadDefaultAuthorName;
+  maxContentLength: ReadMaxContentLength;
+}): Result<ReadNormalConfig, Error> => {
   return ok({
     _type: "ReadNormalConfig",
-    val: {
-      boardName,
-      localRule,
-      defaultAuthorName,
-      maxContentLength,
-    },
+    boardName,
+    localRule,
+    defaultAuthorName,
+    maxContentLength,
   });
 };

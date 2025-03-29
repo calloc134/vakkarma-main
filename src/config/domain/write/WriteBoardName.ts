@@ -1,5 +1,7 @@
 import { err, ok } from "neverthrow";
 
+import { ValidationError } from "../../../types/Error";
+
 import type { Result } from "neverthrow";
 
 export type WriteBoardName = {
@@ -7,15 +9,15 @@ export type WriteBoardName = {
   readonly val: string;
 };
 
-export const createBoardName = (
+export const createWriteBoardName = (
   value: string
-): Result<WriteBoardName, string> => {
+): Result<WriteBoardName, ValidationError> => {
   if (value.length === 0) {
-    return err("ボード名を入力してください");
+    return err(new ValidationError("ボード名は必須です"));
   }
 
   if (value.length > 20) {
-    return err("ボード名は20文字以内で入力してください");
+    return err(new ValidationError("ボード名は20文字以内で入力してください"));
   }
   return ok({ _type: "WriteBoardName", val: value });
 };

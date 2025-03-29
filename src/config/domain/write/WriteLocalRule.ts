@@ -9,7 +9,7 @@ export type WriteLocalRule = {
   readonly val: string;
 };
 
-export const createLocalRule = (
+export const createWriteLocalRule = (
   value: string
 ): Result<WriteLocalRule, ValidationError> => {
   if (value.length === 0) {

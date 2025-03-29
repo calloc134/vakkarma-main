@@ -6,21 +6,20 @@ import type { Result } from "neverthrow";
 
 export type ReadBoardConfig = {
   readonly _type: "ReadBoardConfig";
-  readonly val: {
-    readonly boardName: ReadBoardName;
-    readonly localRule: ReadLocalRule;
-  };
+  readonly boardName: ReadBoardName;
+  readonly localRule: ReadLocalRule;
 };
 
-export const createReadBoardConfig = (
-  boardName: ReadBoardName,
-  localRule: ReadLocalRule
-): Result<ReadBoardConfig, Error> => {
+export const createReadBoardConfig = ({
+  boardName,
+  localRule,
+}: {
+  boardName: ReadBoardName;
+  localRule: ReadLocalRule;
+}): Result<ReadBoardConfig, Error> => {
   return ok({
     _type: "ReadBoardConfig",
-    val: {
-      boardName,
-      localRule,
-    },
+    boardName,
+    localRule,
   });
 };
