@@ -1,6 +1,6 @@
-import { ok, err, type Result } from "neverthrow";
+import { ok, type Result } from "neverthrow";
 
-import { ValidationError } from "../../../types/Error";
+import type { ValidationError } from "../../../types/Error";
 
 // 投稿日時
 export type WritePostedAt = {
@@ -11,9 +11,6 @@ export type WritePostedAt = {
 export const createWritePostedAt = (
   value: Date
 ): Result<WritePostedAt, ValidationError> => {
-  if (!value) {
-    return err(new ValidationError("日時は必須です"));
-  }
   return ok({ _type: "WritePostedAt", val: value });
 };
 
