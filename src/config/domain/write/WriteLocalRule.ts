@@ -5,8 +5,8 @@ import { ValidationError } from "../../../types/Error";
 import type { Result } from "neverthrow";
 
 export type WriteLocalRule = {
-  _type: "WriteLocalRule";
-  val: string;
+  readonly _type: "WriteLocalRule";
+  readonly val: string;
 };
 
 export const createLocalRule = (

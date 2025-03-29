@@ -1,8 +1,8 @@
 import { ok, type Result } from "neverthrow";
 
 export type ReadDefaultAuthorName = {
-  _type: "ReadDefaultAuthorName";
-  val: string;
+  readonly _type: "ReadDefaultAuthorName";
+  readonly val: string;
 };
 
 export const createReadDefaultAuthorName = (

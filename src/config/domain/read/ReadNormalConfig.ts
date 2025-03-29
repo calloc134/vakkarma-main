@@ -7,12 +7,12 @@ import type { ReadMaxContentLength } from "./ReadMaxContentLength";
 import type { Result } from "neverthrow";
 
 export type ReadNormalConfig = {
-  _type: "ReadNormalConfig";
-  val: {
-    boardName: ReadBoardName;
-    localRule: ReadLocalRule;
-    defaultAuthorName: ReadDefaultAuthorName;
-    maxContentLength: ReadMaxContentLength;
+  readonly _type: "ReadNormalConfig";
+  readonly val: {
+    readonly boardName: ReadBoardName;
+    readonly localRule: ReadLocalRule;
+    readonly defaultAuthorName: ReadDefaultAuthorName;
+    readonly maxContentLength: ReadMaxContentLength;
   };
 };
 

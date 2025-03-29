@@ -7,8 +7,8 @@ import type { WritePassword } from "./WritePassword";
 import type { Result } from "neverthrow";
 
 export type WritePasswordHash = {
-  _type: "WritePasswordHash";
-  val: string;
+  readonly _type: "WritePasswordHash";
+  readonly val: string;
 };
 
 export const generatePasswordHash = async (

@@ -3,8 +3,8 @@ import { ok } from "neverthrow";
 import type { Result } from "neverthrow";
 
 export type ReadBoardName = {
-  _type: "ReadBoardName";
-  val: string;
+  readonly _type: "ReadBoardName";
+  readonly val: string;
 };
 
 export const createReadBoardName = (

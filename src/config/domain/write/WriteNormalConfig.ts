@@ -8,12 +8,12 @@ import type { ValidationError } from "../../../types/Error";
 import type { Result } from "neverthrow";
 
 export type WriteNormalConfig = {
-  _type: "WriteNormalConfig";
-  val: {
-    boardName: WriteBoardName;
-    localRule: WriteLocalRule;
-    defaultAuthorName: WriteDefaultAuthorName;
-    maxContentLength: WriteMaxContentLength;
+  readonly _type: "WriteNormalConfig";
+  readonly val: {
+    readonly boardName: WriteBoardName;
+    readonly localRule: WriteLocalRule;
+    readonly defaultAuthorName: WriteDefaultAuthorName;
+    readonly maxContentLength: WriteMaxContentLength;
   };
 };
 export const createNormalConfig = (

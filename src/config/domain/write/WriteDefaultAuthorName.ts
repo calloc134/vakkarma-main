@@ -5,8 +5,8 @@ import { ValidationError } from "../../../types/Error";
 import type { Result } from "neverthrow";
 
 export type WriteDefaultAuthorName = {
-  _type: "WriteDefaultAuthorName";
-  val: string;
+  readonly _type: "WriteDefaultAuthorName";
+  readonly val: string;
 };
 
 export const createDefaultAuthorName = (

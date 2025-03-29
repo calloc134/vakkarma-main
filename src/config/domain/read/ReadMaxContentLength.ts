@@ -3,8 +3,8 @@ import { ok } from "neverthrow";
 import type { Result } from "neverthrow";
 
 export type ReadMaxContentLength = {
-  _type: "ReadMaxContentLength";
-  val: number;
+  readonly _type: "ReadMaxContentLength";
+  readonly val: number;
 };
 
 export const createReadMaxContentLength = (

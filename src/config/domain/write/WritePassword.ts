@@ -4,8 +4,8 @@ import { ValidationError } from "../../../types/Error";
 
 // パスワード
 export type WritePassword = {
-  _type: "WritePassword";
-  val: string;
+  readonly _type: "WritePassword";
+  readonly val: string;
 };
 
 // Minimum 8 characters, one uppercase, one lowercase, one digit, one special character.

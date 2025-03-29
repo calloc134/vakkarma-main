@@ -1,8 +1,8 @@
 import { ok, err, type Result } from "neverthrow";
 
 export type WriteMaxContentLength = {
-  _type: "WriteMaxContentLength";
-  val: number;
+  readonly _type: "WriteMaxContentLength";
+  readonly val: number;
 };
 
 export const createMaxContentLength = (

@@ -3,8 +3,8 @@ import { ok } from "neverthrow";
 import type { Result } from "neverthrow";
 
 export type ReadLocalRule = {
-  _type: "ReadLocalRule";
-  val: string;
+  readonly _type: "ReadLocalRule";
+  readonly val: string;
 };
 
 export const createReadLocalRule = (
