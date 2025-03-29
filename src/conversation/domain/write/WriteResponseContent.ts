@@ -9,13 +9,13 @@ export type WriteResponseContent = {
 };
 export const createWriteResponseContent = async (
   value: string,
-  getMaxLen: () => Promise<Result<number, Error>>
+  getMaxContentLength: () => Promise<Result<number, Error>>
 ): Promise<Result<WriteResponseContent, ValidationError>> => {
   if (value.length === 0) {
     return err(new ValidationError("本文は必須です"));
   }
 
-  const maxLen = await getMaxLen();
+  const maxLen = await getMaxContentLength();
   if (maxLen.isErr()) {
     return err(maxLen.error);
   }
