@@ -9,7 +9,7 @@ export type ReadThread = {
   readonly _type: "ReadThread";
   readonly id: ReadThreadId;
   readonly title: ReadThreadTitle;
-  readonly posedAt: ReadPostedAt;
+  readonly postedAt: ReadPostedAt;
   readonly updatedAt: ReadPostedAt;
   // ここはスレッドのレス数なので妥協
   readonly countResponse: number;
@@ -18,13 +18,13 @@ export type ReadThread = {
 export const createReadThread = ({
   id,
   title,
-  posedAt,
+  postedAt,
   updatedAt,
   countResponse,
 }: {
   id: ReadThreadId;
   title: ReadThreadTitle;
-  posedAt: ReadPostedAt;
+  postedAt: ReadPostedAt;
   updatedAt: ReadPostedAt;
   countResponse: number;
 }): Result<ReadThread, Error> => {
@@ -32,7 +32,7 @@ export const createReadThread = ({
     _type: "ReadThread",
     id,
     title,
-    posedAt,
+    postedAt,
     updatedAt,
     countResponse,
   });

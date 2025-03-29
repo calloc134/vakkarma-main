@@ -10,7 +10,7 @@ export type ReadThreadWithEpochId = {
   readonly _type: "ReadThreadWithEpochId";
   readonly id: ReadThreadId;
   readonly title: ReadThreadTitle;
-  readonly posedAt: ReadPostedAt;
+  readonly postedAt: ReadPostedAt;
   readonly updatedAt: ReadPostedAt;
   // ここはスレッドのレス数なので妥協
   readonly countResponse: number;
@@ -20,14 +20,14 @@ export type ReadThreadWithEpochId = {
 export const createReadThreadWithEpochId = ({
   id,
   title,
-  posedAt,
+  postedAt,
   updatedAt,
   countResponse,
   threadEpochId,
 }: {
   id: ReadThreadId;
   title: ReadThreadTitle;
-  posedAt: ReadPostedAt;
+  postedAt: ReadPostedAt;
   updatedAt: ReadPostedAt;
   countResponse: number;
   threadEpochId: ReadThreadEpochId;
@@ -36,7 +36,7 @@ export const createReadThreadWithEpochId = ({
     _type: "ReadThreadWithEpochId",
     id,
     title,
-    posedAt,
+    postedAt,
     updatedAt,
     countResponse,
     threadEpochId,
