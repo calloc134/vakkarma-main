@@ -1,7 +1,5 @@
 import { err, ok } from "neverthrow";
 
-import { type ReadThreadId } from "../read/ReadThreadId";
-
 import { generateResponseId } from "./WriteResponseId";
 import { createWriteThreadId, type WriteThreadId } from "./WriteThreadId";
 
@@ -37,7 +35,7 @@ export const createWriteResponse = async ({
   responseContent: WriteResponseContent;
   hashId: WriteHashId;
   postedAt: WritePostedAt;
-  getThreadId: () => Promise<Result<ReadThreadId, Error>>;
+  getThreadId: () => Promise<Result<string, Error>>;
 }): Promise<Result<WriteResponse, Error>> => {
   // スレッドのIDを取得
   const getThreadIdResult = await getThreadId();
@@ -46,7 +44,7 @@ export const createWriteResponse = async ({
   }
 
   // 詰め替えが必要
-  const createThreadIdResult = createWriteThreadId(getThreadIdResult.value.val);
+  const createThreadIdResult = createWriteThreadId(getThreadIdResult.value);
   if (createThreadIdResult.isErr()) {
     return err(createThreadIdResult.error);
   }
