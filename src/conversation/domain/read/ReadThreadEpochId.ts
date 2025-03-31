@@ -4,14 +4,14 @@ import type { Result } from "neverthrow";
 
 export type ReadThreadEpochId = {
   readonly _type: "ReadThreadEpochId";
-  readonly val: string;
+  readonly val: number;
 };
 
 export const createReadThreadEpochId = (
-  threadEpochId: string
+  value: number
 ): Result<ReadThreadEpochId, Error> => {
   return ok({
     _type: "ReadThreadEpochId",
-    val: threadEpochId,
+    val: value,
   });
 };
