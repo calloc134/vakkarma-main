@@ -1,9 +1,9 @@
 import { err, ok } from "neverthrow";
 
-import { getBoardConfigRepository } from "../repositories/getBoardConfigRepository";
+import { getBoardConfigRepository } from "../../repositories/getBoardConfigRepository";
 
-import type { BoardConfig } from "../domain/read_model/BoardConfig";
-import type { DbContext } from "../types/DbContext";
+import type { BoardConfig } from "../../domain/read_model/BoardConfig";
+import type { DbContext } from "../../types/DbContext";
 import type { Result } from "neverthrow";
 
 export const getBoardConfigUsecase = async (

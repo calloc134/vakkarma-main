@@ -1,6 +1,6 @@
 import { createRoute } from "honox/factory";
 
-import { getAllThreadsWithEpochIdUsecase } from "../../../src/usecases/getAllThreadsWithEpochIdUsecase";
+import { getAllThreadsWithEpochIdUsecase } from "../../../src/conversation/usecases/getAllThreadsWithEpochIdUsecase";
 import { sql } from "../../db";
 import { convertShiftJis } from "../../utils/convertShiftJis";
 

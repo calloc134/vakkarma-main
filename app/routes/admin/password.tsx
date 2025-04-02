@@ -1,6 +1,6 @@
 import { createRoute } from "honox/factory";
 
-import { updatePasswordUsecase } from "../../../src/usecases/updatePasswordUsecase";
+import { updatePasswordUsecase } from "../../../src/config/usecases/updatePasswordUsecase";
 import { ErrorMessage } from "../../components/ErrorMessage";
 import { sql } from "../../db";
 

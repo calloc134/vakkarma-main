@@ -1,9 +1,9 @@
 import { compare } from "bcrypt-ts";
 import { ok, err } from "neverthrow";
 
-import { getPasswordHashConfigRepository } from "../repositories/getPasswordHashConfigRepository";
+import { getPasswordHashConfigRepository } from "../../repositories/getPasswordHashConfigRepository";
 
-import type { DbContext } from "../types/DbContext";
+import type { DbContext } from "../../types/DbContext";
 
 export const verifyAdminPasswordUsecase = async (
   dbContext: DbContext,

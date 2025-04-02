@@ -2,12 +2,12 @@
 
 import { ok, err } from "neverthrow";
 
-import { getLatest10ThreadsWithResponsesRepository } from "../repositories/getLatest10ThreadsWithResponsesRepository";
-import { getLatest30ThreadsRepository } from "../repositories/getLatest30ThreadsRepository";
+import { getLatest10ThreadsWithResponsesRepository } from "../../repositories/getLatest10ThreadsWithResponsesRepository";
+import { getLatest30ThreadsRepository } from "../../repositories/getLatest30ThreadsRepository";
 
-import type { ResponseForRead } from "../domain/read_model/ResponseForRead";
-import type { ThreadForRead } from "../domain/read_model/ThreadForRead";
-import type { DbContext } from "../types/DbContext";
+import type { ResponseForRead } from "../../domain/read_model/ResponseForRead";
+import type { ThreadForRead } from "../../domain/read_model/ThreadForRead";
+import type { DbContext } from "../../types/DbContext";
 
 export const getTopPageUsecase = async (dbContext: DbContext) => {
   // // 掲示板のconfigを取得

@@ -1,7 +1,7 @@
 import { createRoute } from "honox/factory";
 
 import { formatReadAuthorName } from "../../../../src/domain/value_object/ReadAuthorName";
-import { getAllResponsesByThreadEpochIdUsecase } from "../../../../src/usecases/getAllResponsesByThreadEpochIdUsecase";
+import { getAllResponsesByThreadEpochIdUsecase } from "../../../../src/conversation/usecases/getAllResponsesByThreadEpochIdUsecase";
 import { formatDate } from "../../../../src/utils/formatDate";
 import { sql } from "../../../db";
 import { convertShiftJis } from "../../../utils/convertShiftJis";

@@ -1,7 +1,7 @@
 import { jsxRenderer } from "hono/jsx-renderer";
 import { Link } from "honox/server";
 
-import { getBoardConfigUsecase } from "../../src/usecases/getBoardConfigUsecase";
+import { getBoardConfigUsecase } from "../../src/config/usecases/getBoardConfigUsecase";
 import { ErrorMessage } from "../components/ErrorMessage";
 import { sql } from "../db";
 

@@ -1,7 +1,7 @@
 import { createRoute } from "honox/factory";
 
-import { getConfigUsecase } from "../../../src/usecases/getConfigUsecase";
-import { updateConfigUsecase } from "../../../src/usecases/updateConfigUsecase";
+import { getConfigUsecase } from "../../../src/config/usecases/getConfigUsecase";
+import { updateConfigUsecase } from "../../../src/config/usecases/updateConfigUsecase";
 import { ErrorMessage } from "../../components/ErrorMessage";
 import { sql } from "../../db";
 

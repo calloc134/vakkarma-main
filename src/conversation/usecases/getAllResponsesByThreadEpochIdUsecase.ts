@@ -1,9 +1,9 @@
 import { err, ok } from "neverthrow";
 
-import { createThreadEpochId } from "../domain/value_object/ThreadEpochId";
-import { getAllResponsesByThreadEpochIdRepository } from "../repositories/getAllResponsesByThreadEpochIdRepository";
+import { createThreadEpochId } from "../../domain/value_object/ThreadEpochId";
+import { getAllResponsesByThreadEpochIdRepository } from "../../repositories/getAllResponsesByThreadEpochIdRepository";
 
-import type { DbContext } from "../types/DbContext";
+import type { DbContext } from "../../types/DbContext";
 
 // スレッドについているレスをすべて確認するユースケース
 export const getAllResponsesByThreadEpochIdUsecase = async (

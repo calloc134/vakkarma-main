@@ -2,8 +2,8 @@ import Encoding from "encoding-japanese";
 import { createRoute } from "honox/factory";
 import iconv from "iconv-lite";
 
-import { postResponseByThreadEpochIdUsecase } from "../../../src/usecases/postResponseByThreadEpochIdUsecase";
-import { postThreadUsecase } from "../../../src/usecases/postThreadUsecase";
+import { postResponseByThreadEpochIdUsecase } from "../../../src/conversation/usecases/postResponseByThreadEpochIdUsecase";
+import { postThreadUsecase } from "../../../src/conversation/usecases/postThreadUsecase";
 import { sql } from "../../db";
 import { convertShiftJis } from "../../utils/convertShiftJis";
 import { getIpAddress } from "../../utils/getIpAddress";

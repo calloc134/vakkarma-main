@@ -1,9 +1,9 @@
 import { err, ok } from "neverthrow";
 
-import { createConfig } from "../domain/write_model/Config";
-import { updateConfigRepository } from "../repositories/updateConfigRepository";
+import { createConfig } from "../../domain/write_model/Config";
+import { updateConfigRepository } from "../../repositories/updateConfigRepository";
 
-import type { DbContext } from "../types/DbContext";
+import type { DbContext } from "../../types/DbContext";
 import type { Result } from "neverthrow";
 
 export const updateConfigUsecase = async (

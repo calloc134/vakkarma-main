@@ -4,12 +4,12 @@ import { ok, err, type Result } from "neverthrow";
 import {
   createPassword,
   generatePasswordHash,
-} from "../domain/value_object/WritePassword";
-import { getPasswordHashConfigRepository } from "../repositories/getPasswordHashConfigRepository";
-import { updatePasswordRepository } from "../repositories/updatePasswordRepository";
-import { ValidationError } from "../types/Error";
+} from "../../domain/value_object/WritePassword";
+import { getPasswordHashConfigRepository } from "../../repositories/getPasswordHashConfigRepository";
+import { updatePasswordRepository } from "../../repositories/updatePasswordRepository";
+import { ValidationError } from "../../types/Error";
 
-import type { DbContext } from "../types/DbContext";
+import type { DbContext } from "../../types/DbContext";
 
 export const updatePasswordUsecase = async (
   dbContext: DbContext,

@@ -1,7 +1,7 @@
 import { createRoute } from "honox/factory";
 
 import { formatReadAuthorName } from "../../src/domain/value_object/ReadAuthorName";
-import { getTopPageUsecase } from "../../src/usecases/getTopPageUsecase";
+import { getTopPageUsecase } from "../../src/conversation/usecases/getTopPageUsecase";
 import { formatDate } from "../../src/utils/formatDate";
 import { ErrorMessage } from "../components/ErrorMessage";
 import { ResponseContentComponent } from "../components/ResponseContent";

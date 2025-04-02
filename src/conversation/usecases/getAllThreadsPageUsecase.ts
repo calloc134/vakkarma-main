@@ -1,8 +1,8 @@
 import { err, ok } from "neverthrow";
 
-import { getAllThreadsRepository } from "../repositories/getAllThreadsRepository";
+import { getAllThreadsRepository } from "../../repositories/getAllThreadsRepository";
 
-import type { DbContext } from "../types/DbContext";
+import type { DbContext } from "../../types/DbContext";
 
 // すべてのスレッドを取得するユースケース
 export const getAllThreadsPageUsecase = async (dbContext: DbContext) => {

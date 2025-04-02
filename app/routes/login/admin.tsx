@@ -4,7 +4,7 @@ import { sign } from "hono/jwt";
 import { createRoute } from "honox/factory";
 
 import { ValidationError } from "../../../src/types/Error";
-import { verifyAdminPasswordUsecase } from "../../../src/usecases/verifyAdminPasswordUsecase";
+import { verifyAdminPasswordUsecase } from "../../../src/config/usecases/verifyAdminPasswordUsecase";
 import { ErrorMessage } from "../../components/ErrorMessage";
 import { sql } from "../../db";
 
