@@ -2,20 +2,14 @@
 
 import { ok, err } from "neverthrow";
 
-import { getLatest10ThreadsWithResponsesRepository } from "../../repositories/getLatest10ThreadsWithResponsesRepository";
-import { getLatest30ThreadsRepository } from "../../repositories/getLatest30ThreadsRepository";
+import { getLatest10ThreadsWithResponsesRepository } from "../repositories/getLatest10ThreadsWithResposesRepository";
+import { getLatest30ThreadsRepository } from "../repositories/getLatest30ThreadsRepository";
 
-import type { ResponseForRead } from "../../domain/read_model/ResponseForRead";
-import type { ThreadForRead } from "../../domain/read_model/ThreadForRead";
 import type { DbContext } from "../../types/DbContext";
+import type { ReadResponse } from "../domain/read/ReadResponse";
+import type { ReadThread } from "../domain/read/ReadThread";
 
 export const getTopPageUsecase = async (dbContext: DbContext) => {
-  // // 掲示板のconfigを取得
-  // const configResult = await getConfigRepository(dbContext);
-  // if (configResult.isErr()) {
-  //   return err(configResult.error);
-  // }
-
   // まずスレッド上位30件を取得
   const threadsTop30Result = await getLatest30ThreadsRepository(dbContext);
   if (threadsTop30Result.isErr()) {
@@ -27,7 +21,7 @@ export const getTopPageUsecase = async (dbContext: DbContext) => {
   const top10ThreadIdsResult = threadsTop30Result.value
     .slice(0, 10)
     .map((thread) => {
-      return thread.threadId;
+      return thread.id;
     });
 
   // スレッド上位10件の詳細を取得
@@ -45,12 +39,12 @@ export const getTopPageUsecase = async (dbContext: DbContext) => {
   const threadResponseMap: Map<
     string,
     {
-      thread: ThreadForRead;
-      responses: ResponseForRead[];
+      thread: ReadThread;
+      responses: ReadResponse[];
     }
   > = new Map();
   for (const thread of threadsTop30Result.value) {
-    threadResponseMap.set(thread.threadId.val, {
+    threadResponseMap.set(thread.id.val, {
       thread,
       responses: [],
     });
@@ -85,7 +79,6 @@ export const getTopPageUsecase = async (dbContext: DbContext) => {
   // スレッド上位30件と、
   // スレッド上位10件についてはレスを含めた構造体を返す
   return ok({
-    // config: configResult.value,
     threadTop30: threadsTop30Result.value,
     responsesTop10: threadResponseArray,
   });
