@@ -1,6 +1,6 @@
 import { err, ok } from "neverthrow";
 
-import { createReadThreadEpochId } from "../domain/read/ReadThreadEpochId";
+import { createWriteThreadEpochId } from "../domain/write/WriteThreadEpochId";
 import { getAllResponsesByThreadEpochIdRepository } from "../repositories/getAllResponsesByThreadEpochIdRepository";
 
 import type { DbContext } from "../../types/DbContext";
@@ -11,7 +11,7 @@ export const getAllResponsesByThreadEpochIdUsecase = async (
   { threadEpochIdRaw }: { threadEpochIdRaw: string }
 ) => {
   // ThreadEpochIdを生成
-  const threadEpochId = createReadThreadEpochId(threadEpochIdRaw);
+  const threadEpochId = createWriteThreadEpochId(threadEpochIdRaw);
   if (threadEpochId.isErr()) {
     return err(threadEpochId.error);
   }

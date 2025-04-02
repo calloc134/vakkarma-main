@@ -22,13 +22,13 @@ import {
 
 import type { DbContext } from "../../types/DbContext";
 import type { ValidationError } from "../../types/Error";
-import type { ReadThreadEpochId } from "../domain/read/ReadThreadEpochId";
+import type { WriteThreadEpochId } from "../domain/write/WriteThreadEpochId";
 
 // 指定されたスレッドのすべてのレスポンスを取得するだけのリポジトリ
 // 便宜上、スレッドタイトルも取得する
 export const getAllResponsesByThreadEpochIdRepository = async (
   { sql }: DbContext,
-  { threadEpochId }: { threadEpochId: ReadThreadEpochId }
+  { threadEpochId }: { threadEpochId: WriteThreadEpochId }
 ): Promise<
   Result<
     ReadThreadWithResponses,

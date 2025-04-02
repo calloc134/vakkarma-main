@@ -13,6 +13,7 @@ import {
 import { createReadResponseContent } from "../domain/read/ReadResponseContent";
 import { createReadResponseId } from "../domain/read/ReadResponseId";
 import { createReadResponseNumber } from "../domain/read/ReadResponseNumber";
+import { createReadThreadId } from "../domain/read/ReadThreadId";
 import { createReadThreadTitle } from "../domain/read/ReadThreadTitle";
 import {
   createReadThreadWithResponses,
@@ -21,13 +22,13 @@ import {
 
 import type { DbContext } from "../../types/DbContext";
 import type { ValidationError } from "../../types/Error";
-import type { ReadThreadId } from "../domain/read/ReadThreadId";
+import type { WriteThreadId } from "../domain/write/WriteThreadId";
 
 // 指定されたスレッドのすべてのレスポンスを取得するだけのリポジトリ
 // 便宜上、スレッドタイトルも取得する
 export const getAllResponsesByThreadIdRepository = async (
   { sql }: DbContext,
-  { threadId }: { threadId: ReadThreadId }
+  { threadId }: { threadId: WriteThreadId }
 ): Promise<
   Result<
     ReadThreadWithResponses,
@@ -76,6 +77,11 @@ export const getAllResponsesByThreadIdRepository = async (
     }
 
     // 詰め替え部分
+    const threadIdResult = createReadThreadId(result[0].thread_id);
+    if (threadIdResult.isErr()) {
+      return err(threadIdResult.error);
+    }
+
     const responses: ReadResponse[] = [];
     for (const response of result) {
       const combinedResult = Result.combine([
@@ -104,7 +110,7 @@ export const getAllResponsesByThreadIdRepository = async (
 
       const responseResult = createReadResponse({
         responseId,
-        threadId,
+        threadId: threadIdResult.value,
         responseNumber,
         authorName,
         mail,
@@ -128,7 +134,7 @@ export const getAllResponsesByThreadIdRepository = async (
     }
 
     const threadWithResponsesResult = createReadThreadWithResponses(
-      threadId,
+      threadIdResult.value,
       threadTitleResult.value,
       responses
     );
