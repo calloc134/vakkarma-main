@@ -1,6 +1,6 @@
 import { err, ok } from "neverthrow";
 
-import { getAllThreadsWithEpochIdRepository } from "../../repositories/getAllThreadsWithEpochIdRepository";
+import { getAllThreadsWithEpochIdRepository } from "../repositories/getAllThreadsWithEpochIdRepository";
 
 import type { DbContext } from "../../types/DbContext";
 

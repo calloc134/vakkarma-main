@@ -1,7 +1,7 @@
 import { err, ok } from "neverthrow";
 
-import { createThreadId } from "../../domain/value_object/ThreadId";
-import { getAllResponsesByThreadIdRepository } from "../../repositories/getAllResponsesByThreadIdRepository";
+import { createReadThreadId } from "../domain/read/ReadThreadId";
+import { getAllResponsesByThreadIdRepository } from "../repositories/getAllResponsesByThreadIdRepository";
 
 import type { DbContext } from "../../types/DbContext";
 
@@ -11,7 +11,7 @@ export const getAllResponsesByThreadIdUsecase = async (
   { threadIdRaw }: { threadIdRaw: string }
 ) => {
   // ThreadIdを生成
-  const threadIdResult = createThreadId(threadIdRaw);
+  const threadIdResult = createReadThreadId(threadIdRaw);
   if (threadIdResult.isErr()) {
     return err(threadIdResult.error);
   }
