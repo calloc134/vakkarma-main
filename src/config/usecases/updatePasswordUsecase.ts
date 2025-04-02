@@ -1,13 +1,11 @@
 import { compare } from "bcrypt-ts";
 import { ok, err, type Result } from "neverthrow";
 
-import {
-  createPassword,
-  generatePasswordHash,
-} from "../../domain/value_object/WritePassword";
-import { getPasswordHashConfigRepository } from "../../repositories/getPasswordHashConfigRepository";
-import { updatePasswordRepository } from "../../repositories/updatePasswordRepository";
 import { ValidationError } from "../../types/Error";
+import { createWritePassword } from "../domain/write/WritePassword";
+import { generateWritePasswordHash } from "../domain/write/WritePasswordHash";
+import { getPasswordHashRepository } from "../repositories/getPasswordHashRepository";
+import { updatePasswordHashRepository } from "../repositories/updatePasswordHashRepository";
 
 import type { DbContext } from "../../types/DbContext";
 
@@ -25,28 +23,30 @@ export const updatePasswordUsecase = async (
     );
   }
 
-  const storedHashResult = await getPasswordHashConfigRepository(dbContext);
+  const storedHashResult = await getPasswordHashRepository(dbContext);
   if (storedHashResult.isErr()) {
     return err(storedHashResult.error);
   }
   const storedHash = storedHashResult.value;
 
-  const passwordMatch = await compare(oldPassword, storedHash);
+  const passwordMatch = await compare(oldPassword, storedHash.val);
   if (!passwordMatch) {
     return err(new ValidationError("現在のパスワードが正しくありません"));
   }
 
-  const newPasswordResult = createPassword(newPassword);
+  const newPasswordResult = await createWritePassword(newPassword);
   if (newPasswordResult.isErr()) {
     return err(newPasswordResult.error);
   }
 
-  const newHashResult = await generatePasswordHash(newPasswordResult.value);
+  const newHashResult = await generateWritePasswordHash(
+    newPasswordResult.value
+  );
   if (newHashResult.isErr()) {
     return err(newHashResult.error);
   }
 
-  const updateResult = await updatePasswordRepository(
+  const updateResult = await updatePasswordHashRepository(
     dbContext,
     newHashResult.value
   );

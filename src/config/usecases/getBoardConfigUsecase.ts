@@ -1,14 +1,14 @@
 import { err, ok } from "neverthrow";
 
-import { getBoardConfigRepository } from "../../repositories/getBoardConfigRepository";
+import { getBoardConfigRepository } from "../repositories/getBoardConfigRepository";
 
-import type { BoardConfig } from "../../domain/read_model/BoardConfig";
 import type { DbContext } from "../../types/DbContext";
+import type { ReadBoardConfig } from "../domain/read/ReadBoardConfig";
 import type { Result } from "neverthrow";
 
 export const getBoardConfigUsecase = async (
   dbContext: DbContext
-): Promise<Result<BoardConfig, Error>> => {
+): Promise<Result<ReadBoardConfig, Error>> => {
   const config = await getBoardConfigRepository(dbContext);
   if (config.isErr()) {
     return err(config.error);

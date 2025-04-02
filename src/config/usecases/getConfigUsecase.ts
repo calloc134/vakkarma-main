@@ -1,15 +1,15 @@
 import { err, ok } from "neverthrow";
 
-import { getConfigRepository } from "../../repositories/getConfigRepository";
+import { getNormalConfigRepository } from "../repositories/getNormalConfigRepository";
 
-import type { Config } from "../../domain/write_model/Config";
 import type { DbContext } from "../../types/DbContext";
+import type { ReadNormalConfig } from "../domain/read/ReadNormalConfig";
 import type { Result } from "neverthrow";
 
 export const getConfigUsecase = async (
   dbContext: DbContext
-): Promise<Result<Config, Error>> => {
-  const config = await getConfigRepository(dbContext);
+): Promise<Result<ReadNormalConfig, Error>> => {
+  const config = await getNormalConfigRepository(dbContext);
   if (config.isErr()) {
     return err(config.error);
   }
