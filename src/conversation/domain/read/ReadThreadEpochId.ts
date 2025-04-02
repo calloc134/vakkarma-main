@@ -1,4 +1,6 @@
-import { ok } from "neverthrow";
+import { err, ok } from "neverthrow";
+
+import { ValidationError } from "../../../types/Error";
 
 import type { Result } from "neverthrow";
 
@@ -8,10 +10,15 @@ export type ReadThreadEpochId = {
 };
 
 export const createReadThreadEpochId = (
-  value: number
+  value: string
 ): Result<ReadThreadEpochId, Error> => {
+  // BIGINTを扱うため、数値に変換
+  const epochId = Number(value);
+  if (isNaN(epochId)) {
+    return err(new ValidationError("ThreadEpochIdは数値である必要があります"));
+  }
   return ok({
     _type: "ReadThreadEpochId",
-    val: value,
+    val: epochId,
   });
 };
