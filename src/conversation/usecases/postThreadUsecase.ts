@@ -1,17 +1,17 @@
 import { err, ok } from "neverthrow";
 
-import { generateHashId } from "../../domain/value_object/HashId";
-import { createMail } from "../../domain/value_object/Mail";
-import { generateCurrentPostedAt } from "../../domain/value_object/PostedAt";
-import { createThreadTitle } from "../../domain/value_object/ThreadTitle";
-import { createWriteAuthorName } from "../../domain/value_object/WriteAuthorName";
-import { createWriteResponseContent } from "../../domain/value_object/WriteResponseContent";
-import { createResponse } from "../../domain/write_model/Response";
-import { createThread } from "../../domain/write_model/Thread";
-import { createResponseRepository } from "../../repositories/createResponseRepository";
-import { createThreadRepository } from "../../repositories/createThreadRepository";
-import { getMaxLenContentConfigRepository } from "../../repositories/getMaxLenContentConfigRepository";
-import { getNanashiConfigRepository } from "../../repositories/getNanashiConfigRepository";
+import { getDefaultAuthorNameRepository } from "../../config/repositories/getDefaultAuthorNameRepository";
+import { getMaxContentLengthRepository } from "../../config/repositories/getMaxContentLengthRepository";
+import { createWriteAuthorName } from "../domain/write/WriteAuthorName";
+import { generateWriteHashId } from "../domain/write/WriteHashId";
+import { createWriteMail } from "../domain/write/WriteMail";
+import { generateCurrentPostedAt } from "../domain/write/WritePostedAt";
+import { createWriteResponse } from "../domain/write/WriteResponse";
+import { createWriteResponseContent } from "../domain/write/WriteResponseContent";
+import { createWriteThread } from "../domain/write/WriteThread";
+import { createWriteThreadTitle } from "../domain/write/WriteThreadTitle";
+import { createResponseByThreadIdRepository } from "../repositories/createResponseByThreadIdRepository";
+import { createThreadRepository } from "../repositories/createThreadRepository";
 
 import type { DbContext } from "../../types/DbContext";
 
@@ -34,7 +34,7 @@ export const postThreadUsecase = async (
   }
 ) => {
   // スレタイを生成
-  const threadTitleResult = createThreadTitle(threadTitleRaw);
+  const threadTitleResult = createWriteThreadTitle(threadTitleRaw);
   if (threadTitleResult.isErr()) {
     return err(threadTitleResult.error);
   }
@@ -42,15 +42,18 @@ export const postThreadUsecase = async (
   const authorNameResult = await createWriteAuthorName(
     authorNameRaw,
     async () => {
-      const nanashiNameResult = getNanashiConfigRepository(dbContext);
-      return nanashiNameResult;
+      const nanashiNameResult = await getDefaultAuthorNameRepository(dbContext);
+      if (nanashiNameResult.isErr()) {
+        return err(nanashiNameResult.error);
+      }
+      return ok(nanashiNameResult.value.val);
     }
   );
   if (authorNameResult.isErr()) {
     return err(authorNameResult.error);
   }
   // メール生成
-  const mailResult = createMail(mailRaw);
+  const mailResult = createWriteMail(mailRaw);
   if (mailResult.isErr()) {
     return err(mailResult.error);
   }
@@ -58,23 +61,26 @@ export const postThreadUsecase = async (
   const responseContentResult = await createWriteResponseContent(
     responseContentRaw,
     async () => {
-      const result = await getMaxLenContentConfigRepository(dbContext);
-      return result;
+      const result = await getMaxContentLengthRepository(dbContext);
+      if (result.isErr()) {
+        return err(result.error);
+      }
+      return ok(result.value.val);
     }
   );
   if (responseContentResult.isErr()) {
     return err(responseContentResult.error);
   }
   // 現在時刻を生成
-  const postedAt = generateCurrentPostedAt()._unsafeUnwrap(); // ここでエラーが出ることはない
+  const postedAt = generateCurrentPostedAt();
   // ハッシュ値作成
-  const hashId = generateHashId(ipAddressRaw, postedAt.val);
+  const hashId = generateWriteHashId(ipAddressRaw, postedAt.val);
   if (hashId.isErr()) {
     return err(hashId.error);
   }
 
   // まずスレッド作成
-  const thread = createThread({
+  const thread = createWriteThread({
     title: threadTitleResult.value,
     postedAt,
   });
@@ -83,8 +89,10 @@ export const postThreadUsecase = async (
   }
 
   // 一番目のレスも作成
-  const response = createResponse({
-    threadId: thread.value.id,
+  const response = await createWriteResponse({
+    getThreadId: async () => {
+      return ok(thread.value.id.val);
+    },
     authorName: authorNameResult.value,
     mail: mailResult.value,
     responseContent: responseContentResult.value,
@@ -97,7 +105,7 @@ export const postThreadUsecase = async (
 
   // 最後に永続化
   // 先にレスを作成したほうが安全側に倒せそう
-  const responseResult = await createResponseRepository(
+  const responseResult = await createResponseByThreadIdRepository(
     dbContext,
     response.value
   );
