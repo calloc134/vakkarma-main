@@ -3,8 +3,6 @@ import { ok, err, type Result } from "neverthrow";
 import { ValidationError } from "../../../types/Error";
 import { createTrip } from "../../../utils/createTrip";
 
-import type { ReadAuthorName } from "../read/ReadAuthorName";
-
 type SomeWriteAuthorName = {
   readonly _type: "some";
   readonly authorName: string;
@@ -27,10 +25,10 @@ export type WriteAuthorName = {
 export const createWriteAuthorName = async (
   authorName: string | null,
   // 高階関数パターンで、より低レイヤの処理を隠蔽できるようにする
-  getNanashiName: () => Promise<Result<ReadAuthorName, Error>>
+  getDefaultAuthorName: () => Promise<Result<string, Error>>
 ): Promise<Result<WriteAuthorName, ValidationError>> => {
   if (!authorName) {
-    const nanashiName = await getNanashiName();
+    const nanashiName = await getDefaultAuthorName();
     if (nanashiName.isErr()) {
       return err(nanashiName.error);
     }
@@ -38,7 +36,7 @@ export const createWriteAuthorName = async (
       _type: "WriteAuthorName",
       val: {
         _type: "none",
-        authorName: nanashiName.value.val.authorName,
+        authorName: nanashiName.value,
       },
     });
   }
