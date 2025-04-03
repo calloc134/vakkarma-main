@@ -1,6 +1,6 @@
 import { createRoute } from "honox/factory";
 
-import { postThreadUsecase } from "../../../src/usecases/postThreadUsecase";
+import { postThreadUsecase } from "../../../src/conversation/usecases/postThreadUsecase";
 import { ErrorMessage } from "../../components/ErrorMessage";
 import { sql } from "../../db";
 import { getIpAddress } from "../../utils/getIpAddress";
