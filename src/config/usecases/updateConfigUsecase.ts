@@ -15,19 +15,19 @@ export const updateConfigUsecase = async (
   {
     boardNameRaw,
     localRuleRaw,
-    nanashiNameRaw,
+    defaultAuthorNameRaw,
     maxContentLengthRaw,
   }: {
     boardNameRaw: string;
     localRuleRaw: string;
-    nanashiNameRaw: string;
+    defaultAuthorNameRaw: string;
     maxContentLengthRaw: number;
   }
 ): Promise<Result<undefined, Error>> => {
   const combinedResult = Result.combine([
     createWriteBoardName(boardNameRaw),
     createWriteLocalRule(localRuleRaw),
-    createWriteDefaultAuthorName(nanashiNameRaw),
+    createWriteDefaultAuthorName(defaultAuthorNameRaw),
     createWriteMaxContentLength(maxContentLengthRaw),
   ]);
 
