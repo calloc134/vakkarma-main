@@ -33,7 +33,7 @@ export const POST = createRoute(async (c) => {
     {
       boardNameRaw: boardName,
       localRuleRaw: localRule,
-      nanashiNameRaw: nanashiName,
+      defaultAuthorNameRaw: nanashiName,
       maxContentLengthRaw: Number(maxContentLength),
     }
   );
