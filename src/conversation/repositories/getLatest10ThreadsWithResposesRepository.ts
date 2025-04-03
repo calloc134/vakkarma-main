@@ -17,12 +17,12 @@ import { createReadThreadId } from "../domain/read/ReadThreadId";
 
 import type { DbContext } from "../../types/DbContext";
 import type { ValidationError } from "../../types/Error";
-import type { ReadThreadId } from "../domain/read/ReadThreadId";
+import type { WriteThreadId } from "../domain/write/WriteThreadId";
 
 // スレッドIDを元に、最新のレスポンスを10個取得し、その内容を返す
 export const getLatest10ThreadsWithResponsesRepository = async (
   { sql }: DbContext,
-  { threadIds }: { threadIds: ReadThreadId[] }
+  { threadIds }: { threadIds: WriteThreadId[] }
 ): Promise<
   Result<ReadResponse[], DatabaseError | DataNotFoundError | ValidationError>
 > => {
