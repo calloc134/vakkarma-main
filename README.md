@@ -85,12 +85,14 @@ TRUSTED_PROXY_ID=proxy1
 POSTGRES_USER=myuser
 POSTGRES_PASSWORD=mypassword
 POSTGRES_DB=myapp
+JWT_SECRET_KEY=secret
 ```
 
 - `TRUSTED_PROXY_ID`: リバースプロキシの識別子。ユーザに推測されないように設定してください。
 - `POSTGRES_USER`: データベースのユーザ名
 - `POSTGRES_PASSWORD`: データベースのパスワード
 - `POSTGRES_DB`: データベース名
+- `JWT_SECRET_KEY`: JWT の秘密鍵。ユーザに推測されないように設定してください。
 
 次に、Docker の有効な環境で以下のコマンドを実行してください。
 
@@ -113,11 +115,13 @@ docker compose -f docker-compose.prod.yml up -d
 VITE_POSTGRES_USER=postgres
 VITE_POSTGRES_PASSWORD=postgres
 VITE_POSTGRES_DB=vakkarma-1
+VITE_JWT_SECRET_KEY=secret
 ```
 
 - `VITE_POSTGRES_USER`: データベースのユーザ名
 - `VITE_POSTGRES_PASSWORD`: データベースのパスワード
 - `VITE_POSTGRES_DB`: データベース名
+- `VITE_JWT_SECRET_KEY`: JWT の秘密鍵。ユーザに推測されないように設定してください。
 
 次に、以下のコマンドを実行してください。
 
