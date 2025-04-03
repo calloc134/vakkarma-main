@@ -23,7 +23,7 @@ export default jsxRenderer(async ({ children }) => {
       <head>
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>{configResult.value.boardName}</title>
+        <title>{configResult.value.boardName.val}</title>
         <Link href="/app/style.css" rel="stylesheet" />
         <link rel="icon" href="favicon.svg" type="image/svg+xml" />
       </head>
@@ -32,9 +32,9 @@ export default jsxRenderer(async ({ children }) => {
           <header className="bg-gradient-to-r from-purple-500 to-orange-200 text-white w-full py-4 px-6">
             <div className="container mx-auto">
               <a className="text-3xl font-bold" href="/">
-                {configResult.value.boardName}
+                {configResult.value.boardName.val}
               </a>
-              <p className="text-sm">{configResult.value.localRule}</p>
+              <p className="text-sm">{configResult.value.localRule.val}</p>
             </div>
           </header>
 
