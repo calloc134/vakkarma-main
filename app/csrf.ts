@@ -80,7 +80,6 @@ export const csrf = (options?: CSRFOptions): MiddlewareHandler => {
   };
 
   return async function csrf(c, next) {
-    console.log(c.req.header("origin"));
     if (
       !isSafeMethodRe.test(c.req.method) &&
       isRequestedByFormElementRe.test(
