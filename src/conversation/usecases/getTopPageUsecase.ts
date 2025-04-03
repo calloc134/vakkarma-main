@@ -2,6 +2,7 @@
 
 import { ok, err } from "neverthrow";
 
+import { createWriteThreadId } from "../domain/write/WriteThreadId";
 import { getLatest10ThreadsWithResponsesRepository } from "../repositories/getLatest10ThreadsWithResposesRepository";
 import { getLatest30ThreadsRepository } from "../repositories/getLatest30ThreadsRepository";
 
@@ -24,10 +25,22 @@ export const getTopPageUsecase = async (dbContext: DbContext) => {
       return thread.id;
     });
 
+  // writeThreadIdの配列に変換
+  const top10ThreadIds = top10ThreadIdsResult
+    .map((threadId) => {
+      return createWriteThreadId(threadId.val);
+    })
+    .filter((threadId) => {
+      return threadId.isOk();
+    })
+    .map((threadId) => {
+      return threadId.value;
+    });
+
   // スレッド上位10件の詳細を取得
   const responsesTop10 = await getLatest10ThreadsWithResponsesRepository(
     dbContext,
-    { threadIds: top10ThreadIdsResult }
+    { threadIds: top10ThreadIds }
   );
   if (responsesTop10.isErr()) {
     return err(responsesTop10.error);

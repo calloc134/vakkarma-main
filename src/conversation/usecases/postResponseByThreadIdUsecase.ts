@@ -10,6 +10,7 @@ import { createWriteResponse } from "../domain/write/WriteResponse";
 import { createWriteResponseContent } from "../domain/write/WriteResponseContent";
 import { createWriteThreadId } from "../domain/write/WriteThreadId";
 import { createResponseByThreadIdRepository } from "../repositories/createResponseByThreadIdRepository";
+import { updateThreadUpdatedAtRepository } from "../repositories/updateThreadUpdatedAtRepository";
 
 import type { DbContext } from "../../types/DbContext";
 

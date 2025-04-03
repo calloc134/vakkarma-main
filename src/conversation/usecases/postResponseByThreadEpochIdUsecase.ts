@@ -9,8 +9,10 @@ import { generateCurrentPostedAt } from "../domain/write/WritePostedAt";
 import { createWriteResponse } from "../domain/write/WriteResponse";
 import { createWriteResponseContent } from "../domain/write/WriteResponseContent";
 import { createWriteThreadEpochId } from "../domain/write/WriteThreadEpochId";
+import { createWriteThreadId } from "../domain/write/WriteThreadId";
 import { createResponseByThreadIdRepository } from "../repositories/createResponseByThreadIdRepository";
 import { getThreadIdByThreadEpochIdRepository } from "../repositories/getThreadIdByThreadEpochIdRepository";
+import { updateThreadUpdatedAtRepository } from "../repositories/updateThreadUpdatedAtRepository";
 
 import type { DbContext } from "../../types/DbContext";
 
@@ -37,12 +39,21 @@ export const postResponseByThreadEpochIdUsecase = async (
     return err(threadEpochIdResult.error);
   }
 
-  // ThreadIdを取得
-  const threadIdResult = await getThreadIdByThreadEpochIdRepository(dbContext, {
-    threadEpochId: threadEpochIdResult.value,
-  });
-  if (threadIdResult.isErr()) {
-    return err(threadIdResult.error);
+  // ThreadIdを取得 read
+  const readThreadIdResult = await getThreadIdByThreadEpochIdRepository(
+    dbContext,
+    {
+      threadEpochId: threadEpochIdResult.value,
+    }
+  );
+  if (readThreadIdResult.isErr()) {
+    return err(readThreadIdResult.error);
+  }
+
+  // writeにする
+  const writeThreadIdResult = createWriteThreadId(readThreadIdResult.value.val);
+  if (writeThreadIdResult.isErr()) {
+    return err(writeThreadIdResult.error);
   }
 
   // ユーザ名を生成
@@ -91,7 +102,7 @@ export const postResponseByThreadEpochIdUsecase = async (
   const response = await createWriteResponse({
     // 高階関数パターン必要なかったかも
     getThreadId: async () => {
-      return ok(threadIdResult.value.val);
+      return ok(writeThreadIdResult.value.val);
     },
     authorName: authorNameResult.value,
     mail: mailResult.value,
@@ -114,7 +125,7 @@ export const postResponseByThreadEpochIdUsecase = async (
 
   // また、スレッドのupdated_atも更新する必要がある
   const threadResult = await updateThreadUpdatedAtRepository(dbContext, {
-    threadId: threadIdResult.value,
+    threadId: writeThreadIdResult.value,
     updatedAt: postedAt,
   });
   if (threadResult.isErr()) {
