@@ -12,5 +12,5 @@ export default createRoute(async (_) => {
   if (config.isErr()) {
     return convertShiftJis(`エラーが発生しました: ${config.error.message}`);
   }
-  return convertShiftJis(config.value.localRule);
+  return convertShiftJis(config.value.localRule.val);
 });

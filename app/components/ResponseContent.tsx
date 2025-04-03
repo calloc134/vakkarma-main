@@ -1,5 +1,5 @@
+import type { ReadThreadId } from "../../src/conversation/domain/read/ReadThreadId";
 import type { ReadResponseContent } from "../../src/domain/value_object/ReadResponseContent";
-import type { ThreadId } from "../../src/domain/value_object/ThreadId";
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const ResponseLineComponent = ({
@@ -7,7 +7,7 @@ export const ResponseLineComponent = ({
   threadId,
 }: {
   line: string;
-  threadId: ThreadId;
+  threadId: ReadThreadId;
 }) => {
   const regex = />>(\d+)/g;
   const parts = [];
@@ -40,7 +40,7 @@ export const ResponseContentComponent = ({
   threadId,
   responseContent,
 }: {
-  threadId: ThreadId;
+  threadId: ReadThreadId;
   responseContent: ReadResponseContent;
 }) => {
   const lines = responseContent.val.split("\n");

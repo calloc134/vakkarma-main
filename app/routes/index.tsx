@@ -1,7 +1,7 @@
 import { createRoute } from "honox/factory";
 
-import { formatReadAuthorName } from "../../src/domain/value_object/ReadAuthorName";
 import { getTopPageUsecase } from "../../src/conversation/usecases/getTopPageUsecase";
+import { formatReadAuthorName } from "../../src/domain/value_object/ReadAuthorName";
 import { formatDate } from "../../src/utils/formatDate";
 import { ErrorMessage } from "../components/ErrorMessage";
 import { ResponseContentComponent } from "../components/ResponseContent";
@@ -28,10 +28,10 @@ export default createRoute(async (c) => {
       <section className="bg-white rounded-lg shadow-md p-6 mb-8">
         <ul className="flex flex-col gap-2">
           {threadTop30.map((thread, index) => (
-            <li key={thread.threadId.val} className="">
+            <li key={thread.id.val} className="">
               <a
                 className="text-purple-600 underline"
-                href={`/threads/${thread.threadId.val}`}
+                href={`/threads/${thread.id.val}`}
               >
                 {index + 1}: {thread.title.val} ({thread.countResponse})
               </a>
@@ -44,7 +44,7 @@ export default createRoute(async (c) => {
         <ul className="flex flex-col gap-4">
           {responsesTop10.map((threadResp, threadIndex) => (
             <li
-              key={threadResp.thread.threadId.val}
+              key={threadResp.thread.id.val}
               className="bg-white rounded-lg shadow-md p-6 pb-4"
             >
               <h3 className="text-purple-600 font-bold text-xl">
@@ -85,7 +85,7 @@ export default createRoute(async (c) => {
                 <h3 className="text-xl font-semibold mb-4">返信する</h3>
                 <form
                   method="post"
-                  action={`/threads/${threadResp.thread.threadId.val}/responses`}
+                  action={`/threads/${threadResp.thread.id.val}/responses`}
                   className="flex flex-col gap-4"
                 >
                   <div>
@@ -126,7 +126,7 @@ export default createRoute(async (c) => {
                   </button>
                 </form>
                 <a
-                  href={`/threads/${threadResp.thread.threadId.val}`}
+                  href={`/threads/${threadResp.thread.id.val}`}
                   className="text-blue-600 hover:underline"
                 >
                   全部読む

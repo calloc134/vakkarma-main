@@ -73,7 +73,7 @@ export default createRoute(async (c) => {
                 type="text"
                 id="boardName"
                 name="boardName"
-                value={configResult.value.boardName}
+                value={configResult.value.boardName.val}
                 className="border border-gray-400 rounded py-2 px-3 focus:outline-none focus:shadow-outline"
               />
             </div>
@@ -88,7 +88,7 @@ export default createRoute(async (c) => {
                 type="text"
                 id="localRule"
                 name="localRule"
-                value={configResult.value.localRule}
+                value={configResult.value.localRule.val}
                 className="border border-gray-400 rounded py-2 px-3 focus:outline-none focus:shadow-outline"
               />
             </div>
@@ -103,7 +103,7 @@ export default createRoute(async (c) => {
                 type="text"
                 id="nanashiName"
                 name="nanashiName"
-                value={configResult.value.nanashiName}
+                value={configResult.value.defaultAuthorName.val}
                 className="border border-gray-400 rounded py-2 px-3 focus:outline-none focus:shadow-outline"
               />
             </div>
@@ -118,7 +118,7 @@ export default createRoute(async (c) => {
                 type="number"
                 id="maxResponseLength"
                 name="maxResponseLength"
-                value={configResult.value.maxContentLength}
+                value={configResult.value.maxContentLength.val}
                 className="border border-gray-400 rounded py-2 px-3 focus:outline-none focus:shadow-outline"
               />
             </div>
