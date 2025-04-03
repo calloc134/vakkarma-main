@@ -1,5 +1,5 @@
+import type { ReadResponseContent } from "../../src/conversation/domain/read/ReadResponseContent";
 import type { ReadThreadId } from "../../src/conversation/domain/read/ReadThreadId";
-import type { ReadResponseContent } from "../../src/domain/value_object/ReadResponseContent";
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const ResponseLineComponent = ({
