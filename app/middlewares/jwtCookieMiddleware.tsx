@@ -3,7 +3,7 @@ import { getCookie } from "hono/cookie";
 import { createMiddleware } from "hono/factory";
 import { verify } from "hono/jwt";
 
-import { ErrorMessage } from "./components/ErrorMessage";
+import { ErrorMessage } from "../components/ErrorMessage";
 
 export const jwtAuthMiddleware = () => {
   return createMiddleware(async (c, next) => {
