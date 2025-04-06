@@ -3,14 +3,14 @@ import { Link } from "honox/server";
 
 import { getBoardConfigUsecase } from "../../src/config/usecases/getBoardConfigUsecase";
 import { ErrorMessage } from "../components/ErrorMessage";
-import { sql } from "../db";
+import {  } from "../middlewares/dbInitializeMiddleware";
 
 export default jsxRenderer(async ({ children }) => {
-  if (!sql) {
+  if (!DbClient) {
     return <ErrorMessage error={new Error("DBに接続できませんでした")} />;
   }
   const configResult = await getBoardConfigUsecase({
-    sql,
+    sql: DbClient,
   });
 
   if (configResult.isErr()) {
