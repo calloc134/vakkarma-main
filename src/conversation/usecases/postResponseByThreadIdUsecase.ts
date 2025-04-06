@@ -12,11 +12,11 @@ import { createWriteThreadId } from "../domain/write/WriteThreadId";
 import { createResponseByThreadIdRepository } from "../repositories/createResponseByThreadIdRepository";
 import { updateThreadUpdatedAtRepository } from "../repositories/updateThreadUpdatedAtRepository";
 
-import type { DbContext } from "../../types/DbContext";
+import type { VakContext } from "../../types/VakContext";
 
 // レスを投稿する際のユースケース
 export const postResponseByThreadIdUsecase = async (
-  dbContext: DbContext,
+  dbContext: VakContext,
   {
     threadIdRaw,
     authorNameRaw,

@@ -6,13 +6,13 @@ import {
   type ReadThreadId,
 } from "../domain/read/ReadThreadId";
 
-import type { DbContext } from "../../types/DbContext";
+import type { VakContext } from "../../types/VakContext";
 import type { WriteThread } from "../domain/write/WriteThread";
 import type { Result } from "neverthrow";
 
 // スレッドを作成するリポジトリ
 export const createThreadRepository = async (
-  { sql }: DbContext,
+  { sql }: VakContext,
   thread: WriteThread
 ): Promise<Result<ReadThreadId, DatabaseError>> => {
   try {

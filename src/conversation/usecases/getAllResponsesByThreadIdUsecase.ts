@@ -3,11 +3,11 @@ import { err, ok } from "neverthrow";
 import { createWriteThreadId } from "../domain/write/WriteThreadId";
 import { getAllResponsesByThreadIdRepository } from "../repositories/getAllResponsesByThreadIdRepository";
 
-import type { DbContext } from "../../types/DbContext";
+import type { VakContext } from "../../types/VakContext";
 
 // スレッドについているレスをすべて確認するユースケース
 export const getAllResponsesByThreadIdUsecase = async (
-  dbContext: DbContext,
+  dbContext: VakContext,
   { threadIdRaw }: { threadIdRaw: string }
 ) => {
   // ThreadIdを生成

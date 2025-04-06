@@ -7,10 +7,10 @@ import { generateWritePasswordHash } from "../domain/write/WritePasswordHash";
 import { getPasswordHashRepository } from "../repositories/getPasswordHashRepository";
 import { updatePasswordHashRepository } from "../repositories/updatePasswordHashRepository";
 
-import type { DbContext } from "../../types/DbContext";
+import type { VakContext } from "../../types/VakContext";
 
 export const updatePasswordUsecase = async (
-  dbContext: DbContext,
+  dbContext: VakContext,
   {
     oldPassword,
     newPassword,

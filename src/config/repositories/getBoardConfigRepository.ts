@@ -8,12 +8,12 @@ import {
 import { createReadBoardName } from "../domain/read/ReadBoardName";
 import { createReadLocalRule } from "../domain/read/ReadLocalRule";
 
-import type { DbContext } from "../../types/DbContext";
+import type { VakContext } from "../../types/VakContext";
 import type { Result } from "neverthrow";
 
 export const getBoardConfigRepository = async ({
   sql,
-}: DbContext): Promise<
+}: VakContext): Promise<
   Result<ReadBoardConfig, DatabaseError | DataNotFoundError>
 > => {
   try {

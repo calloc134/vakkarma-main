@@ -11,11 +11,11 @@ import {
   type ReadNormalConfig,
 } from "../domain/read/ReadNormalConfig";
 
-import type { DbContext } from "../../types/DbContext";
+import type { VakContext } from "../../types/VakContext";
 
 export const getNormalConfigRepository = async ({
   sql,
-}: DbContext): Promise<Result<ReadNormalConfig, DatabaseError>> => {
+}: VakContext): Promise<Result<ReadNormalConfig, DatabaseError>> => {
   try {
     const result = await sql<
       {

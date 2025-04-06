@@ -1,5 +1,5 @@
 import type { Sql } from "postgres";
 
-export type DbContext = {
+export type VakContext = {
   sql: Sql;
 };

@@ -2,12 +2,12 @@ import { ok, err } from "neverthrow";
 
 import { DatabaseError } from "../../types/Error";
 
-import type { DbContext } from "../../types/DbContext";
+import type { VakContext } from "../../types/VakContext";
 import type { WritePasswordHash } from "../domain/write/WritePasswordHash";
 import type { Result } from "neverthrow";
 
 export const updatePasswordHashRepository = async (
-  { sql }: DbContext,
+  { sql }: VakContext,
   passwordHash: WritePasswordHash
 ): Promise<Result<undefined, Error>> => {
   try {

@@ -2,13 +2,13 @@ import { err, ok } from "neverthrow";
 
 import { createReadThreadId } from "../domain/read/ReadThreadId";
 
-import type { DbContext } from "../../types/DbContext";
+import type { VakContext } from "../../types/VakContext";
 import type { ReadThreadId } from "../domain/read/ReadThreadId";
 import type { WriteThreadEpochId } from "../domain/write/WriteThreadEpochId";
 import type { Result } from "neverthrow";
 
 export const getThreadIdByThreadEpochIdRepository = async (
-  { sql }: DbContext,
+  { sql }: VakContext,
   { threadEpochId }: { threadEpochId: WriteThreadEpochId }
 ): Promise<Result<ReadThreadId, Error>> => {
   const result = await sql<{ id: string }[]>`

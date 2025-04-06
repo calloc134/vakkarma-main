@@ -8,10 +8,10 @@ import { createWriteMaxContentLength } from "../domain/write/WriteMaxContentLeng
 import { createWriteNormalConfig } from "../domain/write/WriteNormalConfig";
 import { updateNormalConfigRepository } from "../repositories/updateNormalConfigRepository";
 
-import type { DbContext } from "../../types/DbContext";
+import type { VakContext } from "../../types/VakContext";
 
 export const updateConfigUsecase = async (
-  dbContext: DbContext,
+  dbContext: VakContext,
   {
     boardNameRaw,
     localRuleRaw,

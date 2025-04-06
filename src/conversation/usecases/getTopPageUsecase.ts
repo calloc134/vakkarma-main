@@ -6,11 +6,11 @@ import { createWriteThreadId } from "../domain/write/WriteThreadId";
 import { getLatest10ThreadsWithResponsesRepository } from "../repositories/getLatest10ThreadsWithResposesRepository";
 import { getLatest30ThreadsRepository } from "../repositories/getLatest30ThreadsRepository";
 
-import type { DbContext } from "../../types/DbContext";
+import type { VakContext } from "../../types/VakContext";
 import type { ReadResponse } from "../domain/read/ReadResponse";
 import type { ReadThread } from "../domain/read/ReadThread";
 
-export const getTopPageUsecase = async (dbContext: DbContext) => {
+export const getTopPageUsecase = async (dbContext: VakContext) => {
   // まずスレッド上位30件を取得
   const threadsTop30Result = await getLatest30ThreadsRepository(dbContext);
   if (threadsTop30Result.isErr()) {

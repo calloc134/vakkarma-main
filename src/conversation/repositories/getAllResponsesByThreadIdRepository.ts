@@ -20,14 +20,14 @@ import {
   type ReadThreadWithResponses,
 } from "../domain/read/ReadThreadWithResponses";
 
-import type { DbContext } from "../../types/DbContext";
+import type { VakContext } from "../../types/VakContext";
 import type { ValidationError } from "../../types/Error";
 import type { WriteThreadId } from "../domain/write/WriteThreadId";
 
 // 指定されたスレッドのすべてのレスポンスを取得するだけのリポジトリ
 // 便宜上、スレッドタイトルも取得する
 export const getAllResponsesByThreadIdRepository = async (
-  { sql }: DbContext,
+  { sql }: VakContext,
   { threadId }: { threadId: WriteThreadId }
 ): Promise<
   Result<

@@ -2,7 +2,7 @@ import { ok, err } from "neverthrow";
 
 import { DatabaseError } from "../../types/Error";
 
-import type { DbContext } from "../../types/DbContext";
+import type { VakContext } from "../../types/VakContext";
 import type { WritePostedAt } from "../domain/write/WritePostedAt";
 import type { WriteThreadId } from "../domain/write/WriteThreadId";
 import type { Result } from "neverthrow";
@@ -11,7 +11,7 @@ import type { Result } from "neverthrow";
 // ThreadId・updatedAtを受け取る。
 // ThreadIdのみ受け取って操作するのは例外的
 export const updateThreadUpdatedAtRepository = async (
-  { sql }: DbContext,
+  { sql }: VakContext,
   { threadId, updatedAt }: { threadId: WriteThreadId; updatedAt: WritePostedAt }
 ): Promise<Result<WriteThreadId, DatabaseError>> => {
   try {

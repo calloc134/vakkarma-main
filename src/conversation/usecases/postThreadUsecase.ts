@@ -13,11 +13,11 @@ import { createWriteThreadTitle } from "../domain/write/WriteThreadTitle";
 import { createResponseByThreadIdRepository } from "../repositories/createResponseByThreadIdRepository";
 import { createThreadRepository } from "../repositories/createThreadRepository";
 
-import type { DbContext } from "../../types/DbContext";
+import type { VakContext } from "../../types/VakContext";
 
 // スレッドを投稿する際のユースケース
 export const postThreadUsecase = async (
-  dbContext: DbContext,
+  dbContext: VakContext,
   {
     // レスポンス番号は必ず1になるので必要ない
     threadTitleRaw,

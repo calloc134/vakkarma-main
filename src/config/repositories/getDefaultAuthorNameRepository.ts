@@ -6,12 +6,12 @@ import {
   type ReadDefaultAuthorName,
 } from "../domain/read/ReadDefaultAuthorName";
 
-import type { DbContext } from "../../types/DbContext";
+import type { VakContext } from "../../types/VakContext";
 import type { Result } from "neverthrow";
 
 export const getDefaultAuthorNameRepository = async ({
   sql,
-}: DbContext): Promise<
+}: VakContext): Promise<
   Result<ReadDefaultAuthorName, DatabaseError | DataNotFoundError>
 > => {
   try {

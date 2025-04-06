@@ -7,13 +7,13 @@ import { createReadThread, type ReadThread } from "../domain/read/ReadThread";
 import { createReadThreadId } from "../domain/read/ReadThreadId";
 import { createReadThreadTitle } from "../domain/read/ReadThreadTitle";
 
-import type { DbContext } from "../../types/DbContext";
+import type { VakContext } from "../../types/VakContext";
 import type { ValidationError } from "../../types/Error";
 
 // すべてのスレッドを取得するだけのリポジトリ
 export const getAllThreadsRepository = async ({
   sql,
-}: DbContext): Promise<
+}: VakContext): Promise<
   Result<ReadThread[], DatabaseError | DataNotFoundError | ValidationError>
 > => {
   try {

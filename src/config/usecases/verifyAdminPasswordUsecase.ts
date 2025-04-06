@@ -3,10 +3,10 @@ import { ok, err } from "neverthrow";
 
 import { getPasswordHashRepository } from "../repositories/getPasswordHashRepository";
 
-import type { DbContext } from "../../types/DbContext";
+import type { VakContext } from "../../types/VakContext";
 
 export const verifyAdminPasswordUsecase = async (
-  dbContext: DbContext,
+  dbContext: VakContext,
   inputPassword: string
 ) => {
   const configResult = await getPasswordHashRepository(dbContext);

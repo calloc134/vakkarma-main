@@ -2,13 +2,13 @@ import { ok, err } from "neverthrow";
 
 import { DatabaseError } from "../../types/Error";
 
-import type { DbContext } from "../../types/DbContext";
+import type { VakContext } from "../../types/VakContext";
 import type { WriteResponse } from "../domain/write/WriteResponse";
 import type { Result } from "neverthrow";
 
 // レスポンスを作成するリポジトリ
 export const createResponseByThreadIdRepository = async (
-  { sql }: DbContext,
+  { sql }: VakContext,
   response: WriteResponse
 ): Promise<Result<undefined, DatabaseError>> => {
   const trip =

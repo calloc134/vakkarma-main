@@ -6,12 +6,12 @@ import {
   type ReadPasswordHash,
 } from "../domain/read/ReadPasswordHash";
 
-import type { DbContext } from "../../types/DbContext";
+import type { VakContext } from "../../types/VakContext";
 import type { Result } from "neverthrow";
 
 export const getPasswordHashRepository = async ({
   sql,
-}: DbContext): Promise<
+}: VakContext): Promise<
   Result<ReadPasswordHash, DatabaseError | DataNotFoundError>
 > => {
   try {

@@ -7,7 +7,7 @@ import { createReadThread, type ReadThread } from "../domain/read/ReadThread";
 import { createReadThreadId } from "../domain/read/ReadThreadId";
 import { createReadThreadTitle } from "../domain/read/ReadThreadTitle";
 
-import type { DbContext } from "../../types/DbContext";
+import type { VakContext } from "../../types/VakContext";
 import type { ValidationError } from "../../types/Error";
 
 // updated_atが新しい順に30個のスレッドを取得
@@ -15,7 +15,7 @@ import type { ValidationError } from "../../types/Error";
 // レスポンスの内容は、先頭のレスポンス一つと、posted_atが新しい順に10個
 export const getLatest30ThreadsRepository = async ({
   sql,
-}: DbContext): Promise<
+}: VakContext): Promise<
   Result<ReadThread[], DatabaseError | DataNotFoundError | ValidationError>
 > => {
   try {

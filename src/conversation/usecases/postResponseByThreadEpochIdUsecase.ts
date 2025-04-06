@@ -14,11 +14,11 @@ import { createResponseByThreadIdRepository } from "../repositories/createRespon
 import { getThreadIdByThreadEpochIdRepository } from "../repositories/getThreadIdByThreadEpochIdRepository";
 import { updateThreadUpdatedAtRepository } from "../repositories/updateThreadUpdatedAtRepository";
 
-import type { DbContext } from "../../types/DbContext";
+import type { VakContext } from "../../types/VakContext";
 
 // レスを投稿する際のユースケース
 export const postResponseByThreadEpochIdUsecase = async (
-  dbContext: DbContext,
+  dbContext: VakContext,
   {
     threadEpochIdRaw,
     authorNameRaw,

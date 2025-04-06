@@ -6,12 +6,12 @@ import {
   type ReadMaxContentLength,
 } from "../domain/read/ReadMaxContentLength";
 
-import type { DbContext } from "../../types/DbContext";
+import type { VakContext } from "../../types/VakContext";
 import type { Result } from "neverthrow";
 
 export const getMaxContentLengthRepository = async ({
   sql,
-}: DbContext): Promise<
+}: VakContext): Promise<
   Result<ReadMaxContentLength, DatabaseError | DataNotFoundError>
 > => {
   try {

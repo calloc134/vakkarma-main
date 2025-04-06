@@ -2,12 +2,12 @@ import { ok, err } from "neverthrow";
 
 import { DatabaseError } from "../../types/Error";
 
-import type { DbContext } from "../../types/DbContext";
+import type { VakContext } from "../../types/VakContext";
 import type { WriteNormalConfig } from "../domain/write/WriteNormalConfig";
 import type { Result } from "neverthrow";
 
 export const updateNormalConfigRepository = async (
-  { sql }: DbContext,
+  { sql }: VakContext,
   config: WriteNormalConfig
 ): Promise<Result<undefined, Error>> => {
   const { boardName, localRule, defaultAuthorName, maxContentLength } = config;
