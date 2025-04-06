@@ -20,8 +20,8 @@ import {
   type ReadThreadWithResponses,
 } from "../domain/read/ReadThreadWithResponses";
 
-import type { VakContext } from "../../types/VakContext";
 import type { ValidationError } from "../../types/Error";
+import type { VakContext } from "../../types/VakContext";
 import type { WriteThreadId } from "../domain/write/WriteThreadId";
 
 // 指定されたスレッドのすべてのレスポンスを取得するだけのリポジトリ

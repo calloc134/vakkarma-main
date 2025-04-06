@@ -7,8 +7,8 @@ import { createReadThread, type ReadThread } from "../domain/read/ReadThread";
 import { createReadThreadId } from "../domain/read/ReadThreadId";
 import { createReadThreadTitle } from "../domain/read/ReadThreadTitle";
 
-import type { VakContext } from "../../types/VakContext";
 import type { ValidationError } from "../../types/Error";
+import type { VakContext } from "../../types/VakContext";
 
 // updated_atが新しい順に30個のスレッドを取得
 // かつ、新しい先頭の10個は、レスポンスの内容も含めて取得

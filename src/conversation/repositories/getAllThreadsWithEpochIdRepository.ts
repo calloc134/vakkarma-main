@@ -8,8 +8,8 @@ import { createReadThreadId } from "../domain/read/ReadThreadId";
 import { createReadThreadTitle } from "../domain/read/ReadThreadTitle";
 import { createReadThreadWithEpochId } from "../domain/read/ReadThreadWithEpochId";
 
-import type { VakContext } from "../../types/VakContext";
 import type { ValidationError } from "../../types/Error";
+import type { VakContext } from "../../types/VakContext";
 import type { ReadThreadWithEpochId } from "../domain/read/ReadThreadWithEpochId";
 
 // すべてのスレッドを取得するだけのリポジトリ

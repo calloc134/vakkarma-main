@@ -15,8 +15,8 @@ import { createReadResponseId } from "../domain/read/ReadResponseId";
 import { createReadResponseNumber } from "../domain/read/ReadResponseNumber";
 import { createReadThreadId } from "../domain/read/ReadThreadId";
 
-import type { VakContext } from "../../types/VakContext";
 import type { ValidationError } from "../../types/Error";
+import type { VakContext } from "../../types/VakContext";
 import type { WriteThreadId } from "../domain/write/WriteThreadId";
 
 // スレッドIDを元に、最新のレスポンスを10個取得し、その内容を返す
