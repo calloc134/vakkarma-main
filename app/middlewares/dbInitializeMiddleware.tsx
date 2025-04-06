@@ -1,7 +1,7 @@
 import { env, getRuntimeKey } from "hono/adapter";
 import { createMiddleware } from "hono/factory";
 
-import { sql, initSql } from "./db";
+import { sql, initSql } from "../db";
 
 export const dbInitializeMiddleware = () => {
   return createMiddleware(async (c, next) => {
