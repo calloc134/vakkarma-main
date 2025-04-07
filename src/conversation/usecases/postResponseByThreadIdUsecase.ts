@@ -32,52 +32,52 @@ export const postResponseByThreadIdUsecase = async (
   }
 ) => {
   const { logger } = dbContext;
-  
+
   logger.info({
     operation: "postResponseByThreadId",
     threadId: threadIdRaw,
-    message: "Starting response creation process"
+    message: "Starting response creation process",
   });
-  
+
   // ThreadIdを生成
   logger.debug({
     operation: "postResponseByThreadId",
     threadId: threadIdRaw,
-    message: "Validating thread ID"
+    message: "Validating thread ID",
   });
-  
+
   const threadIdResult = createWriteThreadId(threadIdRaw);
   if (threadIdResult.isErr()) {
     logger.error({
       operation: "postResponseByThreadId",
       error: threadIdResult.error,
       threadId: threadIdRaw,
-      message: "Invalid thread ID format"
+      message: "Invalid thread ID format",
     });
     return err(threadIdResult.error);
   }
-  
+
   // ユーザ名を生成
   logger.debug({
     operation: "postResponseByThreadId",
     authorName: authorNameRaw,
-    message: "Processing author name"
+    message: "Processing author name",
   });
-  
+
   const authorNameResult = await createWriteAuthorName(
     authorNameRaw,
     async () => {
       logger.debug({
         operation: "postResponseByThreadId",
-        message: "Fetching default author name from config"
+        message: "Fetching default author name from config",
       });
-      
+
       const nanashiNameResult = await getDefaultAuthorNameRepository(dbContext);
       if (nanashiNameResult.isErr()) {
         logger.error({
           operation: "postResponseByThreadId",
           error: nanashiNameResult.error,
-          message: "Failed to fetch default author name"
+          message: "Failed to fetch default author name",
         });
         return err(nanashiNameResult.error);
       }
@@ -89,50 +89,50 @@ export const postResponseByThreadIdUsecase = async (
       operation: "postResponseByThreadId",
       error: authorNameResult.error,
       authorName: authorNameRaw,
-      message: "Invalid author name format"
+      message: "Invalid author name format",
     });
     return err(authorNameResult.error);
   }
-  
+
   // メール生成
   logger.debug({
     operation: "postResponseByThreadId",
     mail: mailRaw,
-    message: "Validating mail address"
+    message: "Validating mail address",
   });
-  
+
   const mailResult = createWriteMail(mailRaw);
   if (mailResult.isErr()) {
     logger.error({
       operation: "postResponseByThreadId",
       error: mailResult.error,
       mail: mailRaw,
-      message: "Invalid mail format"
+      message: "Invalid mail format",
     });
     return err(mailResult.error);
   }
-  
+
   // レス内容生成
   logger.debug({
     operation: "postResponseByThreadId",
     contentLength: responseContentRaw.length,
-    message: "Validating response content"
+    message: "Validating response content",
   });
-  
+
   const responseContentResult = await createWriteResponseContent(
     responseContentRaw,
     async () => {
       logger.debug({
         operation: "postResponseByThreadId",
-        message: "Fetching max content length from config"
+        message: "Fetching max content length from config",
       });
-      
+
       const result = await getMaxContentLengthRepository(dbContext);
       if (result.isErr()) {
         logger.error({
           operation: "postResponseByThreadId",
           error: result.error,
-          message: "Failed to fetch max content length"
+          message: "Failed to fetch max content length",
         });
         return err(result.error);
       }
@@ -144,26 +144,26 @@ export const postResponseByThreadIdUsecase = async (
       operation: "postResponseByThreadId",
       error: responseContentResult.error,
       contentLength: responseContentRaw.length,
-      message: "Invalid response content"
+      message: "Invalid response content",
     });
     return err(responseContentResult.error);
   }
-  
+
   // 現在時刻を生成
   const postedAt = generateCurrentPostedAt();
-  
+
   // ハッシュ値作成
   logger.debug({
     operation: "postResponseByThreadId",
-    message: "Generating hash ID"
+    message: "Generating hash ID",
   });
-  
+
   const hashId = generateWriteHashId(ipAddressRaw, postedAt.val);
   if (hashId.isErr()) {
     logger.error({
       operation: "postResponseByThreadId",
       error: hashId.error,
-      message: "Failed to generate hash ID"
+      message: "Failed to generate hash ID",
     });
     return err(hashId.error);
   }
@@ -171,9 +171,9 @@ export const postResponseByThreadIdUsecase = async (
   // レスを作成
   logger.debug({
     operation: "postResponseByThreadId",
-    message: "Creating response object"
+    message: "Creating response object",
   });
-  
+
   const response = await createWriteResponse({
     getThreadId: async () => {
       return ok(threadIdResult.value.val);
@@ -188,7 +188,7 @@ export const postResponseByThreadIdUsecase = async (
     logger.error({
       operation: "postResponseByThreadId",
       error: response.error,
-      message: "Failed to create response object"
+      message: "Failed to create response object",
     });
     return err(response.error);
   }
@@ -197,9 +197,9 @@ export const postResponseByThreadIdUsecase = async (
   logger.debug({
     operation: "postResponseByThreadId",
     threadId: threadIdRaw,
-    message: "Persisting response to database"
+    message: "Persisting response to database",
   });
-  
+
   const responseResult = await createResponseByThreadIdRepository(
     dbContext,
     response.value
@@ -209,7 +209,7 @@ export const postResponseByThreadIdUsecase = async (
       operation: "postResponseByThreadId",
       error: responseResult.error,
       threadId: threadIdRaw,
-      message: "Failed to persist response to database"
+      message: "Failed to persist response to database",
     });
     return err(responseResult.error);
   }
@@ -218,9 +218,9 @@ export const postResponseByThreadIdUsecase = async (
   logger.debug({
     operation: "postResponseByThreadId",
     threadId: threadIdRaw,
-    message: "Updating thread updated_at timestamp"
+    message: "Updating thread updated_at timestamp",
   });
-  
+
   const threadResult = await updateThreadUpdatedAtRepository(dbContext, {
     threadId: threadIdResult.value,
     updatedAt: postedAt,
@@ -230,17 +230,17 @@ export const postResponseByThreadIdUsecase = async (
       operation: "postResponseByThreadId",
       error: threadResult.error,
       threadId: threadIdRaw,
-      message: "Failed to update thread timestamp"
+      message: "Failed to update thread timestamp",
     });
     return err(threadResult.error);
   }
 
-  // logger.info({
-  //   operation: "postResponseByThreadId",
-  //   threadId: threadIdRaw,
-  //   responseId: responseResult.value.val,
-  //   message: "Successfully created response and updated thread"
-  // });
-  
+  logger.info({
+    operation: "postResponseByThreadId",
+    threadId: threadIdRaw,
+    responseId: response.value.id.val,
+    message: "Successfully created response and updated thread",
+  });
+
   return ok(threadResult.value);
 };
