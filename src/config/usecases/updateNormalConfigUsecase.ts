@@ -10,7 +10,7 @@ import { updateNormalConfigRepository } from "../repositories/updateNormalConfig
 
 import type { VakContext } from "../../shared/types/VakContext";
 
-export const updateConfigUsecase = async (
+export const updateNormalConfigUsecase = async (
   vakContext: VakContext,
   {
     boardNameRaw,
