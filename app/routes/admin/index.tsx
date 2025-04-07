@@ -1,7 +1,7 @@
 import { createRoute } from "honox/factory";
 
 import { getNormalConfigUsecase } from "../../../src/config/usecases/getNormalConfigUsecase";
-import { updateConfigUsecase } from "../../../src/config/usecases/updateConfigUsecase";
+import { updateNormalConfigUsecase } from "../../../src/config/usecases/updateNormalConfigUsecase";
 import { ErrorMessage } from "../../components/ErrorMessage";
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -70,7 +70,7 @@ export const POST = createRoute(async (c) => {
     message: "Calling updateConfigUsecase",
   });
 
-  const updateConfigResult = await updateConfigUsecase(
+  const updateConfigResult = await updateNormalConfigUsecase(
     { sql, logger },
     {
       boardNameRaw: boardName,
