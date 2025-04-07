@@ -12,10 +12,15 @@ import type { VakContext } from "../../types/VakContext";
 
 // すべてのスレッドを取得するだけのリポジトリ
 export const getAllThreadsRepository = async ({
-  sql,
+  sql, logger
 }: VakContext): Promise<
   Result<ReadThread[], DatabaseError | DataNotFoundError | ValidationError>
 > => {
+  logger.debug({
+    operation: "getAllThreads",
+    message: "Fetching all threads from database"
+  });
+
   try {
     const result = await sql<
       {
@@ -45,8 +50,18 @@ export const getAllThreadsRepository = async ({
       `;
 
     if (!result || result.length === 0) {
+      logger.error({
+        operation: "getAllThreads",
+        message: "No threads found in database"
+      });
       return err(new DataNotFoundError("スレッドの取得に失敗しました"));
     }
+
+    logger.debug({
+      operation: "getAllThreads",
+      threadCount: result.length,
+      message: "Retrieved threads from database, processing domain objects"
+    });
 
     // 詰め替え部分
     const threads: ReadThread[] = [];
@@ -58,6 +73,12 @@ export const getAllThreadsRepository = async ({
         createReadPostedAt(thread.updated_at),
       ]);
       if (combinedResult.isErr()) {
+        logger.error({
+          operation: "getAllThreads",
+          error: combinedResult.error,
+          threadId: thread.id,
+          message: "Failed to create domain objects from thread data"
+        });
         return err(combinedResult.error);
       }
       const [threadId, title, postedAt, updatedAt] = combinedResult.value;
@@ -70,15 +91,32 @@ export const getAllThreadsRepository = async ({
         countResponse: thread.response_count,
       });
       if (threadResult.isErr()) {
+        logger.error({
+          operation: "getAllThreads",
+          error: threadResult.error,
+          threadId: threadId.val,
+          message: "Failed to create thread domain object"
+        });
         return err(threadResult.error);
       }
 
       threads.push(threadResult.value);
     }
 
+    logger.info({
+      operation: "getAllThreads",
+      threadCount: threads.length,
+      message: "Successfully retrieved and processed all threads"
+    });
+
     return ok(threads);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
+    logger.error({
+      operation: "getAllThreads",
+      error,
+      message: `Database error while fetching threads: ${message}`
+    });
     return err(
       new DatabaseError(
         `スレッド取得中にエラーが発生しました: ${message}`,
