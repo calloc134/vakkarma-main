@@ -18,7 +18,7 @@ import type { VakContext } from "../../types/VakContext";
 
 // レスを投稿する際のユースケース
 export const postResponseByThreadEpochIdUsecase = async (
-  dbContext: VakContext,
+  vakContext: VakContext,
   {
     threadEpochIdRaw,
     authorNameRaw,
@@ -33,7 +33,7 @@ export const postResponseByThreadEpochIdUsecase = async (
     ipAddressRaw: string;
   }
 ) => {
-  const { logger } = dbContext;
+  const { logger } = vakContext;
   
   logger.info({
     operation: "postResponseByThreadEpochId",
@@ -70,7 +70,7 @@ export const postResponseByThreadEpochIdUsecase = async (
   });
   
   const readThreadIdResult = await getThreadIdByThreadEpochIdRepository(
-    dbContext,
+    vakContext,
     {
       threadEpochId: threadEpochIdResult.value,
     }
@@ -114,7 +114,7 @@ export const postResponseByThreadEpochIdUsecase = async (
   const authorNameResult = await createWriteAuthorName(
     authorNameRaw,
     async () => {
-      const nanashiNameResult = await getDefaultAuthorNameRepository(dbContext);
+      const nanashiNameResult = await getDefaultAuthorNameRepository(vakContext);
       if (nanashiNameResult.isErr()) {
         return err(nanashiNameResult.error);
       }
@@ -160,7 +160,7 @@ export const postResponseByThreadEpochIdUsecase = async (
   const responseContentResult = await createWriteResponseContent(
     responseContentRaw,
     async () => {
-      const result = await getMaxContentLengthRepository(dbContext);
+      const result = await getMaxContentLengthRepository(vakContext);
       if (result.isErr()) {
         return err(result.error);
       }
@@ -237,7 +237,7 @@ export const postResponseByThreadEpochIdUsecase = async (
   });
   
   const responseResult = await createResponseByThreadIdRepository(
-    dbContext,
+    vakContext,
     response.value
   );
   if (responseResult.isErr()) {
@@ -257,7 +257,7 @@ export const postResponseByThreadEpochIdUsecase = async (
     message: "Updating thread timestamp"
   });
   
-  const threadResult = await updateThreadUpdatedAtRepository(dbContext, {
+  const threadResult = await updateThreadUpdatedAtRepository(vakContext, {
     threadId: writeThreadIdResult.value,
     updatedAt: postedAt,
   });

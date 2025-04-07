@@ -5,25 +5,25 @@ import { getAllThreadsRepository } from "../repositories/getAllThreadsRepository
 import type { VakContext } from "../../types/VakContext";
 
 // すべてのスレッドを取得するユースケース
-export const getAllThreadsPageUsecase = async (dbContext: VakContext) => {
-  const { logger } = dbContext;
-  
+export const getAllThreadsPageUsecase = async (vakContext: VakContext) => {
+  const { logger } = vakContext;
+
   logger.info({
     operation: "getAllThreadsPage",
-    message: "Starting all threads retrieval"
+    message: "Starting all threads retrieval",
   });
-  
+
   logger.debug({
     operation: "getAllThreadsPage",
-    message: "Fetching all threads from repository"
+    message: "Fetching all threads from repository",
   });
-  
-  const threadsResult = await getAllThreadsRepository(dbContext);
+
+  const threadsResult = await getAllThreadsRepository(vakContext);
   if (threadsResult.isErr()) {
     logger.error({
       operation: "getAllThreadsPage",
       error: threadsResult.error,
-      message: "Failed to fetch all threads"
+      message: "Failed to fetch all threads",
     });
     return err(threadsResult.error);
   }
@@ -31,8 +31,8 @@ export const getAllThreadsPageUsecase = async (dbContext: VakContext) => {
   logger.info({
     operation: "getAllThreadsPage",
     threadCount: threadsResult.value.length,
-    message: "Successfully retrieved all threads"
+    message: "Successfully retrieved all threads",
   });
-  
+
   return ok(threadsResult.value);
 };

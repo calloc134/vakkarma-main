@@ -11,7 +11,7 @@ import { updateNormalConfigRepository } from "../repositories/updateNormalConfig
 import type { VakContext } from "../../types/VakContext";
 
 export const updateConfigUsecase = async (
-  dbContext: VakContext,
+  vakContext: VakContext,
   {
     boardNameRaw,
     localRuleRaw,
@@ -24,7 +24,7 @@ export const updateConfigUsecase = async (
     maxContentLengthRaw: number;
   }
 ): Promise<Result<undefined, Error>> => {
-  const { logger } = dbContext;
+  const { logger } = vakContext;
   
   logger.info({
     operation: "updateConfig",
@@ -85,7 +85,7 @@ export const updateConfigUsecase = async (
     message: "Updating configuration in database"
   });
   
-  const result = await updateNormalConfigRepository(dbContext, config.value);
+  const result = await updateNormalConfigRepository(vakContext, config.value);
   if (result.isErr()) {
     logger.error({
       operation: "updateConfig",

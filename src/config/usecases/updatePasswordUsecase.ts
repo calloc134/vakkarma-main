@@ -10,14 +10,14 @@ import { updatePasswordHashRepository } from "../repositories/updatePasswordHash
 import type { VakContext } from "../../types/VakContext";
 
 export const updatePasswordUsecase = async (
-  dbContext: VakContext,
+  vakContext: VakContext,
   {
     oldPassword,
     newPassword,
     confirmNewPassword,
   }: { oldPassword: string; newPassword: string; confirmNewPassword: string }
 ): Promise<Result<undefined, Error>> => {
-  const { logger } = dbContext;
+  const { logger } = vakContext;
   
   logger.info({
     operation: "updatePassword",
@@ -39,7 +39,7 @@ export const updatePasswordUsecase = async (
     message: "Fetching stored password hash"
   });
   
-  const storedHashResult = await getPasswordHashRepository(dbContext);
+  const storedHashResult = await getPasswordHashRepository(vakContext);
   if (storedHashResult.isErr()) {
     logger.error({
       operation: "updatePassword",
@@ -102,7 +102,7 @@ export const updatePasswordUsecase = async (
   });
   
   const updateResult = await updatePasswordHashRepository(
-    dbContext,
+    vakContext,
     newHashResult.value
   );
   if (updateResult.isErr()) {

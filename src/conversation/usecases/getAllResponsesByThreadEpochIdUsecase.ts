@@ -7,10 +7,10 @@ import type { VakContext } from "../../types/VakContext";
 
 // スレッドについているレスをすべて確認するユースケース
 export const getAllResponsesByThreadEpochIdUsecase = async (
-  dbContext: VakContext,
+  vakContext: VakContext,
   { threadEpochIdRaw }: { threadEpochIdRaw: string }
 ) => {
-  const { logger } = dbContext;
+  const { logger } = vakContext;
 
   logger.info({
     operation: "getAllResponsesByThreadEpochId",
@@ -44,7 +44,7 @@ export const getAllResponsesByThreadEpochIdUsecase = async (
   });
 
   const responsesWithThreadResult =
-    await getAllResponsesByThreadEpochIdRepository(dbContext, {
+    await getAllResponsesByThreadEpochIdRepository(vakContext, {
       threadEpochId: threadEpochId.value,
     });
   if (responsesWithThreadResult.isErr()) {

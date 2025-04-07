@@ -16,7 +16,7 @@ import type { VakContext } from "../../types/VakContext";
 
 // レスを投稿する際のユースケース
 export const postResponseByThreadIdUsecase = async (
-  dbContext: VakContext,
+  vakContext: VakContext,
   {
     threadIdRaw,
     authorNameRaw,
@@ -31,7 +31,7 @@ export const postResponseByThreadIdUsecase = async (
     ipAddressRaw: string;
   }
 ) => {
-  const { logger } = dbContext;
+  const { logger } = vakContext;
 
   logger.info({
     operation: "postResponseByThreadId",
@@ -72,7 +72,9 @@ export const postResponseByThreadIdUsecase = async (
         message: "Fetching default author name from config",
       });
 
-      const nanashiNameResult = await getDefaultAuthorNameRepository(dbContext);
+      const nanashiNameResult = await getDefaultAuthorNameRepository(
+        vakContext
+      );
       if (nanashiNameResult.isErr()) {
         logger.error({
           operation: "postResponseByThreadId",
@@ -127,7 +129,7 @@ export const postResponseByThreadIdUsecase = async (
         message: "Fetching max content length from config",
       });
 
-      const result = await getMaxContentLengthRepository(dbContext);
+      const result = await getMaxContentLengthRepository(vakContext);
       if (result.isErr()) {
         logger.error({
           operation: "postResponseByThreadId",
@@ -201,7 +203,7 @@ export const postResponseByThreadIdUsecase = async (
   });
 
   const responseResult = await createResponseByThreadIdRepository(
-    dbContext,
+    vakContext,
     response.value
   );
   if (responseResult.isErr()) {
@@ -221,7 +223,7 @@ export const postResponseByThreadIdUsecase = async (
     message: "Updating thread updated_at timestamp",
   });
 
-  const threadResult = await updateThreadUpdatedAtRepository(dbContext, {
+  const threadResult = await updateThreadUpdatedAtRepository(vakContext, {
     threadId: threadIdResult.value,
     updatedAt: postedAt,
   });

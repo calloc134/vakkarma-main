@@ -10,8 +10,8 @@ import type { VakContext } from "../../types/VakContext";
 import type { ReadResponse } from "../domain/read/ReadResponse";
 import type { ReadThread } from "../domain/read/ReadThread";
 
-export const getTopPageUsecase = async (dbContext: VakContext) => {
-  const { logger } = dbContext;
+export const getTopPageUsecase = async (vakContext: VakContext) => {
+  const { logger } = vakContext;
   
   logger.info({
     operation: "getTopPageUsecase",
@@ -24,7 +24,7 @@ export const getTopPageUsecase = async (dbContext: VakContext) => {
     message: "Fetching top 30 threads"
   });
   
-  const threadsTop30Result = await getLatest30ThreadsRepository(dbContext);
+  const threadsTop30Result = await getLatest30ThreadsRepository(vakContext);
   if (threadsTop30Result.isErr()) {
     logger.error({
       operation: "getTopPageUsecase",
@@ -73,7 +73,7 @@ export const getTopPageUsecase = async (dbContext: VakContext) => {
   });
   
   const responsesTop10 = await getLatest10ThreadsWithResponsesRepository(
-    dbContext,
+    vakContext,
     { threadIds: top10ThreadIds }
   );
   if (responsesTop10.isErr()) {

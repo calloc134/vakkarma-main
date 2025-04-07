@@ -6,10 +6,10 @@ import { getPasswordHashRepository } from "../repositories/getPasswordHashReposi
 import type { VakContext } from "../../types/VakContext";
 
 export const verifyAdminPasswordUsecase = async (
-  dbContext: VakContext,
+  vakContext: VakContext,
   inputPassword: string
 ) => {
-  const { logger } = dbContext;
+  const { logger } = vakContext;
   
   logger.info({
     operation: "verifyAdminPassword",
@@ -21,7 +21,7 @@ export const verifyAdminPasswordUsecase = async (
     message: "Fetching stored password hash"
   });
   
-  const configResult = await getPasswordHashRepository(dbContext);
+  const configResult = await getPasswordHashRepository(vakContext);
   if (configResult.isErr()) {
     logger.error({
       operation: "verifyAdminPassword",

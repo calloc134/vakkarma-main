@@ -7,9 +7,9 @@ import type { ReadNormalConfig } from "../domain/read/ReadNormalConfig";
 import type { Result } from "neverthrow";
 
 export const getConfigUsecase = async (
-  dbContext: VakContext
+  vakContext: VakContext
 ): Promise<Result<ReadNormalConfig, Error>> => {
-  const { logger } = dbContext;
+  const { logger } = vakContext;
   
   logger.info({
     operation: "getConfig",
@@ -21,7 +21,7 @@ export const getConfigUsecase = async (
     message: "Fetching configuration from repository"
   });
   
-  const config = await getNormalConfigRepository(dbContext);
+  const config = await getNormalConfigRepository(vakContext);
   if (config.isErr()) {
     logger.error({
       operation: "getConfig",

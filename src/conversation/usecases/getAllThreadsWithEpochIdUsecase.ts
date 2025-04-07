@@ -5,9 +5,9 @@ import { getAllThreadsWithEpochIdRepository } from "../repositories/getAllThread
 import type { VakContext } from "../../types/VakContext";
 
 export const getAllThreadsWithEpochIdUsecase = async (
-  dbContext: VakContext
+  vakContext: VakContext
 ) => {
-  const { logger } = dbContext;
+  const { logger } = vakContext;
   
   logger.info({
     operation: "getAllThreadsWithEpochId",
@@ -19,7 +19,7 @@ export const getAllThreadsWithEpochIdUsecase = async (
     message: "Fetching threads with epoch IDs from repository"
   });
   
-  const threads = await getAllThreadsWithEpochIdRepository(dbContext);
+  const threads = await getAllThreadsWithEpochIdRepository(vakContext);
   if (threads.isErr()) {
     logger.error({
       operation: "getAllThreadsWithEpochId",

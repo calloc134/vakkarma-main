@@ -7,10 +7,10 @@ import type { VakContext } from "../../types/VakContext";
 
 // スレッドについているレスをすべて確認するユースケース
 export const getAllResponsesByThreadIdUsecase = async (
-  dbContext: VakContext,
+  vakContext: VakContext,
   { threadIdRaw }: { threadIdRaw: string }
 ) => {
-  const { logger } = dbContext;
+  const { logger } = vakContext;
 
   logger.info({
     operation: "getAllResponsesByThreadId",
@@ -44,7 +44,7 @@ export const getAllResponsesByThreadIdUsecase = async (
   });
 
   const responsesWithThreadResult = await getAllResponsesByThreadIdRepository(
-    dbContext,
+    vakContext,
     {
       threadId: threadIdResult.value,
     }

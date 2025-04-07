@@ -7,16 +7,16 @@ import type { ReadBoardConfig } from "../domain/read/ReadBoardConfig";
 import type { Result } from "neverthrow";
 
 export const getBoardConfigUsecase = async (
-  dbContext: VakContext
+  vakContext: VakContext
 ): Promise<Result<ReadBoardConfig, Error>> => {
-  const { logger } = dbContext;
+  const { logger } = vakContext;
   
   logger.debug({
     operation: "getBoardConfigUsecase",
     message: "Starting to fetch board configuration"
   });
   
-  const config = await getBoardConfigRepository(dbContext);
+  const config = await getBoardConfigRepository(vakContext);
   
   if (config.isErr()) {
     logger.error({
