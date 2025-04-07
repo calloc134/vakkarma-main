@@ -1,30 +1,30 @@
 import { createRoute } from "honox/factory";
 
-import { getConfigUsecase } from "../../../src/config/usecases/getConfigUsecase";
+import { getNormalConfigUsecase } from "../../../src/config/usecases/getNormalConfigUsecase";
 import { updateConfigUsecase } from "../../../src/config/usecases/updateConfigUsecase";
 import { ErrorMessage } from "../../components/ErrorMessage";
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const POST = createRoute(async (c) => {
   const { sql, logger } = c.var;
-  
+
   logger.info({
     operation: "admin/POST",
     path: c.req.path,
     method: c.req.method,
-    message: "Starting board configuration update"
+    message: "Starting board configuration update",
   });
-  
+
   if (!sql) {
     logger.error({
       operation: "admin/POST",
-      message: "Database connection not available"
+      message: "Database connection not available",
     });
     return c.render(
       <ErrorMessage error={new Error("DBに接続できませんでした")} />
     );
   }
-  
+
   const body = await c.req.parseBody();
   const boardName = body.boardName;
   const localRule = body.localRule;
@@ -33,11 +33,11 @@ export const POST = createRoute(async (c) => {
 
   logger.debug({
     operation: "admin/POST",
-    hasBoardName: typeof boardName === "string", 
+    hasBoardName: typeof boardName === "string",
     hasLocalRule: typeof localRule === "string",
     hasNanashiName: typeof nanashiName === "string",
     hasMaxContentLength: typeof maxContentLength === "string",
-    message: "Request body parsed for configuration update"
+    message: "Request body parsed for configuration update",
   });
 
   if (
@@ -49,26 +49,27 @@ export const POST = createRoute(async (c) => {
     logger.warn({
       operation: "admin/POST",
       validationError: "Missing required fields",
-      hasBoardName: typeof boardName === "string", 
+      hasBoardName: typeof boardName === "string",
       hasLocalRule: typeof localRule === "string",
       hasNanashiName: typeof nanashiName === "string",
       hasMaxContentLength: typeof maxContentLength === "string",
-      message: "Configuration update validation failed - missing required fields"
+      message:
+        "Configuration update validation failed - missing required fields",
     });
     return c.render(
       <ErrorMessage error={new Error("すべての項目を入力してください")} />
     );
   }
-  
+
   logger.debug({
     operation: "admin/POST",
     boardName,
     localRule,
     nanashiName,
     maxContentLength,
-    message: "Calling updateConfigUsecase"
+    message: "Calling updateConfigUsecase",
   });
-  
+
   const updateConfigResult = await updateConfigUsecase(
     { sql, logger },
     {
@@ -82,64 +83,64 @@ export const POST = createRoute(async (c) => {
     logger.error({
       operation: "admin/POST",
       error: updateConfigResult.error,
-      message: "Configuration update failed"
+      message: "Configuration update failed",
     });
     return c.render(<ErrorMessage error={updateConfigResult.error} />);
   }
-  
+
   logger.info({
     operation: "admin/POST",
     boardName,
     nanashiName,
     maxContentLength,
-    message: "Configuration updated successfully, redirecting to admin page"
+    message: "Configuration updated successfully, redirecting to admin page",
   });
-  
+
   return c.redirect("/admin", 303);
 });
 
 export default createRoute(async (c) => {
   const { sql, logger } = c.var;
-  
+
   logger.info({
     operation: "admin/GET",
     path: c.req.path,
     method: c.req.method,
-    message: "Admin configuration page requested"
+    message: "Admin configuration page requested",
   });
-  
+
   // 管理者画面 config関連
   if (!sql) {
     logger.error({
       operation: "admin/GET",
-      message: "Database connection not available"
+      message: "Database connection not available",
     });
     return c.render(
       <ErrorMessage error={new Error("DBに接続できませんでした")} />
     );
   }
-  
+
   logger.debug({
     operation: "admin/GET",
-    message: "Fetching configuration data"
+    message: "Fetching configuration data",
   });
-  
-  const configResult = await getConfigUsecase({ sql, logger });
+
+  const configResult = await getNormalConfigUsecase({ sql, logger });
   if (configResult.isErr()) {
     logger.error({
       operation: "admin/GET",
       error: configResult.error,
-      message: "Failed to retrieve configuration data"
+      message: "Failed to retrieve configuration data",
     });
     return c.render(<ErrorMessage error={configResult.error} />);
   }
-  
+
   logger.debug({
     operation: "admin/GET",
     boardName: configResult.value.boardName.val,
-    message: "Configuration data retrieved successfully, rendering admin page"
+    message: "Configuration data retrieved successfully, rendering admin page",
   });
-  
+
   // フォームの形にする
   return c.render(
     <main className="container mx-auto flex-grow py-8 px-4">
