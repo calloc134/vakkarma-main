@@ -2,7 +2,7 @@ import crypto from "crypto";
 
 import { ok, err, type Result } from "neverthrow";
 
-import { ValidationError } from "../../../types/Error";
+import { ValidationError } from "../../../shared/types/Error";
 
 // ハッシュID
 export type WriteHashId = {

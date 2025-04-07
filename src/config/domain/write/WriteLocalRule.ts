@@ -1,6 +1,6 @@
 import { err, ok } from "neverthrow";
 
-import { ValidationError } from "../../../types/Error";
+import { ValidationError } from "../../../shared/types/Error";
 
 import type { Result } from "neverthrow";
 

@@ -12,7 +12,7 @@ import { createWriteThreadId } from "../domain/write/WriteThreadId";
 import { createResponseByThreadIdRepository } from "../repositories/createResponseByThreadIdRepository";
 import { updateThreadUpdatedAtRepository } from "../repositories/updateThreadUpdatedAtRepository";
 
-import type { VakContext } from "../../types/VakContext";
+import type { VakContext } from "../../shared/types/VakContext";
 
 // レスを投稿する際のユースケース
 export const postResponseByThreadIdUsecase = async (

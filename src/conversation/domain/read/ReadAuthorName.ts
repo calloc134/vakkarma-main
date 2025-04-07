@@ -1,6 +1,6 @@
 import { ok, type Result } from "neverthrow";
 
-import type { ValidationError } from "../../../types/Error";
+import type { ValidationError } from "../../../shared/types/Error";
 
 type SomeReadAuthorName = {
   readonly _type: "some";

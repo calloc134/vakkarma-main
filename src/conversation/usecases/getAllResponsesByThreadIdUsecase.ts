@@ -3,7 +3,7 @@ import { err, ok } from "neverthrow";
 import { createWriteThreadId } from "../domain/write/WriteThreadId";
 import { getAllResponsesByThreadIdRepository } from "../repositories/getAllResponsesByThreadIdRepository";
 
-import type { VakContext } from "../../types/VakContext";
+import type { VakContext } from "../../shared/types/VakContext";
 
 // スレッドについているレスをすべて確認するユースケース
 export const getAllResponsesByThreadIdUsecase = async (

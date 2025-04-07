@@ -2,7 +2,7 @@ import { createRoute } from "honox/factory";
 
 import { formatReadAuthorName } from "../../src/conversation/domain/read/ReadAuthorName";
 import { getTopPageUsecase } from "../../src/conversation/usecases/getTopPageUsecase";
-import { formatDate } from "../../src/utils/formatDate";
+import { formatDate } from "../../src/shared/utils/formatDate";
 import { ErrorMessage } from "../components/ErrorMessage";
 import { ResponseContentComponent } from "../components/ResponseContent";
 
@@ -13,12 +13,12 @@ export default createRoute(async (c) => {
     operation: "index/GET",
     path: c.req.path,
     method: c.req.method,
-    message: "Rendering top page"
+    message: "Rendering top page",
   });
 
   logger.debug({
     operation: "index/GET",
-    message: "Calling getTopPageUsecase to retrieve data"
+    message: "Calling getTopPageUsecase to retrieve data",
   });
 
   const usecaseResult = await getTopPageUsecase({
@@ -30,7 +30,7 @@ export default createRoute(async (c) => {
     logger.error({
       operation: "index/GET",
       error: usecaseResult.error,
-      message: "Failed to retrieve top page data"
+      message: "Failed to retrieve top page data",
     });
     return c.render(<ErrorMessage error={usecaseResult.error} />);
   }
@@ -41,7 +41,7 @@ export default createRoute(async (c) => {
     operation: "index/GET",
     threadCount: threadTop30.length,
     topThreadCount: responsesTop10.length,
-    message: "Successfully retrieved top page data, rendering page"
+    message: "Successfully retrieved top page data, rendering page",
   });
 
   return c.render(

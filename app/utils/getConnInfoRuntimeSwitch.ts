@@ -3,7 +3,7 @@ import { getRuntimeKey } from "hono/adapter";
 import { getConnInfo as getConnInfoOnWorkers } from "hono/cloudflare-workers";
 import { err, ok } from "neverthrow";
 
-import { IpAddressNotFoundError } from "../../src/types/Error";
+import { IpAddressNotFoundError } from "../../src/shared/types/Error";
 
 import type { Context } from "hono";
 import type { GetConnInfo } from "hono/conninfo";

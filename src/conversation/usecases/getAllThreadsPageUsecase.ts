@@ -2,7 +2,7 @@ import { err, ok } from "neverthrow";
 
 import { getAllThreadsRepository } from "../repositories/getAllThreadsRepository";
 
-import type { VakContext } from "../../types/VakContext";
+import type { VakContext } from "../../shared/types/VakContext";
 
 // すべてのスレッドを取得するユースケース
 export const getAllThreadsPageUsecase = async (vakContext: VakContext) => {

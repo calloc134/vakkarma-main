@@ -1,6 +1,6 @@
 import { ok, err, type Result } from "neverthrow";
 
-import { ValidationError } from "../../../types/Error";
+import { ValidationError } from "../../../shared/types/Error";
 
 // 書き込み時に生成するのでWritePostedAtを受け付けるはず
 import type { WritePostedAt } from "./WritePostedAt";

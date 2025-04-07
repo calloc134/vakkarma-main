@@ -14,7 +14,7 @@ import { createResponseByThreadIdRepository } from "../repositories/createRespon
 import { getThreadIdByThreadEpochIdRepository } from "../repositories/getThreadIdByThreadEpochIdRepository";
 import { updateThreadUpdatedAtRepository } from "../repositories/updateThreadUpdatedAtRepository";
 
-import type { VakContext } from "../../types/VakContext";
+import type { VakContext } from "../../shared/types/VakContext";
 
 // レスを投稿する際のユースケース
 export const postResponseByThreadEpochIdUsecase = async (
@@ -34,30 +34,30 @@ export const postResponseByThreadEpochIdUsecase = async (
   }
 ) => {
   const { logger } = vakContext;
-  
+
   logger.info({
     operation: "postResponseByThreadEpochId",
     threadEpochId: threadEpochIdRaw,
     hasAuthorName: authorNameRaw !== null,
     hasMail: mailRaw !== null,
     contentLength: responseContentRaw.length,
-    message: "Starting response creation by thread epoch ID"
+    message: "Starting response creation by thread epoch ID",
   });
-  
+
   // ThreadEpochIdを生成
   logger.debug({
     operation: "postResponseByThreadEpochId",
     threadEpochId: threadEpochIdRaw,
-    message: "Validating thread epoch ID"
+    message: "Validating thread epoch ID",
   });
-  
+
   const threadEpochIdResult = createWriteThreadEpochId(threadEpochIdRaw);
   if (threadEpochIdResult.isErr()) {
     logger.error({
       operation: "postResponseByThreadEpochId",
       error: threadEpochIdResult.error,
       threadEpochId: threadEpochIdRaw,
-      message: "Invalid thread epoch ID format"
+      message: "Invalid thread epoch ID format",
     });
     return err(threadEpochIdResult.error);
   }
@@ -66,9 +66,9 @@ export const postResponseByThreadEpochIdUsecase = async (
   logger.debug({
     operation: "postResponseByThreadEpochId",
     threadEpochId: threadEpochIdRaw,
-    message: "Fetching thread ID from epoch ID"
+    message: "Fetching thread ID from epoch ID",
   });
-  
+
   const readThreadIdResult = await getThreadIdByThreadEpochIdRepository(
     vakContext,
     {
@@ -80,7 +80,7 @@ export const postResponseByThreadEpochIdUsecase = async (
       operation: "postResponseByThreadEpochId",
       error: readThreadIdResult.error,
       threadEpochId: threadEpochIdRaw,
-      message: "Failed to retrieve thread ID from epoch ID"
+      message: "Failed to retrieve thread ID from epoch ID",
     });
     return err(readThreadIdResult.error);
   }
@@ -89,16 +89,16 @@ export const postResponseByThreadEpochIdUsecase = async (
   logger.debug({
     operation: "postResponseByThreadEpochId",
     threadId: readThreadIdResult.value.val,
-    message: "Converting thread ID to write format"
+    message: "Converting thread ID to write format",
   });
-  
+
   const writeThreadIdResult = createWriteThreadId(readThreadIdResult.value.val);
   if (writeThreadIdResult.isErr()) {
     logger.error({
       operation: "postResponseByThreadEpochId",
       error: writeThreadIdResult.error,
       threadId: readThreadIdResult.value.val,
-      message: "Failed to convert thread ID to write format"
+      message: "Failed to convert thread ID to write format",
     });
     return err(writeThreadIdResult.error);
   }
@@ -108,13 +108,15 @@ export const postResponseByThreadEpochIdUsecase = async (
     operation: "postResponseByThreadEpochId",
     threadEpochId: threadEpochIdRaw,
     hasAuthorName: authorNameRaw !== null,
-    message: "Creating author name"
+    message: "Creating author name",
   });
-  
+
   const authorNameResult = await createWriteAuthorName(
     authorNameRaw,
     async () => {
-      const nanashiNameResult = await getDefaultAuthorNameRepository(vakContext);
+      const nanashiNameResult = await getDefaultAuthorNameRepository(
+        vakContext
+      );
       if (nanashiNameResult.isErr()) {
         return err(nanashiNameResult.error);
       }
@@ -127,36 +129,36 @@ export const postResponseByThreadEpochIdUsecase = async (
       error: authorNameResult.error,
       threadEpochId: threadEpochIdRaw,
       authorName: authorNameRaw,
-      message: "Failed to create author name"
+      message: "Failed to create author name",
     });
     return err(authorNameResult.error);
   }
-  
+
   // メール生成
   logger.debug({
     operation: "postResponseByThreadEpochId",
     hasMail: mailRaw !== null,
-    message: "Creating mail"
+    message: "Creating mail",
   });
-  
+
   const mailResult = createWriteMail(mailRaw);
   if (mailResult.isErr()) {
     logger.error({
       operation: "postResponseByThreadEpochId",
       error: mailResult.error,
       mail: mailRaw,
-      message: "Failed to create mail"
+      message: "Failed to create mail",
     });
     return err(mailResult.error);
   }
-  
+
   // レス内容生成
   logger.debug({
     operation: "postResponseByThreadEpochId",
     contentLength: responseContentRaw.length,
-    message: "Creating response content"
+    message: "Creating response content",
   });
-  
+
   const responseContentResult = await createWriteResponseContent(
     responseContentRaw,
     async () => {
@@ -172,31 +174,31 @@ export const postResponseByThreadEpochIdUsecase = async (
       operation: "postResponseByThreadEpochId",
       error: responseContentResult.error,
       contentLength: responseContentRaw.length,
-      message: "Failed to create response content"
+      message: "Failed to create response content",
     });
     return err(responseContentResult.error);
   }
-  
+
   // 現在時刻を生成
   logger.debug({
     operation: "postResponseByThreadEpochId",
-    message: "Generating current timestamp"
+    message: "Generating current timestamp",
   });
-  
+
   const postedAt = generateCurrentPostedAt();
 
   // ハッシュ値作成
   logger.debug({
     operation: "postResponseByThreadEpochId",
-    message: "Generating hash ID"
+    message: "Generating hash ID",
   });
-  
+
   const hashId = generateWriteHashId(ipAddressRaw, postedAt.val);
   if (hashId.isErr()) {
     logger.error({
       operation: "postResponseByThreadEpochId",
       error: hashId.error,
-      message: "Failed to generate hash ID"
+      message: "Failed to generate hash ID",
     });
     return err(hashId.error);
   }
@@ -205,9 +207,9 @@ export const postResponseByThreadEpochIdUsecase = async (
   logger.debug({
     operation: "postResponseByThreadEpochId",
     threadId: writeThreadIdResult.value.val,
-    message: "Creating response object"
+    message: "Creating response object",
   });
-  
+
   const response = await createWriteResponse({
     // 高階関数パターン必要なかったかも
     getThreadId: async () => {
@@ -224,7 +226,7 @@ export const postResponseByThreadEpochIdUsecase = async (
       operation: "postResponseByThreadEpochId",
       error: response.error,
       threadId: writeThreadIdResult.value.val,
-      message: "Failed to create response object"
+      message: "Failed to create response object",
     });
     return err(response.error);
   }
@@ -233,9 +235,9 @@ export const postResponseByThreadEpochIdUsecase = async (
   logger.debug({
     operation: "postResponseByThreadEpochId",
     threadId: writeThreadIdResult.value.val,
-    message: "Persisting response to database"
+    message: "Persisting response to database",
   });
-  
+
   const responseResult = await createResponseByThreadIdRepository(
     vakContext,
     response.value
@@ -245,7 +247,7 @@ export const postResponseByThreadEpochIdUsecase = async (
       operation: "postResponseByThreadEpochId",
       error: responseResult.error,
       threadId: writeThreadIdResult.value.val,
-      message: "Failed to persist response to database"
+      message: "Failed to persist response to database",
     });
     return err(responseResult.error);
   }
@@ -254,9 +256,9 @@ export const postResponseByThreadEpochIdUsecase = async (
   logger.debug({
     operation: "postResponseByThreadEpochId",
     threadId: writeThreadIdResult.value.val,
-    message: "Updating thread timestamp"
+    message: "Updating thread timestamp",
   });
-  
+
   const threadResult = await updateThreadUpdatedAtRepository(vakContext, {
     threadId: writeThreadIdResult.value,
     updatedAt: postedAt,
@@ -266,7 +268,7 @@ export const postResponseByThreadEpochIdUsecase = async (
       operation: "postResponseByThreadEpochId",
       error: threadResult.error,
       threadId: writeThreadIdResult.value.val,
-      message: "Failed to update thread timestamp"
+      message: "Failed to update thread timestamp",
     });
     return err(threadResult.error);
   }
@@ -276,8 +278,8 @@ export const postResponseByThreadEpochIdUsecase = async (
     threadId: writeThreadIdResult.value.val,
     threadEpochId: threadEpochIdRaw,
     postedAt: postedAt.val,
-    message: "Successfully created response and updated thread"
+    message: "Successfully created response and updated thread",
   });
-  
+
   return ok(threadResult.value);
 };

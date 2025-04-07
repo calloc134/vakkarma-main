@@ -1,26 +1,27 @@
 import { ok, err } from "neverthrow";
 import { Result } from "neverthrow";
 
-import { DatabaseError, DataNotFoundError } from "../../types/Error";
+import { DatabaseError, DataNotFoundError } from "../../shared/types/Error";
 import { createReadPostedAt } from "../domain/read/ReadPostedAt";
 import { createReadThread, type ReadThread } from "../domain/read/ReadThread";
 import { createReadThreadId } from "../domain/read/ReadThreadId";
 import { createReadThreadTitle } from "../domain/read/ReadThreadTitle";
 
-import type { ValidationError } from "../../types/Error";
-import type { VakContext } from "../../types/VakContext";
+import type { ValidationError } from "../../shared/types/Error";
+import type { VakContext } from "../../shared/types/VakContext";
 
 // updated_atが新しい順に30個のスレッドを取得
 // かつ、新しい先頭の10個は、レスポンスの内容も含めて取得
 // レスポンスの内容は、先頭のレスポンス一つと、posted_atが新しい順に10個
 export const getLatest30ThreadsRepository = async ({
-  sql, logger
+  sql,
+  logger,
 }: VakContext): Promise<
   Result<ReadThread[], DatabaseError | DataNotFoundError | ValidationError>
 > => {
   logger.debug({
     operation: "getLatest30Threads",
-    message: "Fetching latest 30 threads ordered by updated_at"
+    message: "Fetching latest 30 threads ordered by updated_at",
   });
 
   try {
@@ -55,7 +56,7 @@ export const getLatest30ThreadsRepository = async ({
     if (!result || result.length === 0) {
       logger.info({
         operation: "getLatest30Threads",
-        message: "No threads found in database"
+        message: "No threads found in database",
       });
       return err(new DataNotFoundError("スレッドの取得に失敗しました"));
     }
@@ -63,7 +64,7 @@ export const getLatest30ThreadsRepository = async ({
     logger.debug({
       operation: "getLatest30Threads",
       count: result.length,
-      message: "Successfully retrieved threads from database"
+      message: "Successfully retrieved threads from database",
     });
 
     // 詰め替え部分
@@ -81,7 +82,7 @@ export const getLatest30ThreadsRepository = async ({
           operation: "getLatest30Threads",
           error: combinedResult.error,
           threadId: thread.id,
-          message: "Failed to create domain objects from database result"
+          message: "Failed to create domain objects from database result",
         });
         return err(combinedResult.error);
       }
@@ -100,7 +101,7 @@ export const getLatest30ThreadsRepository = async ({
           operation: "getLatest30Threads",
           error: threadResult.error,
           threadId: thread.id,
-          message: "Failed to create ReadThread object"
+          message: "Failed to create ReadThread object",
         });
         return err(threadResult.error);
       }
@@ -111,7 +112,7 @@ export const getLatest30ThreadsRepository = async ({
     logger.info({
       operation: "getLatest30Threads",
       threadCount: threads.length,
-      message: "Successfully fetched and processed latest threads"
+      message: "Successfully fetched and processed latest threads",
     });
 
     return ok(threads);
@@ -120,7 +121,7 @@ export const getLatest30ThreadsRepository = async ({
     logger.error({
       operation: "getLatest30Threads",
       error,
-      message: `Database error while fetching threads: ${message}`
+      message: `Database error while fetching threads: ${message}`,
     });
     return err(
       new DatabaseError(

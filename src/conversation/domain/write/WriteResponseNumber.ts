@@ -1,6 +1,6 @@
 import { ok, err, type Result } from "neverthrow";
 
-import { ValidationError } from "../../../types/Error";
+import { ValidationError } from "../../../shared/types/Error";
 
 export type WriteResponseNumber = {
   readonly _type: "WriteResponseNumber";

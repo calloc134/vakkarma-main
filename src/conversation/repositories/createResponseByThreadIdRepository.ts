@@ -1,8 +1,8 @@
 import { ok, err } from "neverthrow";
 
-import { DatabaseError } from "../../types/Error";
+import { DatabaseError } from "../../shared/types/Error";
 
-import type { VakContext } from "../../types/VakContext";
+import type { VakContext } from "../../shared/types/VakContext";
 import type { WriteResponse } from "../domain/write/WriteResponse";
 import type { Result } from "neverthrow";
 
@@ -15,12 +15,12 @@ export const createResponseByThreadIdRepository = async (
     response.authorName.val._type === "some"
       ? response.authorName.val.trip
       : null;
-      
+
   logger.debug({
     operation: "createResponseByThreadId",
     responseId: response.id.val,
     threadId: response.threadId.val,
-    message: "Creating new response in database"
+    message: "Creating new response in database",
   });
 
   try {
@@ -59,18 +59,18 @@ export const createResponseByThreadIdRepository = async (
         operation: "createResponseByThreadId",
         responseId: response.id.val,
         threadId: response.threadId.val,
-        message: "Failed to create response, invalid database response"
+        message: "Failed to create response, invalid database response",
       });
       return err(new DatabaseError("レスポンスの作成に失敗しました"));
     }
-    
+
     logger.info({
       operation: "createResponseByThreadId",
       responseId: response.id.val,
       threadId: response.threadId.val,
-      message: "Response created successfully"
+      message: "Response created successfully",
     });
-    
+
     return ok(undefined);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
@@ -79,7 +79,7 @@ export const createResponseByThreadIdRepository = async (
       responseId: response.id.val,
       threadId: response.threadId.val,
       error,
-      message: `Database error while creating response: ${message}`
+      message: `Database error while creating response: ${message}`,
     });
     return err(
       new DatabaseError(

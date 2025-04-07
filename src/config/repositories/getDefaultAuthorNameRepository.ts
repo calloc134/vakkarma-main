@@ -1,22 +1,23 @@
 import { err, ok } from "neverthrow";
 
-import { DatabaseError, DataNotFoundError } from "../../types/Error";
+import { DatabaseError, DataNotFoundError } from "../../shared/types/Error";
 import {
   createReadDefaultAuthorName,
   type ReadDefaultAuthorName,
 } from "../domain/read/ReadDefaultAuthorName";
 
-import type { VakContext } from "../../types/VakContext";
+import type { VakContext } from "../../shared/types/VakContext";
 import type { Result } from "neverthrow";
 
 export const getDefaultAuthorNameRepository = async ({
-  sql, logger
+  sql,
+  logger,
 }: VakContext): Promise<
   Result<ReadDefaultAuthorName, DatabaseError | DataNotFoundError>
 > => {
   logger.debug({
     operation: "getDefaultAuthorName",
-    message: "Fetching default author name from database"
+    message: "Fetching default author name from database",
   });
 
   try {
@@ -27,7 +28,8 @@ export const getDefaultAuthorNameRepository = async ({
     if (!result || result.length !== 1) {
       logger.error({
         operation: "getDefaultAuthorName",
-        message: "Failed to retrieve default author name, invalid database response"
+        message:
+          "Failed to retrieve default author name, invalid database response",
       });
       return err(new DataNotFoundError("設定の取得に失敗しました"));
     }
@@ -35,7 +37,7 @@ export const getDefaultAuthorNameRepository = async ({
     logger.debug({
       operation: "getDefaultAuthorName",
       defaultAuthorName: result[0].nanashi_name,
-      message: "Default author name retrieved from database"
+      message: "Default author name retrieved from database",
     });
 
     const defaultAuthorNameResult = createReadDefaultAuthorName(
@@ -45,7 +47,7 @@ export const getDefaultAuthorNameRepository = async ({
       logger.error({
         operation: "getDefaultAuthorName",
         error: defaultAuthorNameResult.error,
-        message: "Invalid default author name format"
+        message: "Invalid default author name format",
       });
       return err(defaultAuthorNameResult.error);
     }
@@ -53,7 +55,7 @@ export const getDefaultAuthorNameRepository = async ({
     logger.info({
       operation: "getDefaultAuthorName",
       defaultAuthorName: defaultAuthorNameResult.value.val,
-      message: "Default author name retrieved and validated successfully"
+      message: "Default author name retrieved and validated successfully",
     });
 
     return ok(defaultAuthorNameResult.value);
@@ -62,7 +64,7 @@ export const getDefaultAuthorNameRepository = async ({
     logger.error({
       operation: "getDefaultAuthorName",
       error,
-      message: `Database error while fetching default author name: ${message}`
+      message: `Database error while fetching default author name: ${message}`,
     });
     return err(
       new DatabaseError(`設定取得中にエラーが発生しました: ${message}`, error)

@@ -6,30 +6,30 @@ import { createWriteThreadId } from "../domain/write/WriteThreadId";
 import { getLatest10ThreadsWithResponsesRepository } from "../repositories/getLatest10ThreadsWithResposesRepository";
 import { getLatest30ThreadsRepository } from "../repositories/getLatest30ThreadsRepository";
 
-import type { VakContext } from "../../types/VakContext";
+import type { VakContext } from "../../shared/types/VakContext";
 import type { ReadResponse } from "../domain/read/ReadResponse";
 import type { ReadThread } from "../domain/read/ReadThread";
 
 export const getTopPageUsecase = async (vakContext: VakContext) => {
   const { logger } = vakContext;
-  
+
   logger.info({
     operation: "getTopPageUsecase",
-    message: "Starting top page data retrieval"
+    message: "Starting top page data retrieval",
   });
 
   // まずスレッド上位30件を取得
   logger.debug({
     operation: "getTopPageUsecase",
-    message: "Fetching top 30 threads"
+    message: "Fetching top 30 threads",
   });
-  
+
   const threadsTop30Result = await getLatest30ThreadsRepository(vakContext);
   if (threadsTop30Result.isErr()) {
     logger.error({
       operation: "getTopPageUsecase",
       error: threadsTop30Result.error,
-      message: "Failed to fetch top 30 threads"
+      message: "Failed to fetch top 30 threads",
     });
     return err(threadsTop30Result.error);
   }
@@ -38,7 +38,7 @@ export const getTopPageUsecase = async (vakContext: VakContext) => {
   logger.debug({
     operation: "getTopPageUsecase",
     threadCount: threadsTop30Result.value.length,
-    message: "Successfully fetched top 30 threads"
+    message: "Successfully fetched top 30 threads",
   });
 
   // 次に、スレッド上位30件から上位10件を取得
@@ -63,15 +63,15 @@ export const getTopPageUsecase = async (vakContext: VakContext) => {
   logger.debug({
     operation: "getTopPageUsecase",
     top10ThreadIdsCount: top10ThreadIds.length,
-    message: "Extracted top 10 thread IDs for detailed response fetching"
+    message: "Extracted top 10 thread IDs for detailed response fetching",
   });
 
   // スレッド上位10件の詳細を取得
   logger.debug({
     operation: "getTopPageUsecase",
-    message: "Fetching responses for top 10 threads"
+    message: "Fetching responses for top 10 threads",
   });
-  
+
   const responsesTop10 = await getLatest10ThreadsWithResponsesRepository(
     vakContext,
     { threadIds: top10ThreadIds }
@@ -80,7 +80,7 @@ export const getTopPageUsecase = async (vakContext: VakContext) => {
     logger.error({
       operation: "getTopPageUsecase",
       error: responsesTop10.error,
-      message: "Failed to fetch responses for top 10 threads"
+      message: "Failed to fetch responses for top 10 threads",
     });
     return err(responsesTop10.error);
   }
@@ -88,7 +88,7 @@ export const getTopPageUsecase = async (vakContext: VakContext) => {
   logger.debug({
     operation: "getTopPageUsecase",
     responseCount: responsesTop10.value.length,
-    message: "Successfully fetched responses for top 10 threads"
+    message: "Successfully fetched responses for top 10 threads",
   });
 
   // 上位10件のスレッドのレスについて、先程のふたつを結合して完全版の構造体を作成
@@ -137,7 +137,7 @@ export const getTopPageUsecase = async (vakContext: VakContext) => {
   logger.debug({
     operation: "getTopPageUsecase",
     processedThreadCount: threadResponseArray.length,
-    message: "Data processing completed for top page display"
+    message: "Data processing completed for top page display",
   });
 
   // スレッド上位30件と、
@@ -146,9 +146,9 @@ export const getTopPageUsecase = async (vakContext: VakContext) => {
     operation: "getTopPageUsecase",
     threadCount: threadsTop30Result.value.length,
     detailedThreadCount: threadResponseArray.length,
-    message: "Successfully retrieved and processed top page data"
+    message: "Successfully retrieved and processed top page data",
   });
-  
+
   return ok({
     threadTop30: threadsTop30Result.value,
     responsesTop10: threadResponseArray,

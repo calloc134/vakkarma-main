@@ -1,7 +1,7 @@
 import { hash } from "bcrypt-ts";
 import { ok, err } from "neverthrow";
 
-import { ValidationError } from "../../../types/Error";
+import { ValidationError } from "../../../shared/types/Error";
 
 import type { WritePassword } from "./WritePassword";
 import type { Result } from "neverthrow";

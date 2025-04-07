@@ -1,6 +1,6 @@
 import { err, ok } from "neverthrow";
 
-import { DatabaseError, DataNotFoundError } from "../../types/Error";
+import { DatabaseError, DataNotFoundError } from "../../shared/types/Error";
 import {
   createReadBoardConfig,
   type ReadBoardConfig,
@@ -8,17 +8,18 @@ import {
 import { createReadBoardName } from "../domain/read/ReadBoardName";
 import { createReadLocalRule } from "../domain/read/ReadLocalRule";
 
-import type { VakContext } from "../../types/VakContext";
+import type { VakContext } from "../../shared/types/VakContext";
 import type { Result } from "neverthrow";
 
 export const getBoardConfigRepository = async ({
-  sql, logger
+  sql,
+  logger,
 }: VakContext): Promise<
   Result<ReadBoardConfig, DatabaseError | DataNotFoundError>
 > => {
   logger.debug({
     operation: "getBoardConfig",
-    message: "Fetching board configuration from database"
+    message: "Fetching board configuration from database",
   });
 
   try {
@@ -29,7 +30,8 @@ export const getBoardConfigRepository = async ({
     if (!result || result.length !== 1) {
       logger.error({
         operation: "getBoardConfig",
-        message: "Failed to retrieve board configuration, invalid database response"
+        message:
+          "Failed to retrieve board configuration, invalid database response",
       });
       return err(new DataNotFoundError("設定の取得に失敗しました"));
     }
@@ -37,7 +39,7 @@ export const getBoardConfigRepository = async ({
     logger.debug({
       operation: "getBoardConfig",
       boardName: result[0].board_name,
-      message: "Board configuration retrieved successfully"
+      message: "Board configuration retrieved successfully",
     });
 
     const boardNameResult = createReadBoardName(result[0].board_name);
@@ -45,7 +47,7 @@ export const getBoardConfigRepository = async ({
       logger.error({
         operation: "getBoardConfig",
         error: boardNameResult.error,
-        message: "Invalid board name format"
+        message: "Invalid board name format",
       });
       return err(boardNameResult.error);
     }
@@ -54,7 +56,7 @@ export const getBoardConfigRepository = async ({
       logger.error({
         operation: "getBoardConfig",
         error: localRuleResult.error,
-        message: "Invalid local rule format"
+        message: "Invalid local rule format",
       });
       return err(localRuleResult.error);
     }
@@ -68,7 +70,7 @@ export const getBoardConfigRepository = async ({
       logger.error({
         operation: "getBoardConfig",
         error: config.error,
-        message: "Failed to create board config object"
+        message: "Failed to create board config object",
       });
       return err(config.error);
     }
@@ -76,7 +78,7 @@ export const getBoardConfigRepository = async ({
     logger.info({
       operation: "getBoardConfig",
       boardName: boardNameResult.value.val,
-      message: "Board configuration retrieved and validated successfully"
+      message: "Board configuration retrieved and validated successfully",
     });
 
     return ok(config.value);
@@ -85,7 +87,7 @@ export const getBoardConfigRepository = async ({
     logger.error({
       operation: "getBoardConfig",
       error,
-      message: `Database error while fetching board configuration: ${message}`
+      message: `Database error while fetching board configuration: ${message}`,
     });
     return err(
       new DatabaseError(`設定取得中にエラーが発生しました: ${message}`, error)
