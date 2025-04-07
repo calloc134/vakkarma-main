@@ -24,6 +24,21 @@ export const updateConfigUsecase = async (
     maxContentLengthRaw: number;
   }
 ): Promise<Result<undefined, Error>> => {
+  const { logger } = dbContext;
+  
+  logger.info({
+    operation: "updateConfig",
+    boardName: boardNameRaw,
+    defaultAuthorName: defaultAuthorNameRaw,
+    maxContentLength: maxContentLengthRaw,
+    message: "Starting configuration update"
+  });
+  
+  logger.debug({
+    operation: "updateConfig",
+    message: "Validating configuration values"
+  });
+  
   const combinedResult = Result.combine([
     createWriteBoardName(boardNameRaw),
     createWriteLocalRule(localRuleRaw),
@@ -32,12 +47,22 @@ export const updateConfigUsecase = async (
   ]);
 
   if (combinedResult.isErr()) {
+    logger.error({
+      operation: "updateConfig",
+      error: combinedResult.error,
+      message: "Configuration validation failed"
+    });
     return err(combinedResult.error);
   }
 
   const [boardName, localRule, defaultAuthorName, maxContentLength] =
     combinedResult.value;
 
+  logger.debug({
+    operation: "updateConfig",
+    message: "Creating configuration object"
+  });
+  
   // 今回は値オブジェクトはないので、そのまま
   const config = await createWriteNormalConfig({
     boardName,
@@ -47,13 +72,35 @@ export const updateConfigUsecase = async (
   });
 
   if (config.isErr()) {
+    logger.error({
+      operation: "updateConfig",
+      error: config.error,
+      message: "Failed to create configuration object"
+    });
     return err(config.error);
   }
 
+  logger.debug({
+    operation: "updateConfig",
+    message: "Updating configuration in database"
+  });
+  
   const result = await updateNormalConfigRepository(dbContext, config.value);
   if (result.isErr()) {
+    logger.error({
+      operation: "updateConfig",
+      error: result.error,
+      message: "Failed to update configuration in database"
+    });
     return err(result.error);
   }
 
+  logger.info({
+    operation: "updateConfig",
+    boardName: boardNameRaw,
+    defaultAuthorName: defaultAuthorNameRaw,
+    message: "Configuration updated successfully"
+  });
+  
   return ok(undefined);
 };

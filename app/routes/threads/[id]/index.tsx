@@ -8,22 +8,55 @@ import { ResponseContentComponent } from "../../../components/ResponseContent";
 
 export default createRoute(async (c) => {
   const { sql, logger } = c.var;
+  
+  logger.info({
+    operation: "threads/[id]/GET",
+    path: c.req.path,
+    method: c.req.method,
+    message: "Thread detail page requested"
+  });
+  
   if (!sql) {
+    logger.error({
+      operation: "threads/[id]/GET",
+      message: "Database connection not available"
+    });
     c.status(500);
     return c.render(
       <ErrorMessage error={new Error("DBに接続できませんでした")} />
     );
   }
+  
   const id = c.req.param("id");
+  
+  logger.debug({
+    operation: "threads/[id]/GET",
+    threadId: id,
+    message: "Fetching thread responses"
+  });
 
   const allResponsesResult = await getAllResponsesByThreadIdUsecase(
     { sql, logger },
     { threadIdRaw: id }
   );
   if (allResponsesResult.isErr()) {
+    logger.error({
+      operation: "threads/[id]/GET",
+      error: allResponsesResult.error,
+      threadId: id,
+      message: "Failed to fetch thread responses"
+    });
     c.status(404);
     return c.render(<ErrorMessage error={allResponsesResult.error} />);
   }
+
+  logger.debug({
+    operation: "threads/[id]/GET",
+    threadId: id,
+    threadTitle: allResponsesResult.value.thread.threadTitle.val,
+    responseCount: allResponsesResult.value.responses.length,
+    message: "Successfully fetched thread responses, rendering page"
+  });
 
   return c.render(
     <main className="container mx-auto flex-grow py-8 px-4">
