@@ -22,7 +22,7 @@ export default defineConfig(({ mode }) => {
 
   return {
     ssr: {
-      external: ["iconv-lite", "encoding-japanese", "postgres"],
+      external: ["iconv-lite", "encoding-japanese", "postgres", "pino"],
     },
     server: {
       port: 80,

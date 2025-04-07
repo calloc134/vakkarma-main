@@ -5,7 +5,7 @@ import { ErrorMessage } from "../../components/ErrorMessage";
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const POST = createRoute(async (c) => {
-  const { sql } = c.var;
+  const { sql, logger } = c.var;
   // Check DB connection
   if (!sql) {
     return c.render(
@@ -27,7 +27,7 @@ export const POST = createRoute(async (c) => {
     );
   }
   const updateResult = await updatePasswordUsecase(
-    { sql },
+    { sql, logger },
     { oldPassword, newPassword, confirmNewPassword }
   );
   if (updateResult.isErr()) {

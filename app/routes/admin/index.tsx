@@ -6,17 +6,39 @@ import { ErrorMessage } from "../../components/ErrorMessage";
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const POST = createRoute(async (c) => {
-  const { sql } = c.var;
+  const { sql, logger } = c.var;
+  
+  logger.info({
+    operation: "admin/POST",
+    path: c.req.path,
+    method: c.req.method,
+    message: "Starting board configuration update"
+  });
+  
   if (!sql) {
+    logger.error({
+      operation: "admin/POST",
+      message: "Database connection not available"
+    });
     return c.render(
       <ErrorMessage error={new Error("DBに接続できませんでした")} />
     );
   }
+  
   const body = await c.req.parseBody();
   const boardName = body.boardName;
   const localRule = body.localRule;
   const nanashiName = body.nanashiName;
   const maxContentLength = body.maxResponseLength;
+
+  logger.debug({
+    operation: "admin/POST",
+    hasBoardName: typeof boardName === "string", 
+    hasLocalRule: typeof localRule === "string",
+    hasNanashiName: typeof nanashiName === "string",
+    hasMaxContentLength: typeof maxContentLength === "string",
+    message: "Request body parsed for configuration update"
+  });
 
   if (
     typeof boardName !== "string" ||
@@ -24,12 +46,31 @@ export const POST = createRoute(async (c) => {
     typeof nanashiName !== "string" ||
     typeof maxContentLength !== "string"
   ) {
+    logger.warn({
+      operation: "admin/POST",
+      validationError: "Missing required fields",
+      hasBoardName: typeof boardName === "string", 
+      hasLocalRule: typeof localRule === "string",
+      hasNanashiName: typeof nanashiName === "string",
+      hasMaxContentLength: typeof maxContentLength === "string",
+      message: "Configuration update validation failed - missing required fields"
+    });
     return c.render(
       <ErrorMessage error={new Error("すべての項目を入力してください")} />
     );
   }
+  
+  logger.debug({
+    operation: "admin/POST",
+    boardName,
+    localRule,
+    nanashiName,
+    maxContentLength,
+    message: "Calling updateConfigUsecase"
+  });
+  
   const updateConfigResult = await updateConfigUsecase(
-    { sql },
+    { sql, logger },
     {
       boardNameRaw: boardName,
       localRuleRaw: localRule,
@@ -38,23 +79,67 @@ export const POST = createRoute(async (c) => {
     }
   );
   if (updateConfigResult.isErr()) {
+    logger.error({
+      operation: "admin/POST",
+      error: updateConfigResult.error,
+      message: "Configuration update failed"
+    });
     return c.render(<ErrorMessage error={updateConfigResult.error} />);
   }
+  
+  logger.info({
+    operation: "admin/POST",
+    boardName,
+    nanashiName,
+    maxContentLength,
+    message: "Configuration updated successfully, redirecting to admin page"
+  });
+  
   return c.redirect("/admin", 303);
 });
 
 export default createRoute(async (c) => {
-  const { sql } = c.var;
+  const { sql, logger } = c.var;
+  
+  logger.info({
+    operation: "admin/GET",
+    path: c.req.path,
+    method: c.req.method,
+    message: "Admin configuration page requested"
+  });
+  
   // 管理者画面 config関連
   if (!sql) {
+    logger.error({
+      operation: "admin/GET",
+      message: "Database connection not available"
+    });
     return c.render(
       <ErrorMessage error={new Error("DBに接続できませんでした")} />
     );
   }
-  const configResult = await getConfigUsecase({ sql });
+  
+  logger.debug({
+    operation: "admin/GET",
+    message: "Fetching configuration data"
+  });
+  
+  const configResult = await getConfigUsecase({ sql, logger });
   if (configResult.isErr()) {
+    logger.error({
+      operation: "admin/GET",
+      error: configResult.error,
+      message: "Failed to retrieve configuration data"
+    });
     return c.render(<ErrorMessage error={configResult.error} />);
   }
+  
+  logger.debug({
+    operation: "admin/GET",
+    boardName: configResult.value.boardName.val,
+    message: "Configuration data retrieved successfully, rendering admin page"
+  });
+  
   // フォームの形にする
   return c.render(
     <main className="container mx-auto flex-grow py-8 px-4">

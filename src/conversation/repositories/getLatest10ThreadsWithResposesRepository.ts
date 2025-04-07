@@ -15,19 +15,26 @@ import { createReadResponseId } from "../domain/read/ReadResponseId";
 import { createReadResponseNumber } from "../domain/read/ReadResponseNumber";
 import { createReadThreadId } from "../domain/read/ReadThreadId";
 
-import type { DbContext } from "../../types/DbContext";
 import type { ValidationError } from "../../types/Error";
+import type { VakContext } from "../../types/VakContext";
 import type { WriteThreadId } from "../domain/write/WriteThreadId";
 
 // スレッドIDを元に、最新のレスポンスを10個取得し、その内容を返す
 export const getLatest10ThreadsWithResponsesRepository = async (
-  { sql }: DbContext,
+  { sql, logger }: VakContext,
   { threadIds }: { threadIds: WriteThreadId[] }
 ): Promise<
   Result<ReadResponse[], DatabaseError | DataNotFoundError | ValidationError>
 > => {
   // そのままでは扱えないのでstringを取り出し
   const threadIdRaw = threadIds.map((id) => id.val);
+  
+  logger.debug({
+    operation: "getLatest10ThreadsWithResponses",
+    threadIds: threadIdRaw,
+    message: "Fetching latest responses for threads"
+  });
+
   try {
     // 複雑なクエリ内容なので、流石にsafeqlの補完が効かないと思ったら、効いた・・・？
     const result = (await sql<
@@ -128,8 +135,19 @@ export const getLatest10ThreadsWithResponsesRepository = async (
     }[];
 
     if (!result || result.length === 0) {
+      logger.info({
+        operation: "getLatest10ThreadsWithResponses",
+        threadIds: threadIdRaw,
+        message: "No responses found for the specified threads"
+      });
       return err(new DataNotFoundError("レスポンスの取得に失敗しました"));
     }
+
+    logger.debug({
+      operation: "getLatest10ThreadsWithResponses",
+      count: result.length,
+      message: "Response data retrieved successfully"
+    });
 
     // 詰め替え部分
     const responses: ReadResponse[] = [];
@@ -146,6 +164,11 @@ export const getLatest10ThreadsWithResponsesRepository = async (
       ]);
 
       if (combinedResult.isErr()) {
+        logger.error({
+          operation: "getLatest10ThreadsWithResponses",
+          error: combinedResult.error,
+          message: "Failed to create domain objects from database result"
+        });
         return err(combinedResult.error);
       }
       const [
@@ -170,14 +193,34 @@ export const getLatest10ThreadsWithResponsesRepository = async (
         hashId,
       });
 
-      if (responseResult.isErr()) return err(responseResult.error);
+      if (responseResult.isErr()) {
+        logger.error({
+          operation: "getLatest10ThreadsWithResponses",
+          error: responseResult.error,
+          message: "Failed to create ReadResponse object"
+        });
+        return err(responseResult.error);
+      }
 
       responses.push(responseResult.value);
     }
 
+    logger.info({
+      operation: "getLatest10ThreadsWithResponses",
+      threadIds: threadIdRaw,
+      responseCount: responses.length,
+      message: "Successfully fetched and processed responses"
+    });
+
     return ok(responses);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
+    logger.error({
+      operation: "getLatest10ThreadsWithResponses",
+      error,
+      threadIds: threadIdRaw,
+      message: `Database error while fetching responses: ${message}`
+    });
     return err(
       new DatabaseError(
         `レスポンス取得中にエラーが発生しました: ${message}`,

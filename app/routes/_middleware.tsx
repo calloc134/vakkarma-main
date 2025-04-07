@@ -1,12 +1,19 @@
 import { logger } from "hono/logger";
+import { pinoLogger, type PinoLogger } from "hono-pino";
 import { createRoute } from "honox/factory";
 
 import { csrf } from "../middlewares/csrfMiddleware";
-import { dbClientMiddlewareConditional } from "../middlewares/dbInitializeMiddleware";
-
-import type { DbClient } from "../middlewares/dbInitializeMiddleware";
+import {
+  dbClientMiddlewareConditional,
+  type DbClient,
+} from "../middlewares/dbInitializeMiddleware";
 
 export default createRoute(
+  pinoLogger({
+    pino: {
+      level: "warn",
+    },
+  }),
   logger(),
   csrf(),
   dbClientMiddlewareConditional({
@@ -17,6 +24,7 @@ export default createRoute(
 
 declare module "hono" {
   interface ContextVariableMap {
+    logger: PinoLogger;
     sql: DbClient;
   }
 }

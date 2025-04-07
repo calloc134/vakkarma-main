@@ -7,21 +7,42 @@ import { ErrorMessage } from "../components/ErrorMessage";
 import { ResponseContentComponent } from "../components/ResponseContent";
 
 export default createRoute(async (c) => {
-  const { sql } = c.var;
-  if (!sql) {
-    return c.render(
-      <ErrorMessage error={new Error("DBに接続できませんでした")} />
-    );
-  }
+  const { sql, logger } = c.var;
+
+  logger.info({
+    operation: "index/GET",
+    path: c.req.path,
+    method: c.req.method,
+    message: "Rendering top page"
+  });
+
+  logger.debug({
+    operation: "index/GET",
+    message: "Calling getTopPageUsecase to retrieve data"
+  });
+
   const usecaseResult = await getTopPageUsecase({
     sql,
+    logger,
   });
 
   if (usecaseResult.isErr()) {
+    logger.error({
+      operation: "index/GET",
+      error: usecaseResult.error,
+      message: "Failed to retrieve top page data"
+    });
     return c.render(<ErrorMessage error={usecaseResult.error} />);
   }
 
   const { threadTop30, responsesTop10 } = usecaseResult.value;
+
+  logger.debug({
+    operation: "index/GET",
+    threadCount: threadTop30.length,
+    topThreadCount: responsesTop10.length,
+    message: "Successfully retrieved top page data, rendering page"
+  });
 
   return c.render(
     <main className="container mx-auto flex-grow py-8 px-4">

@@ -4,11 +4,11 @@ import { getAllThreadsWithEpochIdUsecase } from "../../../src/conversation/useca
 import { convertShiftJis } from "../../utils/convertShiftJis";
 
 export default createRoute(async (c) => {
-  const { sql } = c.var;
+  const { sql, logger } = c.var;
   if (!sql) {
     return convertShiftJis("DBに接続できませんでした");
   }
-  const threads = await getAllThreadsWithEpochIdUsecase({ sql });
+  const threads = await getAllThreadsWithEpochIdUsecase({ sql, logger });
   if (threads.isErr()) {
     return convertShiftJis(`エラーが発生しました: ${threads.error.message}`);
   }

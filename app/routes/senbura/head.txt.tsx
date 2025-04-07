@@ -4,11 +4,11 @@ import { getBoardConfigUsecase } from "../../../src/config/usecases/getBoardConf
 import { convertShiftJis } from "../../utils/convertShiftJis";
 
 export default createRoute(async (c) => {
-  const { sql } = c.var;
+  const { sql, logger } = c.var;
   if (!sql) {
     return convertShiftJis("DBに接続できませんでした");
   }
-  const config = await getBoardConfigUsecase({ sql });
+  const config = await getBoardConfigUsecase({ sql, logger });
   if (config.isErr()) {
     return convertShiftJis(`エラーが発生しました: ${config.error.message}`);
   }

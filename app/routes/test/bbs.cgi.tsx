@@ -23,7 +23,7 @@ const responseBodyShiftJis = iconv.encode(responseBody, "Shift_JIS");
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const POST = createRoute(async (c) => {
-  const { sql } = c.var;
+  const { sql, logger } = c.var;
   if (!sql) {
     return convertShiftJis("DBに接続できませんでした");
   }
@@ -76,7 +76,7 @@ export const POST = createRoute(async (c) => {
   // subjectがある場合→新規スレッド作成
   if (subject) {
     const result = await postThreadUsecase(
-      { sql },
+      { sql, logger },
       {
         threadTitleRaw: subject,
         authorNameRaw: name,
@@ -96,7 +96,7 @@ export const POST = createRoute(async (c) => {
     // keyがある場合→レスポンス追加
   } else if (key) {
     const result = await postResponseByThreadEpochIdUsecase(
-      { sql },
+      { sql, logger },
       {
         threadEpochIdRaw: key,
         authorNameRaw: name,

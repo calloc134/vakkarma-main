@@ -7,12 +7,10 @@ import { ErrorMessage } from "../components/ErrorMessage";
 export default jsxRenderer(async ({ children }) => {
   const c = useRequestContext();
 
-  const { sql } = c.var;
-  if (!sql) {
-    return <ErrorMessage error={new Error("DBに接続できませんでした")} />;
-  }
+  const { sql, logger } = c.var;
   const configResult = await getBoardConfigUsecase({
-    sql: sql,
+    sql,
+    logger,
   });
 
   if (configResult.isErr()) {
@@ -27,7 +25,7 @@ export default jsxRenderer(async ({ children }) => {
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>{configResult.value.boardName.val}</title>
         <Link href="/app/style.css" rel="stylesheet" />
-        <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
       </head>
       <body>
         <div className="flex flex-col min-h-screen bg-gray-100">
