@@ -1,10 +1,10 @@
 import { createRoute } from "honox/factory";
 
 import { getAllThreadsWithEpochIdUsecase } from "../../../src/conversation/usecases/getAllThreadsWithEpochIdUsecase";
-import { sql } from "../../db";
 import { convertShiftJis } from "../../utils/convertShiftJis";
 
-export default createRoute(async (_) => {
+export default createRoute(async (c) => {
+  const { sql } = c.var;
   if (!sql) {
     return convertShiftJis("DBに接続できませんでした");
   }

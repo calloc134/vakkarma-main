@@ -5,9 +5,9 @@ import { getTopPageUsecase } from "../../src/conversation/usecases/getTopPageUse
 import { formatDate } from "../../src/utils/formatDate";
 import { ErrorMessage } from "../components/ErrorMessage";
 import { ResponseContentComponent } from "../components/ResponseContent";
-import { sql } from "../db";
 
 export default createRoute(async (c) => {
+  const { sql } = c.var;
   if (!sql) {
     return c.render(
       <ErrorMessage error={new Error("DBに接続できませんでした")} />

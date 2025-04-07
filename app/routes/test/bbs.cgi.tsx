@@ -4,7 +4,6 @@ import iconv from "iconv-lite";
 
 import { postResponseByThreadEpochIdUsecase } from "../../../src/conversation/usecases/postResponseByThreadEpochIdUsecase";
 import { postThreadUsecase } from "../../../src/conversation/usecases/postThreadUsecase";
-import { sql } from "../../db";
 import { convertShiftJis } from "../../utils/convertShiftJis";
 import { getIpAddress } from "../../utils/getIpAddress";
 
@@ -24,6 +23,7 @@ const responseBodyShiftJis = iconv.encode(responseBody, "Shift_JIS");
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const POST = createRoute(async (c) => {
+  const { sql } = c.var;
   if (!sql) {
     return convertShiftJis("DBに接続できませんでした");
   }
