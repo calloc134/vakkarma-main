@@ -9,7 +9,11 @@ import {
 } from "../middlewares/dbInitializeMiddleware";
 
 export default createRoute(
-  pinoLogger(),
+  pinoLogger({
+    pino: {
+      level: "warn",
+    },
+  }),
   logger(),
   csrf(),
   dbClientMiddlewareConditional({
