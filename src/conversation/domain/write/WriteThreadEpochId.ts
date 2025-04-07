@@ -22,6 +22,9 @@ export const generateWriteThreadEpochId = (
 export const createWriteThreadEpochId = (
   value: string
 ): Result<WriteThreadEpochId, ValidationError> => {
+  if (value === "") {
+    return err(new ValidationError("ThreadEpochIdは空文字列にできません"));
+  }
   // BIGINTを扱うため、数値に変換
   const epochId = Number(value);
   if (isNaN(epochId)) {
