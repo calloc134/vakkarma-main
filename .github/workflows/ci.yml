@@ -1,5 +1,6 @@
 name: CI
-"on":
+
+on:
   push:
     branches:
       - main
@@ -8,31 +9,40 @@ name: CI
       - opened
       - synchronize
   workflow_dispatch: null
+
 concurrency:
-  group: pages
-  cancel-in-progress: false
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true # PRの場合、最新のコミットのみを実行する方が効率的 (mainへのpushではfalseが良い場合も)
+
 jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v3
-        with:
-          version: 8
-          run_install: false
-      - name: Setup Node.js environment
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: pnpm
-      - name: install dependencies
-        run: pnpm install --no-frozen-lockfile
-      - name: typecheck
-        run: pnpm run typecheck
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Node.jsとpnpmのセットアップを削除し、Bunの公式セットアップアクションを使用
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        # with:
+        #   bun-version: latest # 特定のバージョンが必要な場合は指定 (例: '1.1.8')
+        # oven-sh/setup-bun は自動でBunのキャッシュを設定します
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Typecheck
+        run: bun run typecheck
+
       - name: Lint
-        run: pnpm run lint
+        run: bun run lint
+
+      - name: Test
+        run: bun test
+
       - name: Build Bun
-        run: pnpm run build:bun
+        run: bun run build:bun
+
       - name: Build Workers
-        run: pnpm run build:workers
+        run: bun run build:workers
