@@ -57,13 +57,13 @@ export const getAllResponsesByThreadEpochIdUsecase = async (
     return err(responsesWithThreadResult.error);
   }
 
-  logger.info({
-    operation: "getAllResponsesByThreadEpochId",
-    threadEpochId: threadEpochIdRaw,
-    threadTitle: responsesWithThreadResult.value.threadTitle.val,
-    responseCount: responsesWithThreadResult.value.responses.length,
-    message: "Successfully retrieved thread responses by epoch ID"
-  });
+  // logger.info({
+  //   operation: "getAllResponsesByThreadEpochId",
+  //   threadEpochId: threadEpochIdRaw,
+  //   threadTitle: responsesWithThreadResult.value.threadTitle.val,
+  //   responseCount: responsesWithThreadResult.value.responses.length,
+  //   message: "Successfully retrieved thread responses by epoch ID"
+  // });
   
   return ok(responsesWithThreadResult.value);
 };
