@@ -38,7 +38,7 @@ describe("WriteThreadEpochId", () => {
     });
 
     it("数値に変換できない文字列の場合はエラーになること", () => {
-      const invalidValues = ["abc", "123abc", "", "undefined", "null"];
+      const invalidValues = ["abc", "123abc", "undefined", "null"];
 
       invalidValues.forEach((value) => {
         const result = createWriteThreadEpochId(value);
@@ -49,6 +49,17 @@ describe("WriteThreadEpochId", () => {
           );
         }
       });
+    });
+
+    it("空文字列の場合はエラーになること", () => {
+      const result = createWriteThreadEpochId("");
+
+      expect(result.isErr()).toBe(true);
+      if (result.isErr()) {
+        expect(result.error.message).toBe(
+          "ThreadEpochIdは空文字列にできません"
+        );
+      }
     });
   });
 });
