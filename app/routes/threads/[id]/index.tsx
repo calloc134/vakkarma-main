@@ -2,37 +2,37 @@ import { createRoute } from "honox/factory";
 
 import { formatReadAuthorName } from "../../../../src/conversation/domain/read/ReadAuthorName";
 import { getAllResponsesByThreadIdUsecase } from "../../../../src/conversation/usecases/getAllResponsesByThreadIdUsecase";
-import { formatDate } from "../../../../src/utils/formatDate";
+import { formatDate } from "../../../../src/shared/utils/formatDate";
 import { ErrorMessage } from "../../../components/ErrorMessage";
 import { ResponseContentComponent } from "../../../components/ResponseContent";
 
 export default createRoute(async (c) => {
   const { sql, logger } = c.var;
-  
+
   logger.info({
     operation: "threads/[id]/GET",
     path: c.req.path,
     method: c.req.method,
-    message: "Thread detail page requested"
+    message: "Thread detail page requested",
   });
-  
+
   if (!sql) {
     logger.error({
       operation: "threads/[id]/GET",
-      message: "Database connection not available"
+      message: "Database connection not available",
     });
     c.status(500);
     return c.render(
       <ErrorMessage error={new Error("DBに接続できませんでした")} />
     );
   }
-  
+
   const id = c.req.param("id");
-  
+
   logger.debug({
     operation: "threads/[id]/GET",
     threadId: id,
-    message: "Fetching thread responses"
+    message: "Fetching thread responses",
   });
 
   const allResponsesResult = await getAllResponsesByThreadIdUsecase(
@@ -44,7 +44,7 @@ export default createRoute(async (c) => {
       operation: "threads/[id]/GET",
       error: allResponsesResult.error,
       threadId: id,
-      message: "Failed to fetch thread responses"
+      message: "Failed to fetch thread responses",
     });
     c.status(404);
     return c.render(<ErrorMessage error={allResponsesResult.error} />);
@@ -55,7 +55,7 @@ export default createRoute(async (c) => {
     threadId: id,
     threadTitle: allResponsesResult.value.thread.threadTitle.val,
     responseCount: allResponsesResult.value.responses.length,
-    message: "Successfully fetched thread responses, rendering page"
+    message: "Successfully fetched thread responses, rendering page",
   });
 
   return c.render(

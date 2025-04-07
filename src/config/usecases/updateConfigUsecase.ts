@@ -8,7 +8,7 @@ import { createWriteMaxContentLength } from "../domain/write/WriteMaxContentLeng
 import { createWriteNormalConfig } from "../domain/write/WriteNormalConfig";
 import { updateNormalConfigRepository } from "../repositories/updateNormalConfigRepository";
 
-import type { VakContext } from "../../types/VakContext";
+import type { VakContext } from "../../shared/types/VakContext";
 
 export const updateConfigUsecase = async (
   vakContext: VakContext,
@@ -25,20 +25,20 @@ export const updateConfigUsecase = async (
   }
 ): Promise<Result<undefined, Error>> => {
   const { logger } = vakContext;
-  
+
   logger.info({
     operation: "updateConfig",
     boardName: boardNameRaw,
     defaultAuthorName: defaultAuthorNameRaw,
     maxContentLength: maxContentLengthRaw,
-    message: "Starting configuration update"
+    message: "Starting configuration update",
   });
-  
+
   logger.debug({
     operation: "updateConfig",
-    message: "Validating configuration values"
+    message: "Validating configuration values",
   });
-  
+
   const combinedResult = Result.combine([
     createWriteBoardName(boardNameRaw),
     createWriteLocalRule(localRuleRaw),
@@ -50,7 +50,7 @@ export const updateConfigUsecase = async (
     logger.error({
       operation: "updateConfig",
       error: combinedResult.error,
-      message: "Configuration validation failed"
+      message: "Configuration validation failed",
     });
     return err(combinedResult.error);
   }
@@ -60,9 +60,9 @@ export const updateConfigUsecase = async (
 
   logger.debug({
     operation: "updateConfig",
-    message: "Creating configuration object"
+    message: "Creating configuration object",
   });
-  
+
   // 今回は値オブジェクトはないので、そのまま
   const config = await createWriteNormalConfig({
     boardName,
@@ -75,22 +75,22 @@ export const updateConfigUsecase = async (
     logger.error({
       operation: "updateConfig",
       error: config.error,
-      message: "Failed to create configuration object"
+      message: "Failed to create configuration object",
     });
     return err(config.error);
   }
 
   logger.debug({
     operation: "updateConfig",
-    message: "Updating configuration in database"
+    message: "Updating configuration in database",
   });
-  
+
   const result = await updateNormalConfigRepository(vakContext, config.value);
   if (result.isErr()) {
     logger.error({
       operation: "updateConfig",
       error: result.error,
-      message: "Failed to update configuration in database"
+      message: "Failed to update configuration in database",
     });
     return err(result.error);
   }
@@ -99,8 +99,8 @@ export const updateConfigUsecase = async (
     operation: "updateConfig",
     boardName: boardNameRaw,
     defaultAuthorName: defaultAuthorNameRaw,
-    message: "Configuration updated successfully"
+    message: "Configuration updated successfully",
   });
-  
+
   return ok(undefined);
 };

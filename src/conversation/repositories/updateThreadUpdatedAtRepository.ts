@@ -1,8 +1,8 @@
 import { ok, err } from "neverthrow";
 
-import { DatabaseError } from "../../types/Error";
+import { DatabaseError } from "../../shared/types/Error";
 
-import type { VakContext } from "../../types/VakContext";
+import type { VakContext } from "../../shared/types/VakContext";
 import type { WritePostedAt } from "../domain/write/WritePostedAt";
 import type { WriteThreadId } from "../domain/write/WriteThreadId";
 import type { Result } from "neverthrow";
@@ -18,9 +18,9 @@ export const updateThreadUpdatedAtRepository = async (
     operation: "updateThreadUpdatedAt",
     threadId: threadId.val,
     updatedAt: updatedAt.val,
-    message: "Updating thread timestamp"
+    message: "Updating thread timestamp",
   });
-  
+
   try {
     const result = await sql<{ id: string }[]>`
         UPDATE
@@ -35,7 +35,7 @@ export const updateThreadUpdatedAtRepository = async (
       logger.error({
         operation: "updateThreadUpdatedAt",
         threadId: threadId.val,
-        message: "Failed to update thread timestamp, invalid database response"
+        message: "Failed to update thread timestamp, invalid database response",
       });
       return err(new DatabaseError("スレッドの更新に失敗しました"));
     }
@@ -44,9 +44,9 @@ export const updateThreadUpdatedAtRepository = async (
       operation: "updateThreadUpdatedAt",
       threadId: threadId.val,
       updatedAt: updatedAt.val,
-      message: "Thread timestamp updated successfully"
+      message: "Thread timestamp updated successfully",
     });
-    
+
     return ok(threadId);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
@@ -54,7 +54,7 @@ export const updateThreadUpdatedAtRepository = async (
       operation: "updateThreadUpdatedAt",
       threadId: threadId.val,
       error,
-      message: `Database error while updating thread timestamp: ${message}`
+      message: `Database error while updating thread timestamp: ${message}`,
     });
     return err(
       new DatabaseError(`更新処理中にエラーが発生しました: ${message}`, error)

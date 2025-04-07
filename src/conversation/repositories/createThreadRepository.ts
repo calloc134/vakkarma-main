@@ -1,12 +1,12 @@
 import { ok, err } from "neverthrow";
 
-import { DatabaseError } from "../../types/Error";
+import { DatabaseError } from "../../shared/types/Error";
 import {
   createReadThreadId,
   type ReadThreadId,
 } from "../domain/read/ReadThreadId";
 
-import type { VakContext } from "../../types/VakContext";
+import type { VakContext } from "../../shared/types/VakContext";
 import type { WriteThread } from "../domain/write/WriteThread";
 import type { Result } from "neverthrow";
 
@@ -19,7 +19,7 @@ export const createThreadRepository = async (
     operation: "createThread",
     threadId: thread.id.val,
     threadTitle: thread.title.val,
-    message: "Creating new thread in database"
+    message: "Creating new thread in database",
   });
 
   try {
@@ -44,29 +44,29 @@ export const createThreadRepository = async (
       logger.error({
         operation: "createThread",
         threadId: thread.id.val,
-        message: "Failed to create thread, invalid database response"
+        message: "Failed to create thread, invalid database response",
       });
       return err(new DatabaseError("スレッドの作成に失敗しました"));
     }
-    
+
     const threadIdResult = createReadThreadId(result[0].id);
     if (threadIdResult.isErr()) {
       logger.error({
         operation: "createThread",
         error: threadIdResult.error,
         threadId: thread.id.val,
-        message: "Failed to create thread ID from database result"
+        message: "Failed to create thread ID from database result",
       });
       return err(threadIdResult.error);
     }
-    
+
     logger.info({
       operation: "createThread",
       threadId: thread.id.val,
       threadTitle: thread.title.val,
-      message: "Thread created successfully"
+      message: "Thread created successfully",
     });
-    
+
     return ok(threadIdResult.value);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
@@ -74,7 +74,7 @@ export const createThreadRepository = async (
       operation: "createThread",
       error,
       threadId: thread.id.val,
-      message: `Database error while creating thread: ${message}`
+      message: `Database error while creating thread: ${message}`,
     });
     return err(
       new DatabaseError(`データベースエラーが発生しました: ${message}`, error)

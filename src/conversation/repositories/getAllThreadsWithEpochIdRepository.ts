@@ -1,20 +1,21 @@
 import { ok, err } from "neverthrow";
 import { Result } from "neverthrow";
 
-import { DatabaseError, DataNotFoundError } from "../../types/Error";
+import { DatabaseError, DataNotFoundError } from "../../shared/types/Error";
 import { createReadPostedAt } from "../domain/read/ReadPostedAt";
 import { createReadThreadEpochId } from "../domain/read/ReadThreadEpochId";
 import { createReadThreadId } from "../domain/read/ReadThreadId";
 import { createReadThreadTitle } from "../domain/read/ReadThreadTitle";
 import { createReadThreadWithEpochId } from "../domain/read/ReadThreadWithEpochId";
 
-import type { ValidationError } from "../../types/Error";
-import type { VakContext } from "../../types/VakContext";
+import type { ValidationError } from "../../shared/types/Error";
+import type { VakContext } from "../../shared/types/VakContext";
 import type { ReadThreadWithEpochId } from "../domain/read/ReadThreadWithEpochId";
 
 // すべてのスレッドを取得するだけのリポジトリ
 export const getAllThreadsWithEpochIdRepository = async ({
-  sql, logger
+  sql,
+  logger,
 }: VakContext): Promise<
   Result<
     ReadThreadWithEpochId[],
@@ -23,7 +24,7 @@ export const getAllThreadsWithEpochIdRepository = async ({
 > => {
   logger.debug({
     operation: "getAllThreadsWithEpochId",
-    message: "Fetching all threads with epoch IDs"
+    message: "Fetching all threads with epoch IDs",
   });
 
   try {
@@ -59,7 +60,7 @@ export const getAllThreadsWithEpochIdRepository = async ({
     if (!result || result.length === 0) {
       logger.info({
         operation: "getAllThreadsWithEpochId",
-        message: "No threads found in database"
+        message: "No threads found in database",
       });
       return err(new DataNotFoundError("スレッドの取得に失敗しました"));
     }
@@ -67,7 +68,7 @@ export const getAllThreadsWithEpochIdRepository = async ({
     logger.debug({
       operation: "getAllThreadsWithEpochId",
       count: result.length,
-      message: "Successfully retrieved threads from database"
+      message: "Successfully retrieved threads from database",
     });
 
     // 詰め替え部分
@@ -85,7 +86,7 @@ export const getAllThreadsWithEpochIdRepository = async ({
           operation: "getAllThreadsWithEpochId",
           error: combinedResult.error,
           threadId: thread.id,
-          message: "Failed to create domain objects from database result"
+          message: "Failed to create domain objects from database result",
         });
         return err(combinedResult.error);
       }
@@ -105,7 +106,7 @@ export const getAllThreadsWithEpochIdRepository = async ({
           operation: "getAllThreadsWithEpochId",
           error: threadWithEpochIdResult.error,
           threadId: threadId.val,
-          message: "Failed to create ReadThreadWithEpochId object"
+          message: "Failed to create ReadThreadWithEpochId object",
         });
         return err(threadWithEpochIdResult.error);
       }
@@ -115,7 +116,7 @@ export const getAllThreadsWithEpochIdRepository = async ({
     logger.info({
       operation: "getAllThreadsWithEpochId",
       threadCount: threads.length,
-      message: "Successfully fetched and processed all threads with epoch IDs"
+      message: "Successfully fetched and processed all threads with epoch IDs",
     });
 
     return ok(threads);
@@ -124,7 +125,7 @@ export const getAllThreadsWithEpochIdRepository = async ({
     logger.error({
       operation: "getAllThreadsWithEpochId",
       error,
-      message: `Database error while fetching threads: ${message}`
+      message: `Database error while fetching threads: ${message}`,
     });
     return err(
       new DatabaseError(

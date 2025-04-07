@@ -1,22 +1,23 @@
 import { err, ok } from "neverthrow";
 
-import { DatabaseError, DataNotFoundError } from "../../types/Error";
+import { DatabaseError, DataNotFoundError } from "../../shared/types/Error";
 import {
   createReadMaxContentLength,
   type ReadMaxContentLength,
 } from "../domain/read/ReadMaxContentLength";
 
-import type { VakContext } from "../../types/VakContext";
+import type { VakContext } from "../../shared/types/VakContext";
 import type { Result } from "neverthrow";
 
 export const getMaxContentLengthRepository = async ({
-  sql, logger
+  sql,
+  logger,
 }: VakContext): Promise<
   Result<ReadMaxContentLength, DatabaseError | DataNotFoundError>
 > => {
   logger.debug({
     operation: "getMaxContentLength",
-    message: "Fetching maximum content length from database"
+    message: "Fetching maximum content length from database",
   });
 
   try {
@@ -26,7 +27,8 @@ export const getMaxContentLengthRepository = async ({
     if (!result || result.length !== 1) {
       logger.error({
         operation: "getMaxContentLength",
-        message: "Failed to retrieve maximum content length, invalid database response"
+        message:
+          "Failed to retrieve maximum content length, invalid database response",
       });
       return err(new DataNotFoundError("設定の取得に失敗しました"));
     }
@@ -34,7 +36,7 @@ export const getMaxContentLengthRepository = async ({
     logger.debug({
       operation: "getMaxContentLength",
       maxContentLength: result[0].max_content_length,
-      message: "Maximum content length retrieved from database"
+      message: "Maximum content length retrieved from database",
     });
 
     const maxContentLengthResult = createReadMaxContentLength(
@@ -44,7 +46,7 @@ export const getMaxContentLengthRepository = async ({
       logger.error({
         operation: "getMaxContentLength",
         error: maxContentLengthResult.error,
-        message: "Invalid maximum content length format"
+        message: "Invalid maximum content length format",
       });
       return err(maxContentLengthResult.error);
     }
@@ -52,7 +54,7 @@ export const getMaxContentLengthRepository = async ({
     logger.info({
       operation: "getMaxContentLength",
       maxContentLength: maxContentLengthResult.value.val,
-      message: "Maximum content length retrieved and validated successfully"
+      message: "Maximum content length retrieved and validated successfully",
     });
 
     return ok(maxContentLengthResult.value);
@@ -61,7 +63,7 @@ export const getMaxContentLengthRepository = async ({
     logger.error({
       operation: "getMaxContentLength",
       error,
-      message: `Database error while fetching maximum content length: ${message}`
+      message: `Database error while fetching maximum content length: ${message}`,
     });
     return err(
       new DatabaseError(`設定取得中にエラーが発生しました: ${message}`, error)

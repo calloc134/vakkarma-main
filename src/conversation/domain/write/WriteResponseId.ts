@@ -1,8 +1,8 @@
 import { ok, err, type Result } from "neverthrow";
 import { uuidv7 } from "uuidv7";
 
-import { ValidationError } from "../../../types/Error";
-import { validateUUIDv7 } from "../../../utils/validateUUIDv7";
+import { ValidationError } from "../../../shared/types/Error";
+import { validateUUIDv7 } from "../../../shared/utils/validateUUIDv7";
 
 // レスポンスのメインID。uuidv7
 export type WriteResponseId = {

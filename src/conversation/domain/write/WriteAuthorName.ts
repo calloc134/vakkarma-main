@@ -1,7 +1,7 @@
 import { ok, err, type Result } from "neverthrow";
 
-import { ValidationError } from "../../../types/Error";
-import { createTrip } from "../../../utils/createTrip";
+import { ValidationError } from "../../../shared/types/Error";
+import { createTrip } from "../../../shared/utils/createTrip";
 
 type SomeWriteAuthorName = {
   readonly _type: "some";

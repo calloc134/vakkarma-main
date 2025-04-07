@@ -2,7 +2,7 @@ import { createRoute } from "honox/factory";
 
 import { formatReadAuthorName } from "../../../../src/conversation/domain/read/ReadAuthorName";
 import { getAllResponsesByThreadEpochIdUsecase } from "../../../../src/conversation/usecases/getAllResponsesByThreadEpochIdUsecase";
-import { formatDate } from "../../../../src/utils/formatDate";
+import { formatDate } from "../../../../src/shared/utils/formatDate";
 import { convertShiftJis } from "../../../utils/convertShiftJis";
 
 export default createRoute(async (c) => {

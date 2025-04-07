@@ -4,7 +4,7 @@ import { sign } from "hono/jwt";
 import { createRoute } from "honox/factory";
 
 import { verifyAdminPasswordUsecase } from "../../../src/config/usecases/verifyAdminPasswordUsecase";
-import { ValidationError } from "../../../src/types/Error";
+import { ValidationError } from "../../../src/shared/types/Error";
 import { ErrorMessage } from "../../components/ErrorMessage";
 
 // GET: Render the admin login fors

@@ -1,6 +1,6 @@
 import { ok, err, type Result } from "neverthrow";
 
-import { ValidationError } from "../../../types/Error";
+import { ValidationError } from "../../../shared/types/Error";
 
 // 本文
 export type WriteResponseContent = {

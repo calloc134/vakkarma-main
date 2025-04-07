@@ -1,7 +1,7 @@
 import { err, ok } from "neverthrow";
 import { Result } from "neverthrow";
 
-import { DatabaseError } from "../../types/Error";
+import { DatabaseError } from "../../shared/types/Error";
 import { createReadBoardName } from "../domain/read/ReadBoardName";
 import { createReadDefaultAuthorName } from "../domain/read/ReadDefaultAuthorName";
 import { createReadLocalRule } from "../domain/read/ReadLocalRule";
@@ -11,16 +11,17 @@ import {
   type ReadNormalConfig,
 } from "../domain/read/ReadNormalConfig";
 
-import type { VakContext } from "../../types/VakContext";
+import type { VakContext } from "../../shared/types/VakContext";
 
 export const getNormalConfigRepository = async ({
-  sql, logger
+  sql,
+  logger,
 }: VakContext): Promise<Result<ReadNormalConfig, DatabaseError>> => {
   logger.debug({
     operation: "getNormalConfig",
-    message: "Fetching board configuration from database"
+    message: "Fetching board configuration from database",
   });
-  
+
   try {
     const result = await sql<
       {
@@ -42,18 +43,18 @@ export const getNormalConfigRepository = async ({
     if (!result || result.length !== 1) {
       logger.error({
         operation: "getNormalConfig",
-        message: "Failed to retrieve configuration, invalid database response"
+        message: "Failed to retrieve configuration, invalid database response",
       });
       return err(new DatabaseError("設定の取得に失敗しました"));
     }
-    
+
     logger.debug({
       operation: "getNormalConfig",
       boardName: result[0].board_name,
       maxContentLength: result[0].max_content_length,
-      message: "Configuration data retrieved from database"
+      message: "Configuration data retrieved from database",
     });
-    
+
     const combinedResult = Result.combine([
       createReadBoardName(result[0].board_name),
       createReadLocalRule(result[0].local_rule),
@@ -65,7 +66,7 @@ export const getNormalConfigRepository = async ({
       logger.error({
         operation: "getNormalConfig",
         error: combinedResult.error,
-        message: "Failed to create domain objects from database result"
+        message: "Failed to create domain objects from database result",
       });
       return err(combinedResult.error);
     }
@@ -84,7 +85,7 @@ export const getNormalConfigRepository = async ({
       logger.error({
         operation: "getNormalConfig",
         error: normalConfigResult.error,
-        message: "Failed to create ReadNormalConfig object"
+        message: "Failed to create ReadNormalConfig object",
       });
       return err(normalConfigResult.error);
     }
@@ -92,16 +93,16 @@ export const getNormalConfigRepository = async ({
     logger.info({
       operation: "getNormalConfig",
       boardName: boardName.val,
-      message: "Configuration retrieved successfully"
+      message: "Configuration retrieved successfully",
     });
-    
+
     return ok(normalConfigResult.value);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
     logger.error({
       operation: "getNormalConfig",
       error,
-      message: `Database error while retrieving configuration: ${message}`
+      message: `Database error while retrieving configuration: ${message}`,
     });
     return err(
       new DatabaseError(`設定の取得中にエラーが発生しました: ${message}`, error)

@@ -1,7 +1,7 @@
 import { ok, err } from "neverthrow";
 import { Result } from "neverthrow";
 
-import { DatabaseError, DataNotFoundError } from "../../types/Error";
+import { DatabaseError, DataNotFoundError } from "../../shared/types/Error";
 import { createReadAuthorName } from "../domain/read/ReadAuthorName";
 import { createReadHashId } from "../domain/read/ReadHashId";
 import { createReadMail } from "../domain/read/ReadMail";
@@ -15,8 +15,8 @@ import { createReadResponseId } from "../domain/read/ReadResponseId";
 import { createReadResponseNumber } from "../domain/read/ReadResponseNumber";
 import { createReadThreadId } from "../domain/read/ReadThreadId";
 
-import type { ValidationError } from "../../types/Error";
-import type { VakContext } from "../../types/VakContext";
+import type { ValidationError } from "../../shared/types/Error";
+import type { VakContext } from "../../shared/types/VakContext";
 import type { WriteThreadId } from "../domain/write/WriteThreadId";
 
 // スレッドIDを元に、最新のレスポンスを10個取得し、その内容を返す
@@ -28,11 +28,11 @@ export const getLatest10ThreadsWithResponsesRepository = async (
 > => {
   // そのままでは扱えないのでstringを取り出し
   const threadIdRaw = threadIds.map((id) => id.val);
-  
+
   logger.debug({
     operation: "getLatest10ThreadsWithResponses",
     threadIds: threadIdRaw,
-    message: "Fetching latest responses for threads"
+    message: "Fetching latest responses for threads",
   });
 
   try {
@@ -138,7 +138,7 @@ export const getLatest10ThreadsWithResponsesRepository = async (
       logger.info({
         operation: "getLatest10ThreadsWithResponses",
         threadIds: threadIdRaw,
-        message: "No responses found for the specified threads"
+        message: "No responses found for the specified threads",
       });
       return err(new DataNotFoundError("レスポンスの取得に失敗しました"));
     }
@@ -146,7 +146,7 @@ export const getLatest10ThreadsWithResponsesRepository = async (
     logger.debug({
       operation: "getLatest10ThreadsWithResponses",
       count: result.length,
-      message: "Response data retrieved successfully"
+      message: "Response data retrieved successfully",
     });
 
     // 詰め替え部分
@@ -167,7 +167,7 @@ export const getLatest10ThreadsWithResponsesRepository = async (
         logger.error({
           operation: "getLatest10ThreadsWithResponses",
           error: combinedResult.error,
-          message: "Failed to create domain objects from database result"
+          message: "Failed to create domain objects from database result",
         });
         return err(combinedResult.error);
       }
@@ -197,7 +197,7 @@ export const getLatest10ThreadsWithResponsesRepository = async (
         logger.error({
           operation: "getLatest10ThreadsWithResponses",
           error: responseResult.error,
-          message: "Failed to create ReadResponse object"
+          message: "Failed to create ReadResponse object",
         });
         return err(responseResult.error);
       }
@@ -209,7 +209,7 @@ export const getLatest10ThreadsWithResponsesRepository = async (
       operation: "getLatest10ThreadsWithResponses",
       threadIds: threadIdRaw,
       responseCount: responses.length,
-      message: "Successfully fetched and processed responses"
+      message: "Successfully fetched and processed responses",
     });
 
     return ok(responses);
@@ -219,7 +219,7 @@ export const getLatest10ThreadsWithResponsesRepository = async (
       operation: "getLatest10ThreadsWithResponses",
       error,
       threadIds: threadIdRaw,
-      message: `Database error while fetching responses: ${message}`
+      message: `Database error while fetching responses: ${message}`,
     });
     return err(
       new DatabaseError(
