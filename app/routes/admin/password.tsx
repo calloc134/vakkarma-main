@@ -2,10 +2,10 @@ import { createRoute } from "honox/factory";
 
 import { updatePasswordUsecase } from "../../../src/config/usecases/updatePasswordUsecase";
 import { ErrorMessage } from "../../components/ErrorMessage";
-import { sql } from "../../db";
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const POST = createRoute(async (c) => {
+  const { sql } = c.var;
   // Check DB connection
   if (!sql) {
     return c.render(
