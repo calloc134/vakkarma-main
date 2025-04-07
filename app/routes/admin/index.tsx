@@ -3,10 +3,10 @@ import { createRoute } from "honox/factory";
 import { getConfigUsecase } from "../../../src/config/usecases/getConfigUsecase";
 import { updateConfigUsecase } from "../../../src/config/usecases/updateConfigUsecase";
 import { ErrorMessage } from "../../components/ErrorMessage";
-import { sql } from "../../db";
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const POST = createRoute(async (c) => {
+  const { sql, logger } = c.var;
   if (!sql) {
     return c.render(
       <ErrorMessage error={new Error("DBに接続できませんでした")} />
@@ -29,7 +29,7 @@ export const POST = createRoute(async (c) => {
     );
   }
   const updateConfigResult = await updateConfigUsecase(
-    { sql },
+    { sql, logger },
     {
       boardNameRaw: boardName,
       localRuleRaw: localRule,
@@ -44,13 +44,14 @@ export const POST = createRoute(async (c) => {
 });
 
 export default createRoute(async (c) => {
+  const { sql, logger } = c.var;
   // 管理者画面 config関連
   if (!sql) {
     return c.render(
       <ErrorMessage error={new Error("DBに接続できませんでした")} />
     );
   }
-  const configResult = await getConfigUsecase({ sql });
+  const configResult = await getConfigUsecase({ sql, logger });
   if (configResult.isErr()) {
     return c.render(<ErrorMessage error={configResult.error} />);
   }

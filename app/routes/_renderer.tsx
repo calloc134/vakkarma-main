@@ -1,16 +1,16 @@
-import { jsxRenderer } from "hono/jsx-renderer";
+import { jsxRenderer, useRequestContext } from "hono/jsx-renderer";
 import { Link } from "honox/server";
 
 import { getBoardConfigUsecase } from "../../src/config/usecases/getBoardConfigUsecase";
 import { ErrorMessage } from "../components/ErrorMessage";
-import { sql } from "../db";
 
 export default jsxRenderer(async ({ children }) => {
-  if (!sql) {
-    return <ErrorMessage error={new Error("DBに接続できませんでした")} />;
-  }
+  const c = useRequestContext();
+
+  const { sql, logger } = c.var;
   const configResult = await getBoardConfigUsecase({
     sql,
+    logger,
   });
 
   if (configResult.isErr()) {

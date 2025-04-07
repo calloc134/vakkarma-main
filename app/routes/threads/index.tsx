@@ -2,16 +2,12 @@ import { createRoute } from "honox/factory";
 
 import { postThreadUsecase } from "../../../src/conversation/usecases/postThreadUsecase";
 import { ErrorMessage } from "../../components/ErrorMessage";
-import { sql } from "../../db";
 import { getIpAddress } from "../../utils/getIpAddress";
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const POST = createRoute(async (c) => {
-  if (!sql) {
-    return c.render(
-      <ErrorMessage error={new Error("DBに接続できませんでした")} />
-    );
-  }
+  const { sql, logger } = c.var;
+
   const body = await c.req.parseBody();
   const title = body.title;
   const name = typeof body.name === "string" ? body.name : null;
@@ -27,7 +23,7 @@ export const POST = createRoute(async (c) => {
   const ipAddressRaw = getIpAddress(c);
 
   const postThreadResult = await postThreadUsecase(
-    { sql },
+    { sql, logger },
     {
       threadTitleRaw: title,
       authorNameRaw: name,

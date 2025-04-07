@@ -5,9 +5,9 @@ import { getAllResponsesByThreadIdUsecase } from "../../../../src/conversation/u
 import { formatDate } from "../../../../src/utils/formatDate";
 import { ErrorMessage } from "../../../components/ErrorMessage";
 import { ResponseContentComponent } from "../../../components/ResponseContent";
-import { sql } from "../../../db";
 
 export default createRoute(async (c) => {
+  const { sql, logger } = c.var;
   if (!sql) {
     c.status(500);
     return c.render(
@@ -17,7 +17,7 @@ export default createRoute(async (c) => {
   const id = c.req.param("id");
 
   const allResponsesResult = await getAllResponsesByThreadIdUsecase(
-    { sql },
+    { sql, logger },
     { threadIdRaw: id }
   );
   if (allResponsesResult.isErr()) {

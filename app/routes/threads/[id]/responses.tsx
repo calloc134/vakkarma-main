@@ -2,16 +2,11 @@ import { createRoute } from "honox/factory";
 
 import { postResponseByThreadIdUsecase } from "../../../../src/conversation/usecases/postResponseByThreadIdUsecase";
 import { ErrorMessage } from "../../../components/ErrorMessage";
-import { sql } from "../../../db";
 import { getIpAddress } from "../../../utils/getIpAddress";
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const POST = createRoute(async (c) => {
-  if (!sql) {
-    return c.render(
-      <ErrorMessage error={new Error("DBに接続できませんでした")} />
-    );
-  }
+  const { sql, logger } = c.var;
   const id = c.req.param("id");
   if (!id)
     return c.render(
@@ -32,7 +27,7 @@ export const POST = createRoute(async (c) => {
   // レス番号(responseNumber)は自動で振られるので、渡す必要はない
   // 整合性とレイヤ分離のトレードオフだが、ロジックとして重要な部分なので整合性を優先した
   const responseResult = await postResponseByThreadIdUsecase(
-    { sql },
+    { sql, logger },
     {
       threadIdRaw: id,
       authorNameRaw: name,

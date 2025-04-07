@@ -6,7 +6,6 @@ import { createRoute } from "honox/factory";
 import { verifyAdminPasswordUsecase } from "../../../src/config/usecases/verifyAdminPasswordUsecase";
 import { ValidationError } from "../../../src/types/Error";
 import { ErrorMessage } from "../../components/ErrorMessage";
-import { sql } from "../../db";
 
 // GET: Render the admin login fors
 export default createRoute(async (c) => {
@@ -52,6 +51,7 @@ export default createRoute(async (c) => {
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const POST = createRoute(async (c) => {
+  const { sql, logger } = c.var;
   if (!sql) {
     return c.render(
       <ErrorMessage error={new Error("DBに接続できませんでした")} />
@@ -76,7 +76,10 @@ export const POST = createRoute(async (c) => {
     );
   }
 
-  const result = await verifyAdminPasswordUsecase({ sql }, inputPassword);
+  const result = await verifyAdminPasswordUsecase(
+    { sql, logger },
+    inputPassword
+  );
   if (result.isErr()) {
     return c.render(<ErrorMessage error={result.error} />);
   }

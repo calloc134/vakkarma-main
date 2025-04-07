@@ -3,10 +3,10 @@ import { createRoute } from "honox/factory";
 import { formatReadAuthorName } from "../../../../src/conversation/domain/read/ReadAuthorName";
 import { getAllResponsesByThreadEpochIdUsecase } from "../../../../src/conversation/usecases/getAllResponsesByThreadEpochIdUsecase";
 import { formatDate } from "../../../../src/utils/formatDate";
-import { sql } from "../../../db";
 import { convertShiftJis } from "../../../utils/convertShiftJis";
 
 export default createRoute(async (c) => {
+  const { sql, logger } = c.var;
   if (!sql) {
     return convertShiftJis("DBに接続できませんでした");
   }
@@ -21,7 +21,7 @@ export default createRoute(async (c) => {
   }
 
   const responsesResult = await getAllResponsesByThreadEpochIdUsecase(
-    { sql },
+    { sql, logger },
     { threadEpochIdRaw: id }
   );
   if (responsesResult.isErr()) {
