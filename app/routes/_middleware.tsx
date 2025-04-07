@@ -1,22 +1,26 @@
 import { logger } from "hono/logger";
-import { pinoLogger } from "hono-pino";
+import { pinoLogger, type PinoLogger } from "hono-pino";
 import { createRoute } from "honox/factory";
 
 import { csrf } from "../middlewares/csrfMiddleware";
-import { dbInitializeMiddleware } from "../middlewares/dbInitializeMiddleware";
-
-import type { PinoLogger } from "hono-pino";
+import {
+  dbClientMiddlewareConditional,
+  type DbClient,
+} from "../middlewares/dbInitializeMiddleware";
 
 export default createRoute(
   pinoLogger(),
   logger(),
   csrf(),
-  dbInitializeMiddleware()
+  dbClientMiddlewareConditional({
+    envKey: "DATABASE_URL",
+    contextKey: "sql",
+  })
 );
 
-// しょうがないので型定義を拡張
 declare module "hono" {
   interface ContextVariableMap {
     logger: PinoLogger;
+    sql: DbClient;
   }
 }
