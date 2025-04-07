@@ -99,6 +99,14 @@ VALUES(
     '$2b$10$9gxLQMYSDoBdbz/1znmieu1vjhZ2VGzKd21azF112uG45DvQNn0E6'
 )
 ;
+
+/* 新規追加: NGワードリストテーブルの作成 */
+CREATE TABLE ng_words (
+  word TEXT PRIMARY KEY
+);
+-- 新規追加: 初期のNGワードを挿入する例
+INSERT INTO ng_words(word) VALUES ('badword1'), ('badword2');
+
 --migrate:down
 -- 関連するテーブルを削除
 DROP TABLE IF EXISTS responses CASCADE
@@ -107,3 +115,5 @@ DROP TABLE IF EXISTS threads CASCADE
 ;
 DROP TABLE IF EXISTS config CASCADE
 ;
+/* 新規追加: NGワードリストテーブルの削除 */
+DROP TABLE IF EXISTS ng_words;

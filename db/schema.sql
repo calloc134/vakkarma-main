@@ -28,6 +28,15 @@ CREATE TABLE public.config (
 
 
 --
+-- Name: ng_words; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.ng_words (
+    word text NOT NULL
+);
+
+
+--
 -- Name: responses; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -72,6 +81,14 @@ CREATE TABLE public.threads (
 
 ALTER TABLE ONLY public.config
     ADD CONSTRAINT config_pkey PRIMARY KEY (board_name);
+
+
+--
+-- Name: ng_words ng_words_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ng_words
+    ADD CONSTRAINT ng_words_pkey PRIMARY KEY (word);
 
 
 --
