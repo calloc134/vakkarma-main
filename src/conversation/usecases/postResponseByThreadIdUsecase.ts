@@ -2,6 +2,10 @@ import { err, ok } from "neverthrow";
 
 import { getDefaultAuthorNameRepository } from "../../config/repositories/getDefaultAuthorNameRepository";
 import { getMaxContentLengthRepository } from "../../config/repositories/getMaxContentLengthRepository";
+import {
+  createReadThreadId,
+  type ReadThreadId,
+} from "../domain/read/ReadThreadId";
 import { createWriteAuthorName } from "../domain/write/WriteAuthorName";
 import { generateWriteHashId } from "../domain/write/WriteHashId";
 import { createWriteMail, isSage } from "../domain/write/WriteMail";
@@ -31,7 +35,7 @@ export const postResponseByThreadIdUsecase = async (
     responseContentRaw: string;
     ipAddressRaw: string;
   }
-): Promise<Result<undefined, Error>> => {
+): Promise<Result<ReadThreadId, Error>> => {
   const { logger } = vakContext;
 
   logger.info({
@@ -47,15 +51,15 @@ export const postResponseByThreadIdUsecase = async (
     message: "Validating thread ID",
   });
 
-  const threadIdResult = createWriteThreadId(threadIdRaw);
-  if (threadIdResult.isErr()) {
+  const writeThreadIdResult = createWriteThreadId(threadIdRaw);
+  if (writeThreadIdResult.isErr()) {
     logger.error({
       operation: "postResponseByThreadId",
-      error: threadIdResult.error,
+      error: writeThreadIdResult.error,
       threadId: threadIdRaw,
       message: "Invalid thread ID format",
     });
-    return err(threadIdResult.error);
+    return err(writeThreadIdResult.error);
   }
 
   // ユーザ名を生成
@@ -179,7 +183,7 @@ export const postResponseByThreadIdUsecase = async (
 
   const response = await createWriteResponse({
     getThreadId: async () => {
-      return ok(threadIdResult.value.val);
+      return ok(writeThreadIdResult.value.val);
     },
     authorName: authorNameResult.value,
     mail: mailResult.value,
@@ -227,7 +231,7 @@ export const postResponseByThreadIdUsecase = async (
     });
 
     const threadResult = await updateThreadUpdatedAtRepository(vakContext, {
-      threadId: threadIdResult.value,
+      threadId: writeThreadIdResult.value,
       updatedAt: postedAt,
     });
     if (threadResult.isErr()) {
@@ -254,5 +258,11 @@ export const postResponseByThreadIdUsecase = async (
     message: "Successfully created response",
   });
 
-  return ok(undefined);
+  // 便宜上、writeオブジェクトからreadオブジェクトを生成して返す
+  // 多分エラーは出ないのでunwrap
+  const readThreadId = createReadThreadId(
+    writeThreadIdResult.value.val
+  )._unsafeUnwrap();
+
+  return ok(readThreadId);
 };

@@ -15,6 +15,7 @@ import { getThreadIdByThreadEpochIdRepository } from "../repositories/getThreadI
 import { updateThreadUpdatedAtRepository } from "../repositories/updateThreadUpdatedAtRepository";
 
 import type { VakContext } from "../../shared/types/VakContext";
+import type { ReadThreadId } from "../domain/read/ReadThreadId";
 import type { Result } from "neverthrow";
 
 // レスを投稿する際のユースケース
@@ -33,7 +34,7 @@ export const postResponseByThreadEpochIdUsecase = async (
     responseContentRaw: string;
     ipAddressRaw: string;
   }
-): Promise<Result<undefined, Error>> => {
+): Promise<Result<ReadThreadId, Error>> => {
   const { logger } = vakContext;
 
   logger.info({
@@ -291,5 +292,5 @@ export const postResponseByThreadEpochIdUsecase = async (
     message: "Successfully created response",
   });
 
-  return ok(undefined);
+  return ok(readThreadIdResult.value);
 };

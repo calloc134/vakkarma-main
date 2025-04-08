@@ -118,7 +118,6 @@ export default createRoute(async (c) => {
             <label className="block text-gray-700 text-sm font-bold mb-2">
               メールアドレス:
               <input
-                type="email"
                 name="mail"
                 className="border border-gray-400 rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline"
               />
