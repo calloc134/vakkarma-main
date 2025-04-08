@@ -1,6 +1,7 @@
 import { createRoute } from "honox/factory";
 
 import { formatReadAuthorName } from "../../../../src/conversation/domain/read/ReadAuthorName";
+import { isSage } from "../../../../src/conversation/domain/write/WriteMail";
 import { getAllResponsesByThreadIdUsecase } from "../../../../src/conversation/usecases/getAllResponsesByThreadIdUsecase";
 import { formatDate } from "../../../../src/shared/utils/formatDate";
 import { ErrorMessage } from "../../../components/ErrorMessage";
@@ -76,7 +77,11 @@ export default createRoute(async (c) => {
               >
                 <div className="flex flex-wrap items-center gap-2 mb-2">
                   <span className="font-bold">{resp.responseNumber.val}</span>
-                  <span className="text-gray-700">
+                  <span
+                    className={`text-gray-700 ${
+                      isSage(resp.mail) ? "text-violet-600" : ""
+                    }`}
+                  >
                     {formatReadAuthorName(resp.authorName)}
                   </span>
                   <span className="text-gray-500 text-sm">
