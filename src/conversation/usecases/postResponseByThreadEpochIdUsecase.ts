@@ -4,7 +4,7 @@ import { getDefaultAuthorNameRepository } from "../../config/repositories/getDef
 import { getMaxContentLengthRepository } from "../../config/repositories/getMaxContentLengthRepository";
 import { createWriteAuthorName } from "../domain/write/WriteAuthorName";
 import { generateWriteHashId } from "../domain/write/WriteHashId";
-import { createWriteMail } from "../domain/write/WriteMail";
+import { createWriteMail, isSage } from "../domain/write/WriteMail";
 import { generateCurrentPostedAt } from "../domain/write/WritePostedAt";
 import { createWriteResponse } from "../domain/write/WriteResponse";
 import { createWriteResponseContent } from "../domain/write/WriteResponseContent";
@@ -15,6 +15,7 @@ import { getThreadIdByThreadEpochIdRepository } from "../repositories/getThreadI
 import { updateThreadUpdatedAtRepository } from "../repositories/updateThreadUpdatedAtRepository";
 
 import type { VakContext } from "../../shared/types/VakContext";
+import type { Result } from "neverthrow";
 
 // レスを投稿する際のユースケース
 export const postResponseByThreadEpochIdUsecase = async (
@@ -32,7 +33,7 @@ export const postResponseByThreadEpochIdUsecase = async (
     responseContentRaw: string;
     ipAddressRaw: string;
   }
-) => {
+): Promise<Result<undefined, Error>> => {
   const { logger } = vakContext;
 
   logger.info({
@@ -253,24 +254,33 @@ export const postResponseByThreadEpochIdUsecase = async (
   }
 
   // また、スレッドのupdated_atも更新する必要がある
-  logger.debug({
-    operation: "postResponseByThreadEpochId",
-    threadId: writeThreadIdResult.value.val,
-    message: "Updating thread timestamp",
-  });
-
-  const threadResult = await updateThreadUpdatedAtRepository(vakContext, {
-    threadId: writeThreadIdResult.value,
-    updatedAt: postedAt,
-  });
-  if (threadResult.isErr()) {
-    logger.error({
+  // メールが'sage'でない場合のみ
+  if (isSage(mailResult.value)) {
+    logger.debug({
       operation: "postResponseByThreadEpochId",
-      error: threadResult.error,
       threadId: writeThreadIdResult.value.val,
-      message: "Failed to update thread timestamp",
+      message: "Updating thread updated_at timestamp",
     });
-    return err(threadResult.error);
+
+    const threadResult = await updateThreadUpdatedAtRepository(vakContext, {
+      threadId: writeThreadIdResult.value,
+      updatedAt: postedAt,
+    });
+    if (threadResult.isErr()) {
+      logger.error({
+        operation: "postResponseByThreadEpochId",
+        error: threadResult.error,
+        threadId: writeThreadIdResult.value.val,
+        message: "Failed to update thread timestamp",
+      });
+      return err(threadResult.error);
+    }
+
+    logger.debug({
+      operation: "postResponseByThreadEpochId",
+      threadId: writeThreadIdResult.value.val,
+      message: "Successfully updated thread timestamp",
+    });
   }
 
   logger.info({
@@ -278,8 +288,8 @@ export const postResponseByThreadEpochIdUsecase = async (
     threadId: writeThreadIdResult.value.val,
     threadEpochId: threadEpochIdRaw,
     postedAt: postedAt.val,
-    message: "Successfully created response and updated thread",
+    message: "Successfully created response",
   });
 
-  return ok(threadResult.value);
+  return ok(undefined);
 };
