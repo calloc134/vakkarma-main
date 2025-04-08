@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 
-import { createWriteMail } from "./WriteMail";
+import { createWriteMail, isSage } from "./WriteMail";
 
 describe("WriteMail", () => {
   it("有効なメールアドレスで作成できること", () => {
@@ -83,5 +83,36 @@ describe("WriteMail", () => {
         expect(result.error.message).toBe("不正なメールアドレス形式です");
       }
     });
+  });
+
+  it("sageの場合isSageがtrueを返すこと", () => {
+    const mail = createWriteMail("sage");
+    expect(mail.isOk()).toBe(true);
+    if (mail.isOk()) {
+      expect(isSage(mail.value)).toBe(true);
+    }
+  });
+  it("SAGEの場合isSageがtrueを返すこと", () => {
+    const mail = createWriteMail("SAGE");
+    expect(mail.isOk()).toBe(true);
+    if (mail.isOk()) {
+      expect(isSage(mail.value)).toBe(true);
+    }
+  });
+
+  it("空文字列の場合isSageがfalseを返すこと", () => {
+    const mail = createWriteMail("");
+    expect(mail.isOk()).toBe(true);
+    if (mail.isOk()) {
+      expect(isSage(mail.value)).toBe(false);
+    }
+  });
+
+  it("通常のメールアドレスの場合isSageがfalseを返すこと", () => {
+    const mail = createWriteMail("");
+    expect(mail.isOk()).toBe(true);
+    if (mail.isOk()) {
+      expect(isSage(mail.value)).toBe(false);
+    }
   });
 });

@@ -31,3 +31,8 @@ export const createWriteMail = (
   }
   return ok({ _type: "WriteMail", val: value });
 };
+
+// メールアドレスの内容がsageかどうかを判定する関数
+export const isSage = (mail: WriteMail): boolean => {
+  return mail.val.toLowerCase() === "sage";
+};
