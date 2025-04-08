@@ -2,6 +2,8 @@ import { ok, err, type Result } from "neverthrow";
 
 import { ValidationError } from "../../../shared/types/Error";
 
+import type { ReadMail } from "../read/ReadMail";
+
 // メールアドレス
 export type WriteMail = {
   readonly _type: "WriteMail";
@@ -30,4 +32,9 @@ export const createWriteMail = (
     return err(new ValidationError("不正なメールアドレス形式です"));
   }
   return ok({ _type: "WriteMail", val: value });
+};
+
+// メールアドレスの内容がsageかどうかを判定する関数
+export const isSage = (mail: WriteMail | ReadMail): boolean => {
+  return mail.val.toLowerCase() === "sage";
 };

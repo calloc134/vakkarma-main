@@ -2,9 +2,13 @@ import { err, ok } from "neverthrow";
 
 import { getDefaultAuthorNameRepository } from "../../config/repositories/getDefaultAuthorNameRepository";
 import { getMaxContentLengthRepository } from "../../config/repositories/getMaxContentLengthRepository";
+import {
+  createReadThreadId,
+  type ReadThreadId,
+} from "../domain/read/ReadThreadId";
 import { createWriteAuthorName } from "../domain/write/WriteAuthorName";
 import { generateWriteHashId } from "../domain/write/WriteHashId";
-import { createWriteMail } from "../domain/write/WriteMail";
+import { createWriteMail, isSage } from "../domain/write/WriteMail";
 import { generateCurrentPostedAt } from "../domain/write/WritePostedAt";
 import { createWriteResponse } from "../domain/write/WriteResponse";
 import { createWriteResponseContent } from "../domain/write/WriteResponseContent";
@@ -13,6 +17,7 @@ import { createResponseByThreadIdRepository } from "../repositories/createRespon
 import { updateThreadUpdatedAtRepository } from "../repositories/updateThreadUpdatedAtRepository";
 
 import type { VakContext } from "../../shared/types/VakContext";
+import type { Result } from "neverthrow";
 
 // レスを投稿する際のユースケース
 export const postResponseByThreadIdUsecase = async (
@@ -30,7 +35,7 @@ export const postResponseByThreadIdUsecase = async (
     responseContentRaw: string;
     ipAddressRaw: string;
   }
-) => {
+): Promise<Result<ReadThreadId, Error>> => {
   const { logger } = vakContext;
 
   logger.info({
@@ -46,15 +51,15 @@ export const postResponseByThreadIdUsecase = async (
     message: "Validating thread ID",
   });
 
-  const threadIdResult = createWriteThreadId(threadIdRaw);
-  if (threadIdResult.isErr()) {
+  const writeThreadIdResult = createWriteThreadId(threadIdRaw);
+  if (writeThreadIdResult.isErr()) {
     logger.error({
       operation: "postResponseByThreadId",
-      error: threadIdResult.error,
+      error: writeThreadIdResult.error,
       threadId: threadIdRaw,
       message: "Invalid thread ID format",
     });
-    return err(threadIdResult.error);
+    return err(writeThreadIdResult.error);
   }
 
   // ユーザ名を生成
@@ -178,7 +183,7 @@ export const postResponseByThreadIdUsecase = async (
 
   const response = await createWriteResponse({
     getThreadId: async () => {
-      return ok(threadIdResult.value.val);
+      return ok(writeThreadIdResult.value.val);
     },
     authorName: authorNameResult.value,
     mail: mailResult.value,
@@ -217,32 +222,47 @@ export const postResponseByThreadIdUsecase = async (
   }
 
   // また、スレッドのupdated_atも更新する必要がある
-  logger.debug({
-    operation: "postResponseByThreadId",
-    threadId: threadIdRaw,
-    message: "Updating thread updated_at timestamp",
-  });
-
-  const threadResult = await updateThreadUpdatedAtRepository(vakContext, {
-    threadId: threadIdResult.value,
-    updatedAt: postedAt,
-  });
-  if (threadResult.isErr()) {
-    logger.error({
+  // メールが'sage'でない場合のみ
+  if (!isSage(mailResult.value)) {
+    logger.debug({
       operation: "postResponseByThreadId",
-      error: threadResult.error,
       threadId: threadIdRaw,
-      message: "Failed to update thread timestamp",
+      message: "Updating thread updated_at timestamp",
     });
-    return err(threadResult.error);
+
+    const threadResult = await updateThreadUpdatedAtRepository(vakContext, {
+      threadId: writeThreadIdResult.value,
+      updatedAt: postedAt,
+    });
+    if (threadResult.isErr()) {
+      logger.error({
+        operation: "postResponseByThreadId",
+        error: threadResult.error,
+        threadId: threadIdRaw,
+        message: "Failed to update thread timestamp",
+      });
+      return err(threadResult.error);
+    }
+
+    logger.debug({
+      operation: "postResponseByThreadId",
+      threadId: threadIdRaw,
+      message: "Successfully updated thread timestamp",
+    });
   }
 
   logger.info({
     operation: "postResponseByThreadId",
     threadId: threadIdRaw,
     responseId: response.value.id.val,
-    message: "Successfully created response and updated thread",
+    message: "Successfully created response",
   });
 
-  return ok(threadResult.value);
+  // 便宜上、writeオブジェクトからreadオブジェクトを生成して返す
+  // 多分エラーは出ないのでunwrap
+  const readThreadId = createReadThreadId(
+    writeThreadIdResult.value.val
+  )._unsafeUnwrap();
+
+  return ok(readThreadId);
 };
