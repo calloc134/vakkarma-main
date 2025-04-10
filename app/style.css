@@ -1,1 +1,16 @@
 @import "tailwindcss" source("../app");
+
+@font-face {
+  font-family: "aahub";
+  src: url("../fonts/aahub.woff2") format("woff2"),
+    url("../fonts/aahub.woff") format("woff"),
+    url("../fonts/aahub.ttf") format("ttf");
+  font-display: swap;
+}
+
+@layer utilities {
+  .font-aahub {
+    font-family: "aahub";
+    line-height: 18px;
+  }
+}
