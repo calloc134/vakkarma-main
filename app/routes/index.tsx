@@ -98,7 +98,7 @@ export default createRoute(async (c) => {
                         ID: {resp.hashId.val}
                       </span>
                     </div>
-                    <div className="text-gray-800 max-h-52 overflow-y-auto whitespace-pre-wrap">
+                    <div className="text-gray-800 max-h-80 overflow-y-auto whitespace-pre-wrap">
                       <ResponseContentComponent
                         threadId={resp.threadId}
                         responseContent={resp.responseContent}
