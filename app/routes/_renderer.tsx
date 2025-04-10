@@ -28,7 +28,7 @@ export default jsxRenderer(async ({ children }) => {
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
       </head>
       <body>
-        <div className="flex flex-col min-h-screen bg-gray-100 font-aahub">
+        <div className="flex flex-col min-h-screen bg-gray-100 font-aahub-light4">
           <header className="bg-gradient-to-r from-purple-500 to-orange-200 text-white w-full py-4 px-6">
             <div className="container mx-auto">
               <a className="text-3xl font-bold" href="/">
