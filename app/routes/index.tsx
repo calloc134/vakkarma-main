@@ -98,12 +98,12 @@ export default createRoute(async (c) => {
                         ID: {resp.hashId.val}
                       </span>
                     </div>
-                    <p className="text-gray-800">
+                    <div className="text-gray-800 max-h-52 overflow-y-auto whitespace-pre-wrap">
                       <ResponseContentComponent
                         threadId={resp.threadId}
                         responseContent={resp.responseContent}
                       />
-                    </p>
+                    </div>
                   </li>
                 ))}
               </ul>
