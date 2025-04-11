@@ -98,12 +98,12 @@ export default createRoute(async (c) => {
                         ID: {resp.hashId.val}
                       </span>
                     </div>
-                    <p className="text-gray-800">
+                    <div className="text-gray-800 max-h-80 overflow-y-auto whitespace-pre-wrap">
                       <ResponseContentComponent
                         threadId={resp.threadId}
                         responseContent={resp.responseContent}
                       />
-                    </p>
+                    </div>
                   </li>
                 ))}
               </ul>
@@ -114,8 +114,8 @@ export default createRoute(async (c) => {
                   action={`/threads/${threadResp.thread.id.val}/responses`}
                   className="flex flex-col gap-4"
                 >
-                  <div>
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                  <div className="flex flex-col md:flex-row gap-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2 md:w-1/2">
                       名前:
                       <input
                         type="text"
@@ -123,9 +123,7 @@ export default createRoute(async (c) => {
                         className="border border-gray-400 rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline"
                       />
                     </label>
-                  </div>
-                  <div>
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                    <label className="block text-gray-700 text-sm font-bold mb-2 md:w-1/2">
                       メールアドレス:
                       <input
                         name="mail"
@@ -176,8 +174,8 @@ export default createRoute(async (c) => {
               />
             </label>
           </div>
-          <div>
-            <label className="block text-gray-700 text-sm font-bold mb-2">
+          <div className="flex flex-col md:flex-row gap-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2 md:w-1/2">
               名前:
               <input
                 type="text"
@@ -185,12 +183,9 @@ export default createRoute(async (c) => {
                 className="border border-gray-400 rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline"
               />
             </label>
-          </div>
-          <div>
-            <label className="block text-gray-700 text-sm font-bold mb-2">
+            <label className="block text-gray-700 text-sm font-bold mb-2 md:w-1/2">
               メールアドレス:
               <input
-                type="email"
                 name="mail"
                 className="border border-gray-400 rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline"
               />
