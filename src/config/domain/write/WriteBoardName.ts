@@ -16,8 +16,8 @@ export const createWriteBoardName = (
     return err(new ValidationError("ボード名は必須です"));
   }
 
-  if (value.length > 20) {
-    return err(new ValidationError("ボード名は20文字以内で入力してください"));
+  if (value.length > 50) {
+    return err(new ValidationError("ボード名は50文字以内で入力してください"));
   }
   return ok({ _type: "WriteBoardName", val: value });
 };

@@ -20,14 +20,14 @@ describe("WriteBoardName", () => {
     }
   });
 
-  it("20文字を超える場合はエラーになること", () => {
+  it("50文字を超える場合はエラーになること", () => {
     const result = createWriteBoardName(
-      "あいうえおかきくけこさしすせそたちつてとな"
-    ); // 21文字
+      "いろはにほへとちりぬるをわかよたれそつねならむうゐのおくやまけふこえてあさきゆめみしゑひもせす。。。。"
+    ); // 51文字
     expect(result.isErr()).toBe(true);
     if (result.isErr()) {
       expect(result.error.message).toBe(
-        "ボード名は20文字以内で入力してください"
+        "ボード名は50文字以内で入力してください"
       );
     }
   });
