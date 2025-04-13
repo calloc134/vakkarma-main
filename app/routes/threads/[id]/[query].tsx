@@ -3,23 +3,29 @@ import { createRoute } from "honox/factory";
 import { formatReadAuthorName } from "../../../../src/conversation/domain/read/ReadAuthorName";
 import { isSage } from "../../../../src/conversation/domain/write/WriteMail";
 import { getAllResponsesByThreadIdUsecase } from "../../../../src/conversation/usecases/getAllResponsesByThreadIdUsecase";
+import { getLatestResponsesByThreadIdAndCountUsecase } from "../../../../src/conversation/usecases/getLatestResponsesByThreadIdAndCountUsecase";
+import { getResponseByThreadIdAndResNumRangeUsecase } from "../../../../src/conversation/usecases/getResponseByThreadIdAndResNumRangeUsecase";
+import { getResponseByThreadIdAndResNumUsecase } from "../../../../src/conversation/usecases/getResponseByThreadIdAndResNumUsecase";
 import { formatDate } from "../../../../src/shared/utils/formatDate";
 import { ErrorMessage } from "../../../components/ErrorMessage";
 import { ResponseContentComponent } from "../../../components/ResponseContent";
+
+import type { ReadThreadWithResponses } from "../../../../src/conversation/domain/read/ReadThreadWithResponses";
+import type { Result } from "neverthrow";
 
 export default createRoute(async (c) => {
   const { sql, logger } = c.var;
 
   logger.info({
-    operation: "threads/[id]/GET",
+    operation: "threads/[id]/[query]/GET",
     path: c.req.path,
     method: c.req.method,
-    message: "Thread detail page requested",
+    message: "Thread query page requested",
   });
 
   if (!sql) {
     logger.error({
-      operation: "threads/[id]/GET",
+      operation: "threads/[id]/[query]/GET",
       message: "Database connection not available",
     });
     c.status(500);
@@ -29,39 +35,112 @@ export default createRoute(async (c) => {
   }
 
   const id = c.req.param("id");
+  const queryString = c.req.param("query");
 
   logger.debug({
-    operation: "threads/[id]/GET",
+    operation: "threads/[id]/[query]/GET",
     threadId: id,
-    message: "Fetching thread responses",
+    query: queryString,
+    message: "Parsing query string and fetching responses",
   });
 
-  const allResponsesResult = await getAllResponsesByThreadIdUsecase(
-    { sql, logger },
-    { threadIdRaw: id }
-  );
-  if (allResponsesResult.isErr()) {
-    logger.error({
-      operation: "threads/[id]/GET",
-      error: allResponsesResult.error,
+  let responsesResult: Result<ReadThreadWithResponses, Error>;
+
+  // パターン別の処理
+  // 1. l50 - 最新50件
+  if (queryString.startsWith("l") && /^l\d+$/.test(queryString)) {
+    const count = parseInt(queryString.substring(1), 10);
+    logger.debug({
+      operation: "threads/[id]/[query]/GET",
       threadId: id,
+      query: queryString,
+      count,
+      message: "Fetching latest responses",
+    });
+
+    responsesResult = await getLatestResponsesByThreadIdAndCountUsecase(
+      { sql, logger },
+      { threadIdRaw: id, countRaw: count }
+    );
+  }
+  // 2. 数値のみ - 特定のレス番号を取得
+  else if (/^\d+$/.test(queryString)) {
+    const resNum = parseInt(queryString, 10);
+    logger.debug({
+      operation: "threads/[id]/[query]/GET",
+      threadId: id,
+      query: queryString,
+      responseNumber: resNum,
+      message: "Fetching specific response",
+    });
+
+    responsesResult = await getResponseByThreadIdAndResNumUsecase(
+      { sql, logger },
+      { threadIdRaw: id, responseNumberRaw: resNum }
+    );
+  }
+  // 3. 範囲指定 (XX-, -YY, XX-YY)
+  else if (/^\d*-\d*$/.test(queryString)) {
+    const [startStr, endStr] = queryString.split("-");
+    const start = startStr ? parseInt(startStr, 10) : null;
+    const end = endStr ? parseInt(endStr, 10) : null;
+
+    logger.debug({
+      operation: "threads/[id]/[query]/GET",
+      threadId: id,
+      query: queryString,
+      startResponse: start,
+      endResponse: end,
+      message: "Fetching response range",
+    });
+
+    responsesResult = await getResponseByThreadIdAndResNumRangeUsecase(
+      { sql, logger },
+      {
+        threadIdRaw: id,
+        startResponseNumberRaw: start,
+        endResponseNumberRaw: end,
+      }
+    );
+  }
+  // 4. 空文字列またはその他 - 全レスを取得
+  else {
+    logger.debug({
+      operation: "threads/[id]/[query]/GET",
+      threadId: id,
+      query: queryString,
+      message: "Query format not recognized or empty, fetching all responses",
+    });
+
+    responsesResult = await getAllResponsesByThreadIdUsecase(
+      { sql, logger },
+      { threadIdRaw: id }
+    );
+  }
+
+  if (responsesResult.isErr()) {
+    logger.error({
+      operation: "threads/[id]/[query]/GET",
+      error: responsesResult.error,
+      threadId: id,
+      query: queryString,
       message: "Failed to fetch thread responses",
     });
     c.status(404);
-    return c.render(<ErrorMessage error={allResponsesResult.error} />);
+    return c.render(<ErrorMessage error={responsesResult.error} />);
   }
 
   // 最新のレス番号を取得
   const latestResponseNumber =
-    allResponsesResult.value.responses[
-      allResponsesResult.value.responses.length - 1
-    ].responseNumber.val;
+    responsesResult.value.responses[responsesResult.value.responses.length - 1]
+      .responseNumber.val;
 
   logger.debug({
-    operation: "threads/[id]/GET",
+    operation: "threads/[id]/[query]/GET",
     threadId: id,
-    threadTitle: allResponsesResult.value.thread.threadTitle.val,
-    responseCount: allResponsesResult.value.responses.length,
+    query: queryString,
+    threadTitle: responsesResult.value.thread.threadTitle.val,
+    responseCount: responsesResult.value.responses.length,
     message: "Successfully fetched thread responses, rendering page",
   });
 
@@ -70,16 +149,15 @@ export default createRoute(async (c) => {
       <section className="bg-white rounded-lg shadow-md p-6 mb-8">
         <div>
           <h3 className="text-purple-600 font-bold text-xl mb-4">
-            {allResponsesResult.value.thread.threadTitle.val} (
-            {allResponsesResult.value.responses.length})
+            {responsesResult.value.thread.threadTitle.val} (
+            {responsesResult.value.responses.length})
           </h3>
-          {allResponsesResult.value.responses.map((resp) => {
+          {responsesResult.value.responses.map((resp) => {
             return (
               <div
                 key={resp.responseNumber.val}
-                // スレッドIDとレス番号を組み合わせてアンカーとなるIDを生成
                 id={`${resp.threadId.val}-${resp.responseNumber.val}`}
-                className="bg-gray-50 p-4 rounded-md"
+                className="bg-gray-50 p-4 rounded-md mb-2"
               >
                 <div className="flex flex-wrap items-center gap-2 mb-2">
                   <span className="font-bold">{resp.responseNumber.val}</span>
@@ -109,31 +187,32 @@ export default createRoute(async (c) => {
         </div>
         <div className="flex gap-4 mt-2">
           <a
-            href={`/threads/${allResponsesResult.value.thread.threadId.val}`}
+            href={`/threads/${responsesResult.value.thread.threadId.val}`}
             className="text-blue-600 hover:underline"
           >
             全部読む
           </a>
           <a
-            href={`/threads/${allResponsesResult.value.thread.threadId.val}/l50`}
+            href={`/threads/${responsesResult.value.thread.threadId.val}/l50`}
             className="text-blue-600 hover:underline"
           >
             最新50件
           </a>
           <a
-            href={`/threads/${allResponsesResult.value.thread.threadId.val}/1-100`}
+            href={`/threads/${responsesResult.value.thread.threadId.val}/1-100`}
             className="text-blue-600 hover:underline"
           >
             1-100
           </a>
           <a
-            href={`/threads/${allResponsesResult.value.thread.threadId.val}/${latestResponseNumber}-`}
+            href={`/threads/${responsesResult.value.thread.threadId.val}/${latestResponseNumber}-`}
             className="text-blue-600 hover:underline"
           >
             新着レスの表示
           </a>
         </div>
       </section>
+
       <section className="bg-white rounded-lg shadow-md p-6">
         <h2 className="text-2xl font-semibold mb-4">返信する</h2>
         <form

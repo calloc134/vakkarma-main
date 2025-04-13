@@ -22,13 +22,14 @@ import {
 
 import type { ValidationError } from "../../shared/types/Error";
 import type { VakContext } from "../../shared/types/VakContext";
+import type { WriteResponseNumber } from "../domain/write/WriteResponseNumber";
 import type { WriteThreadId } from "../domain/write/WriteThreadId";
 
-// 指定されたスレッドのすべてのレスポンスを取得するだけのリポジトリ
+// 指定されたスレッドの最新のレスポンスをcount個取得するリポジトリ
 // 便宜上、スレッドタイトルも取得する
-export const getAllResponsesByThreadIdRepository = async (
+export const getLatestResponsesByThreadIdAndCountRepository = async (
   { sql, logger }: VakContext,
-  { threadId }: { threadId: WriteThreadId }
+  { threadId, count }: { threadId: WriteThreadId; count: WriteResponseNumber }
 ): Promise<
   Result<
     ReadThreadWithResponses,
@@ -36,51 +37,72 @@ export const getAllResponsesByThreadIdRepository = async (
   >
 > => {
   logger.debug({
-    operation: "getAllResponsesByThreadId",
+    operation: "getLatestResponseByThreadId",
     threadId: threadId.val,
-    message: "Fetching all responses for thread",
+    count: count.val,
+    message: "Fetching latest responses for thread",
   });
 
   try {
-    const result = await sql<
+    // unionなのでSafeQLの推論する型と異なる場合がある
+    // やむを得ないがasで型を指定する
+    const result = (await sql<
       {
-        id: string;
-        thread_id: string;
-        response_number: number;
-        author_name: string;
-        mail: string;
-        posted_at: Date;
-        response_content: string;
-        hash_id: string;
+        id: string | null;
+        thread_id: string | null;
+        response_number: number | null;
+        author_name: string | null;
+        mail: string | null;
+        posted_at: Date | null;
+        response_content: string | null;
+        hash_id: string | null;
         trip: string | null;
-        title: string;
+        title: string | null;
       }[]
     >`
-          SELECT
-              r.id,
-              r.thread_id,
-              r.response_number,
-              r.author_name,
-              r.mail,
-              r.posted_at,
-              r.response_content,
-              r.hash_id,
-              r.trip,
-              t.title
-          FROM
-              responses as r
-              JOIN
-                  threads as t
-              ON  r.thread_id = t.id
-          WHERE
-              r.thread_id = ${threadId.val}::uuid
-          ORDER BY
-              r.response_number
-      `;
+    (
+        SELECT
+            r.id, r.thread_id, r.response_number, r.author_name, r.mail,
+            r.posted_at, r.response_content, r.hash_id, r.trip, t.title
+        FROM
+            responses as r
+            JOIN threads as t ON r.thread_id = t.id
+        WHERE
+            r.thread_id = ${threadId.val}::uuid
+        ORDER BY
+            r.response_number DESC
+        LIMIT ${count.val}
+    )
+    UNION
+    (
+        SELECT
+            r.id, r.thread_id, r.response_number, r.author_name, r.mail,
+            r.posted_at, r.response_content, r.hash_id, r.trip, t.title
+        FROM
+            responses as r
+            JOIN threads as t ON r.thread_id = t.id
+        WHERE
+            r.thread_id = ${threadId.val}::uuid
+            AND r.response_number = 1
+    )
+    ORDER BY
+        response_number ASC -- または DESC
+`) as {
+      id: string;
+      thread_id: string;
+      response_number: number;
+      author_name: string;
+      mail: string;
+      posted_at: Date;
+      response_content: string;
+      hash_id: string;
+      trip: string | null;
+      title: string;
+    }[];
 
     if (!result || result.length === 0) {
       logger.info({
-        operation: "getAllResponsesByThreadId",
+        operation: "getLatestResponseByThreadId",
         threadId: threadId.val,
         message: "No responses found for thread",
       });
@@ -88,10 +110,10 @@ export const getAllResponsesByThreadIdRepository = async (
     }
 
     logger.debug({
-      operation: "getAllResponsesByThreadId",
+      operation: "getLatestResponseByThreadId",
       threadId: threadId.val,
       responseCount: result.length,
-      message: "Successfully retrieved responses from database",
+      message: "Successfully retrieved latest responses from database",
     });
 
     // 詰め替え部分
@@ -99,7 +121,7 @@ export const getAllResponsesByThreadIdRepository = async (
     const threadIdResult = createReadThreadId(result[0].thread_id);
     if (threadIdResult.isErr()) {
       logger.error({
-        operation: "getAllResponsesByThreadId",
+        operation: "getLatestResponseByThreadId",
         threadId: threadId.val,
         error: threadIdResult.error,
         message: "Failed to create thread ID from database result",
@@ -107,8 +129,13 @@ export const getAllResponsesByThreadIdRepository = async (
       return err(threadIdResult.error);
     }
 
+    // レスポンスを番号順（昇順）に並べ直す
+    const sortedResponses = [...result].sort(
+      (a, b) => a.response_number - b.response_number
+    );
+
     const responses: ReadResponse[] = [];
-    for (const response of result) {
+    for (const response of sortedResponses) {
       const combinedResult = Result.combine([
         createReadResponseId(response.id),
         createReadResponseNumber(response.response_number),
@@ -121,7 +148,7 @@ export const getAllResponsesByThreadIdRepository = async (
 
       if (combinedResult.isErr()) {
         logger.error({
-          operation: "getAllResponsesByThreadId",
+          operation: "getLatestResponseByThreadId",
           threadId: threadId.val,
           responseId: response.id,
           error: combinedResult.error,
@@ -153,7 +180,7 @@ export const getAllResponsesByThreadIdRepository = async (
 
       if (responseResult.isErr()) {
         logger.error({
-          operation: "getAllResponsesByThreadId",
+          operation: "getLatestResponseByThreadId",
           threadId: threadId.val,
           responseId: responseId.val,
           error: responseResult.error,
@@ -170,7 +197,7 @@ export const getAllResponsesByThreadIdRepository = async (
     const threadTitleResult = createReadThreadTitle(firstResponse.title);
     if (threadTitleResult.isErr()) {
       logger.error({
-        operation: "getAllResponsesByThreadId",
+        operation: "getLatestResponseByThreadId",
         threadId: threadId.val,
         threadTitle: firstResponse.title,
         error: threadTitleResult.error,
@@ -187,7 +214,7 @@ export const getAllResponsesByThreadIdRepository = async (
 
     if (threadWithResponsesResult.isErr()) {
       logger.error({
-        operation: "getAllResponsesByThreadId",
+        operation: "getLatestResponseByThreadId",
         threadId: threadId.val,
         error: threadWithResponsesResult.error,
         message: "Failed to create thread with responses object",
@@ -196,25 +223,25 @@ export const getAllResponsesByThreadIdRepository = async (
     }
 
     logger.info({
-      operation: "getAllResponsesByThreadId",
+      operation: "getLatestResponseByThreadId",
       threadId: threadId.val,
       threadTitle: threadTitleResult.value.val,
       responseCount: responses.length,
-      message: "Successfully fetched and processed all responses for thread",
+      message: "Successfully fetched and processed latest responses for thread",
     });
 
     return ok(threadWithResponsesResult.value);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
     logger.error({
-      operation: "getAllResponsesByThreadId",
+      operation: "getLatestResponseByThreadId",
       threadId: threadId.val,
       error,
       message: `Database error while fetching responses: ${message}`,
     });
     return err(
       new DatabaseError(
-        `レスポンス取得中にエラーが発生しました: ${message}`,
+        `最新レスポンス取得中にエラーが発生しました: ${message}`,
         error
       )
     );

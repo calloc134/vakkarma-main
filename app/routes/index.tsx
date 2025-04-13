@@ -148,12 +148,26 @@ export default createRoute(async (c) => {
                     書き込む
                   </button>
                 </form>
-                <a
-                  href={`/threads/${threadResp.thread.id.val}`}
-                  className="text-blue-600 hover:underline"
-                >
-                  全部読む
-                </a>
+                <div className="flex gap-4 mt-2">
+                  <a
+                    href={`/threads/${threadResp.thread.id.val}`}
+                    className="text-blue-600 hover:underline"
+                  >
+                    全部読む
+                  </a>
+                  <a
+                    href={`/threads/${threadResp.thread.id.val}/l50`}
+                    className="text-blue-600 hover:underline"
+                  >
+                    最新50件
+                  </a>
+                  <a
+                    href={`/threads/${threadResp.thread.id.val}/1-100`}
+                    className="text-blue-600 hover:underline"
+                  >
+                    1-100
+                  </a>
+                </div>
               </div>
             </li>
           ))}

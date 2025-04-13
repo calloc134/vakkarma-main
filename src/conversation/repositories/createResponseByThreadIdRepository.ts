@@ -1,8 +1,12 @@
 import { ok, err } from "neverthrow";
 
 import { DatabaseError } from "../../shared/types/Error";
+import { createReadResponseNumber } from "../domain/read/ReadResponseNumber";
+import { createReadThreadId } from "../domain/read/ReadThreadId";
 
 import type { VakContext } from "../../shared/types/VakContext";
+import type { ReadResponseNumber } from "../domain/read/ReadResponseNumber";
+import type { ReadThreadId } from "../domain/read/ReadThreadId";
 import type { WriteResponse } from "../domain/write/WriteResponse";
 import type { Result } from "neverthrow";
 
@@ -10,7 +14,15 @@ import type { Result } from "neverthrow";
 export const createResponseByThreadIdRepository = async (
   { sql, logger }: VakContext,
   response: WriteResponse
-): Promise<Result<undefined, DatabaseError>> => {
+): Promise<
+  Result<
+    {
+      threadId: ReadThreadId;
+      responseNumber: ReadResponseNumber;
+    },
+    DatabaseError
+  >
+> => {
   const trip =
     response.authorName.val._type === "some"
       ? response.authorName.val.trip
@@ -24,7 +36,9 @@ export const createResponseByThreadIdRepository = async (
   });
 
   try {
-    const result = await sql<{ id: string }[]>`
+    const result = await sql<
+      { id: string; response_number: number; thread_id: string }[]
+    >`
         INSERT INTO responses(
             id,
             thread_id,
@@ -51,7 +65,7 @@ export const createResponseByThreadIdRepository = async (
             ${response.responseContent.val},
             ${response.hashId.val},
             ${trip}
-        ) RETURNING id
+        ) RETURNING id, response_number, thread_id
       `;
 
     if (!result || result.length !== 1) {
@@ -71,7 +85,34 @@ export const createResponseByThreadIdRepository = async (
       message: "Response created successfully",
     });
 
-    return ok(undefined);
+    const threadIdResult = createReadThreadId(result[0].thread_id);
+    if (threadIdResult.isErr()) {
+      logger.error({
+        operation: "createResponseByThreadId",
+        error: threadIdResult.error,
+        responseId: response.id.val,
+        threadId: response.threadId.val,
+        message: "Failed to create thread ID from database result",
+      });
+      return err(threadIdResult.error);
+    }
+    const responseNumber = createReadResponseNumber(result[0].response_number);
+
+    if (responseNumber.isErr()) {
+      logger.error({
+        operation: "createResponseByThreadId",
+        error: responseNumber.error,
+        responseId: response.id.val,
+        threadId: response.threadId.val,
+        message: "Failed to create response number from database result",
+      });
+      return err(responseNumber.error);
+    }
+
+    return ok({
+      threadId: threadIdResult.value,
+      responseNumber: responseNumber.value,
+    });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
     logger.error({

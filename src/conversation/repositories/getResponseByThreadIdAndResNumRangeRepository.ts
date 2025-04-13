@@ -22,13 +22,22 @@ import {
 
 import type { ValidationError } from "../../shared/types/Error";
 import type { VakContext } from "../../shared/types/VakContext";
+import type { WriteResponseNumber } from "../domain/write/WriteResponseNumber";
 import type { WriteThreadId } from "../domain/write/WriteThreadId";
 
-// 指定されたスレッドのすべてのレスポンスを取得するだけのリポジトリ
+// 指定されたスレッドの指定された範囲のレスポンスを取得するリポジトリ
 // 便宜上、スレッドタイトルも取得する
-export const getAllResponsesByThreadIdRepository = async (
+export const getResponseByThreadIdAndResNumRangeRepository = async (
   { sql, logger }: VakContext,
-  { threadId }: { threadId: WriteThreadId }
+  {
+    threadId,
+    startResponseNumber,
+    endResponseNumber,
+  }: {
+    threadId: WriteThreadId;
+    startResponseNumber: WriteResponseNumber | null;
+    endResponseNumber: WriteResponseNumber | null;
+  }
 ): Promise<
   Result<
     ReadThreadWithResponses,
@@ -36,10 +45,18 @@ export const getAllResponsesByThreadIdRepository = async (
   >
 > => {
   logger.debug({
-    operation: "getAllResponsesByThreadId",
+    operation: "getResponseByThreadIdAndResNumRange",
     threadId: threadId.val,
-    message: "Fetching all responses for thread",
+    startResponseNumber: startResponseNumber?.val ?? "NULL",
+    endResponseNumber: endResponseNumber?.val ?? "NULL",
+    message: "Fetching responses in range for thread",
   });
+
+  // とりあえずnullならダミー
+  const startNumRaw = startResponseNumber?.val ?? 0;
+  const endNumRaw = endResponseNumber?.val ?? 10000000;
+  const isStartNumNull = startResponseNumber === null;
+  const isEndNumNull = endResponseNumber === null;
 
   try {
     const result = await sql<
@@ -73,22 +90,36 @@ export const getAllResponsesByThreadIdRepository = async (
                   threads as t
               ON  r.thread_id = t.id
           WHERE
-              r.thread_id = ${threadId.val}::uuid
+            r.thread_id = ${threadId.val}::uuid
+            AND (
+                -- 範囲指定された場合
+                (
+                    (${isStartNumNull} OR r.response_number >= ${startNumRaw})
+                    AND
+                    (${isEndNumNull} OR r.response_number <= ${endNumRaw})
+                )
+                -- または、レス番号1のレスポンスを取得する条件
+                OR r.response_number = 1
+            )
           ORDER BY
               r.response_number
       `;
 
     if (!result || result.length === 0) {
       logger.info({
-        operation: "getAllResponsesByThreadId",
+        operation: "getResponseByThreadIdAndResNumRange",
         threadId: threadId.val,
-        message: "No responses found for thread",
+        startResponseNumber: startResponseNumber?.val ?? "NULL",
+        endResponseNumber: endResponseNumber?.val ?? "NULL",
+        message: "No responses found for thread within specified range",
       });
-      return err(new DataNotFoundError("レスポンスの取得に失敗しました"));
+      return err(
+        new DataNotFoundError("指定された範囲のレスポンスの取得に失敗しました")
+      );
     }
 
     logger.debug({
-      operation: "getAllResponsesByThreadId",
+      operation: "getResponseByThreadIdAndResNumRange",
       threadId: threadId.val,
       responseCount: result.length,
       message: "Successfully retrieved responses from database",
@@ -99,7 +130,7 @@ export const getAllResponsesByThreadIdRepository = async (
     const threadIdResult = createReadThreadId(result[0].thread_id);
     if (threadIdResult.isErr()) {
       logger.error({
-        operation: "getAllResponsesByThreadId",
+        operation: "getResponseByThreadIdAndResNumRange",
         threadId: threadId.val,
         error: threadIdResult.error,
         message: "Failed to create thread ID from database result",
@@ -121,7 +152,7 @@ export const getAllResponsesByThreadIdRepository = async (
 
       if (combinedResult.isErr()) {
         logger.error({
-          operation: "getAllResponsesByThreadId",
+          operation: "getResponseByThreadIdAndResNumRange",
           threadId: threadId.val,
           responseId: response.id,
           error: combinedResult.error,
@@ -153,7 +184,7 @@ export const getAllResponsesByThreadIdRepository = async (
 
       if (responseResult.isErr()) {
         logger.error({
-          operation: "getAllResponsesByThreadId",
+          operation: "getResponseByThreadIdAndResNumRange",
           threadId: threadId.val,
           responseId: responseId.val,
           error: responseResult.error,
@@ -170,7 +201,7 @@ export const getAllResponsesByThreadIdRepository = async (
     const threadTitleResult = createReadThreadTitle(firstResponse.title);
     if (threadTitleResult.isErr()) {
       logger.error({
-        operation: "getAllResponsesByThreadId",
+        operation: "getResponseByThreadIdAndResNumRange",
         threadId: threadId.val,
         threadTitle: firstResponse.title,
         error: threadTitleResult.error,
@@ -187,7 +218,7 @@ export const getAllResponsesByThreadIdRepository = async (
 
     if (threadWithResponsesResult.isErr()) {
       logger.error({
-        operation: "getAllResponsesByThreadId",
+        operation: "getResponseByThreadIdAndResNumRange",
         threadId: threadId.val,
         error: threadWithResponsesResult.error,
         message: "Failed to create thread with responses object",
@@ -196,19 +227,24 @@ export const getAllResponsesByThreadIdRepository = async (
     }
 
     logger.info({
-      operation: "getAllResponsesByThreadId",
+      operation: "getResponseByThreadIdAndResNumRange",
       threadId: threadId.val,
       threadTitle: threadTitleResult.value.val,
       responseCount: responses.length,
-      message: "Successfully fetched and processed all responses for thread",
+      startResponseNumber: startResponseNumber?.val ?? "NULL",
+      endResponseNumber: endResponseNumber?.val ?? "NULL",
+      message:
+        "Successfully fetched and processed responses in range for thread",
     });
 
     return ok(threadWithResponsesResult.value);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
     logger.error({
-      operation: "getAllResponsesByThreadId",
+      operation: "getResponseByThreadIdAndResNumRange",
       threadId: threadId.val,
+      startResponseNumber: startResponseNumber?.val ?? "NULL",
+      endResponseNumber: endResponseNumber?.val ?? "NULL",
       error,
       message: `Database error while fetching responses: ${message}`,
     });
