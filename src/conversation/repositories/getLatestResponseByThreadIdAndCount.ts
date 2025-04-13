@@ -27,7 +27,7 @@ import type { WriteThreadId } from "../domain/write/WriteThreadId";
 
 // 指定されたスレッドの最新のレスポンスをcount個取得するリポジトリ
 // 便宜上、スレッドタイトルも取得する
-export const getLatestResponseByThreadIdRepository = async (
+export const getLatestResponseByThreadIdAndCountRepository = async (
   { sql, logger }: VakContext,
   { threadId, count }: { threadId: WriteThreadId; count: WriteResponseNumber }
 ): Promise<
