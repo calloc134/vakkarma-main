@@ -108,34 +108,11 @@ export const getResponseByThreadIdAndResNumRepository = async (
 
     // 詰め替え部分
     const response = result[0];
-    const threadIdResult = createReadThreadId(response.thread_id);
-    if (threadIdResult.isErr()) {
-      logger.error({
-        operation: "getResponseByThreadIdAndResNum",
-        threadId: threadId.val,
-        responseNumber: responseNumber.val,
-        error: threadIdResult.error,
-        message: "Failed to create thread ID from database result",
-      });
-      return err(threadIdResult.error);
-    }
-
-    // スレッドタイトルの取得とバリデーション
-    const threadTitleResult = createReadThreadTitle(response.title);
-    if (threadTitleResult.isErr()) {
-      logger.error({
-        operation: "getResponseByThreadIdAndResNum",
-        threadId: threadId.val,
-        responseNumber: responseNumber.val,
-        threadTitle: response.title,
-        error: threadTitleResult.error,
-        message: "Failed to create thread title from database result",
-      });
-      return err(threadTitleResult.error);
-    }
 
     // レスポンスの各フィールドのバリデーションと作成
     const combinedResult = Result.combine([
+      createReadThreadId(response.thread_id),
+      createReadThreadTitle(response.title),
       createReadResponseId(response.id),
       createReadResponseNumber(response.response_number),
       createReadAuthorName(response.author_name, response.trip),
@@ -158,6 +135,8 @@ export const getResponseByThreadIdAndResNumRepository = async (
     }
 
     const [
+      readThreadId,
+      threadTitle,
       responseId,
       readResponseNumber,
       authorName,
@@ -169,7 +148,7 @@ export const getResponseByThreadIdAndResNumRepository = async (
 
     const responseResult = createReadResponse({
       responseId,
-      threadId: threadIdResult.value,
+      threadId: readThreadId,
       responseNumber: readResponseNumber,
       authorName,
       mail,
@@ -194,8 +173,8 @@ export const getResponseByThreadIdAndResNumRepository = async (
     const responses: ReadResponse[] = [responseResult.value];
 
     const threadWithResponsesResult = createReadThreadWithResponses(
-      threadIdResult.value,
-      threadTitleResult.value,
+      readThreadId,
+      threadTitle,
       responses
     );
 
@@ -214,7 +193,7 @@ export const getResponseByThreadIdAndResNumRepository = async (
       operation: "getResponseByThreadIdAndResNum",
       threadId: threadId.val,
       responseNumber: responseNumber.val,
-      threadTitle: threadTitleResult.value.val,
+      threadTitle: threadTitle.val,
       message:
         "Successfully fetched and processed specific response for thread",
     });
