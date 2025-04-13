@@ -52,6 +52,12 @@ export const getResponseByThreadIdAndResNumRangeRepository = async (
     message: "Fetching responses in range for thread",
   });
 
+  // とりあえずnullならダミー
+  const startNumRaw = startResponseNumber?.val ?? 0;
+  const endNumRaw = endResponseNumber?.val ?? 10000000;
+  const isStartNumNull = startResponseNumber === null;
+  const isEndNumNull = endResponseNumber === null;
+
   try {
     const result = await sql<
       {
@@ -85,20 +91,10 @@ export const getResponseByThreadIdAndResNumRangeRepository = async (
               ON  r.thread_id = t.id
           WHERE
               r.thread_id = ${threadId.val}::uuid
-              AND
-              -- startResponseNumber が NULL であるか、または response_number が startResponseNumber 以上である
-              (${
-                startResponseNumber === null ? null : startResponseNumber.val
-              } IS NULL OR r.response_number >= ${
-      startResponseNumber === null ? null : startResponseNumber.val
-    })
-              AND
-              -- endResponseNumber が NULL であるか、または response_number が endResponseNumber 以下である
-              (${
-                endResponseNumber === null ? null : endResponseNumber.val
-              } IS NULL OR r.response_number <= ${
-      endResponseNumber === null ? null : endResponseNumber.val
-    })
+              -- 開始番号の条件: isStartNumNullがtrueか、そうでないなら response_number >= startNumRaw
+              AND (${isStartNumNull} OR r.response_number >= ${startNumRaw})
+              -- 終了番号の条件: isEndNumNullがtrueか、そうでないなら response_number <= endNumRaw
+              AND (${isEndNumNull} OR r.response_number <= ${endNumRaw})
           ORDER BY
               r.response_number
       `;
