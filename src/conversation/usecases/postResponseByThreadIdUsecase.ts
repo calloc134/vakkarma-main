@@ -2,10 +2,7 @@ import { err, ok } from "neverthrow";
 
 import { getDefaultAuthorNameRepository } from "../../config/repositories/getDefaultAuthorNameRepository";
 import { getMaxContentLengthRepository } from "../../config/repositories/getMaxContentLengthRepository";
-import {
-  createReadThreadId,
-  type ReadThreadId,
-} from "../domain/read/ReadThreadId";
+import { type ReadThreadId } from "../domain/read/ReadThreadId";
 import { createWriteAuthorName } from "../domain/write/WriteAuthorName";
 import { generateWriteHashId } from "../domain/write/WriteHashId";
 import { createWriteMail, isSage } from "../domain/write/WriteMail";
@@ -17,6 +14,7 @@ import { createResponseByThreadIdRepository } from "../repositories/createRespon
 import { updateThreadUpdatedAtRepository } from "../repositories/updateThreadUpdatedAtRepository";
 
 import type { VakContext } from "../../shared/types/VakContext";
+import type { ReadResponseNumber } from "../domain/read/ReadResponseNumber";
 import type { Result } from "neverthrow";
 
 // レスを投稿する際のユースケース
@@ -35,7 +33,15 @@ export const postResponseByThreadIdUsecase = async (
     responseContentRaw: string;
     ipAddressRaw: string;
   }
-): Promise<Result<ReadThreadId, Error>> => {
+): Promise<
+  Result<
+    {
+      threadId: ReadThreadId;
+      responseNumber: ReadResponseNumber;
+    },
+    Error
+  >
+> => {
   const { logger } = vakContext;
 
   logger.info({
@@ -221,6 +227,8 @@ export const postResponseByThreadIdUsecase = async (
     return err(responseResult.error);
   }
 
+  const { threadId, responseNumber } = responseResult.value;
+
   // また、スレッドのupdated_atも更新する必要がある
   // メールが'sage'でない場合のみ
   if (!isSage(mailResult.value)) {
@@ -258,11 +266,8 @@ export const postResponseByThreadIdUsecase = async (
     message: "Successfully created response",
   });
 
-  // 便宜上、writeオブジェクトからreadオブジェクトを生成して返す
-  // 多分エラーは出ないのでunwrap
-  const readThreadId = createReadThreadId(
-    writeThreadIdResult.value.val
-  )._unsafeUnwrap();
-
-  return ok(readThreadId);
+  return ok({
+    threadId,
+    responseNumber,
+  });
 };
