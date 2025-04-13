@@ -51,6 +51,12 @@ export default createRoute(async (c) => {
     return c.render(<ErrorMessage error={allResponsesResult.error} />);
   }
 
+  // 最新のレス番号を取得
+  const latestResponseNumber =
+    allResponsesResult.value.responses[
+      allResponsesResult.value.responses.length - 1
+    ].responseNumber.val;
+
   logger.debug({
     operation: "threads/[id]/GET",
     threadId: id,
@@ -100,6 +106,32 @@ export default createRoute(async (c) => {
               </div>
             );
           })}
+        </div>
+        <div className="flex gap-4 mt-2">
+          <a
+            href={`/threads/${allResponsesResult.value.thread.threadId.val}`}
+            className="text-blue-600 hover:underline"
+          >
+            全部読む
+          </a>
+          <a
+            href={`/threads/${allResponsesResult.value.thread.threadId.val}/l50`}
+            className="text-blue-600 hover:underline"
+          >
+            最新50件
+          </a>
+          <a
+            href={`/threads/${allResponsesResult.value.thread.threadId.val}/1-100`}
+            className="text-blue-600 hover:underline"
+          >
+            1-100
+          </a>
+          <a
+            href={`/threads/${allResponsesResult.value.thread.threadId.val}/${latestResponseNumber}-`}
+            className="text-blue-600 hover:underline"
+          >
+            新着レスの表示
+          </a>
         </div>
       </section>
       <section className="bg-white rounded-lg shadow-md p-6">
