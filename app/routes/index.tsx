@@ -48,9 +48,9 @@ export default createRoute(async (c) => {
   return c.render(
     <main className="container mx-auto flex-grow py-8 px-4">
       <section className="bg-white rounded-lg shadow-md p-6 mb-8">
-        <ul className="flex flex-col gap-2">
+        <ul className="flex flex-wrap gap-4">
           {threadTop30.map((thread, index) => (
-            <li key={thread.id.val} className="">
+            <li key={thread.id.val} className="flex-none">
               <a
                 className="text-purple-600 underline"
                 href={`/threads/${thread.id.val}`}
