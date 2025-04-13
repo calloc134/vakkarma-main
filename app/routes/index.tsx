@@ -53,7 +53,7 @@ export default createRoute(async (c) => {
             <li key={thread.id.val} className="flex-none">
               <a
                 className="text-purple-600 underline"
-                href={`/threads/${thread.id.val}`}
+                href={`/threads/${thread.id.val}/l50`}
               >
                 {index + 1}: {thread.title.val} ({thread.countResponse})
               </a>
