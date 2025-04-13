@@ -90,11 +90,17 @@ export const getResponseByThreadIdAndResNumRangeRepository = async (
                   threads as t
               ON  r.thread_id = t.id
           WHERE
-              r.thread_id = ${threadId.val}::uuid
-              -- 開始番号の条件: isStartNumNullがtrueか、そうでないなら response_number >= startNumRaw
-              AND (${isStartNumNull} OR r.response_number >= ${startNumRaw})
-              -- 終了番号の条件: isEndNumNullがtrueか、そうでないなら response_number <= endNumRaw
-              AND (${isEndNumNull} OR r.response_number <= ${endNumRaw})
+            r.thread_id = ${threadId.val}::uuid
+            AND (
+                -- 範囲指定された場合
+                (
+                    (${isStartNumNull} OR r.response_number >= ${startNumRaw})
+                    AND
+                    (${isEndNumNull} OR r.response_number <= ${endNumRaw})
+                )
+                -- または、レス番号1のレスポンスを取得する条件
+                OR r.response_number = 1
+            )
           ORDER BY
               r.response_number
       `;
