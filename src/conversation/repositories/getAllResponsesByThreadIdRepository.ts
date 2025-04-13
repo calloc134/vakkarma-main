@@ -95,6 +95,7 @@ export const getAllResponsesByThreadIdRepository = async (
     });
 
     // 詰め替え部分
+    // すべての投稿でスレッドIDは共通なので、最初のレスポンスから取得
     const threadIdResult = createReadThreadId(result[0].thread_id);
     if (threadIdResult.isErr()) {
       logger.error({
