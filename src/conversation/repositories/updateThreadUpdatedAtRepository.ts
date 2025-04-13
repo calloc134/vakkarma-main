@@ -1,10 +1,12 @@
 import { ok, err } from "neverthrow";
 
 import { DatabaseError } from "../../shared/types/Error";
+import { createReadThreadId } from "../domain/read/ReadThreadId";
+import { type WriteThreadId } from "../domain/write/WriteThreadId";
 
 import type { VakContext } from "../../shared/types/VakContext";
+import type { ReadThreadId } from "../domain/read/ReadThreadId";
 import type { WritePostedAt } from "../domain/write/WritePostedAt";
-import type { WriteThreadId } from "../domain/write/WriteThreadId";
 import type { Result } from "neverthrow";
 
 // スレッドのupdated_atを更新するリポジトリ
@@ -13,7 +15,7 @@ import type { Result } from "neverthrow";
 export const updateThreadUpdatedAtRepository = async (
   { sql, logger }: VakContext,
   { threadId, updatedAt }: { threadId: WriteThreadId; updatedAt: WritePostedAt }
-): Promise<Result<WriteThreadId, DatabaseError>> => {
+): Promise<Result<ReadThreadId, DatabaseError>> => {
   logger.debug({
     operation: "updateThreadUpdatedAt",
     threadId: threadId.val,
@@ -47,7 +49,17 @@ export const updateThreadUpdatedAtRepository = async (
       message: "Thread timestamp updated successfully",
     });
 
-    return ok(threadId);
+    const readThreadIdResult = createReadThreadId(result[0].id);
+    if (readThreadIdResult.isErr()) {
+      logger.error({
+        operation: "updateThreadUpdatedAt",
+        threadId: threadId.val,
+        message: "Failed to create WriteThreadId from database response",
+      });
+      return err(readThreadIdResult.error);
+    }
+
+    return ok(readThreadIdResult.value);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
     logger.error({
