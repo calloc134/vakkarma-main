@@ -95,9 +95,9 @@ export const POST = createRoute(async (c) => {
     message: "Response created successfully, redirecting to thread page",
   });
 
-  const { threadId, responseNumber } = responseResult.value;
+  const { threadId } = responseResult.value;
 
-  return c.redirect(`/threads/${threadId.val}/${responseNumber.val}-`, 303);
+  return c.redirect(`/threads/${threadId.val}/l10`, 303);
 });
 
 export default createRoute((c) => {
