@@ -48,6 +48,9 @@ export default createRoute(async (c) => {
   return c.render(
     <main className="container mx-auto flex-grow py-8 px-4">
       <section className="bg-white rounded-lg shadow-md p-6 mb-8">
+        <div className="mb-4">
+          <h2 className="text-xl font-semibold">人気スレッド</h2>
+        </div>
         <ul className="flex flex-wrap gap-4">
           {threadTop30.map((thread, index) => (
             <li key={thread.id.val} className="flex-none">
@@ -60,6 +63,11 @@ export default createRoute(async (c) => {
             </li>
           ))}
         </ul>
+        <div className="mt-4">
+          <a href="/subback.html" className="text-blue-600 hover:underline">
+            全スレッド一覧
+          </a>
+        </div>
       </section>
 
       <section className="mb-8">
