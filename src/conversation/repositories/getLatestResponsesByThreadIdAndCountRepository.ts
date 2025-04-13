@@ -44,42 +44,61 @@ export const getLatestResponsesByThreadIdAndCountRepository = async (
   });
 
   try {
-    const result = await sql<
+    // unionなのでSafeQLの推論する型と異なる場合がある
+    // やむを得ないがasで型を指定する
+    const result = (await sql<
       {
-        id: string;
-        thread_id: string;
-        response_number: number;
-        author_name: string;
-        mail: string;
-        posted_at: Date;
-        response_content: string;
-        hash_id: string;
+        id: string | null;
+        thread_id: string | null;
+        response_number: number | null;
+        author_name: string | null;
+        mail: string | null;
+        posted_at: Date | null;
+        response_content: string | null;
+        hash_id: string | null;
         trip: string | null;
-        title: string;
+        title: string | null;
       }[]
     >`
-          SELECT
-              r.id,
-              r.thread_id,
-              r.response_number,
-              r.author_name,
-              r.mail,
-              r.posted_at,
-              r.response_content,
-              r.hash_id,
-              r.trip,
-              t.title
-          FROM
-              responses as r
-              JOIN
-                  threads as t
-              ON  r.thread_id = t.id
-          WHERE
-              r.thread_id = ${threadId.val}::uuid
-          ORDER BY
-              r.response_number DESC
-          LIMIT ${count.val}
-      `;
+    (
+        SELECT
+            r.id, r.thread_id, r.response_number, r.author_name, r.mail,
+            r.posted_at, r.response_content, r.hash_id, r.trip, t.title
+        FROM
+            responses as r
+            JOIN threads as t ON r.thread_id = t.id
+        WHERE
+            r.thread_id = ${threadId.val}::uuid
+        ORDER BY
+            r.response_number DESC
+        LIMIT ${count.val}
+    )
+    UNION
+    (
+        SELECT
+            r.id, r.thread_id, r.response_number, r.author_name, r.mail,
+            r.posted_at, r.response_content, r.hash_id, r.trip, t.title
+        FROM
+            responses as r
+            JOIN threads as t ON r.thread_id = t.id
+        WHERE
+            r.thread_id = ${threadId.val}::uuid
+            AND r.response_number = 1
+    )
+    ORDER BY
+        response_number ASC -- または DESC
+`) as {
+      id: string;
+      thread_id: string;
+      response_number: number;
+      author_name: string;
+      mail: string;
+      posted_at: Date;
+      response_content: string;
+      hash_id: string;
+      trip: string | null;
+      title: string;
+    }[];
 
     if (!result || result.length === 0) {
       logger.info({
