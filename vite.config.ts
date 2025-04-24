@@ -11,7 +11,7 @@ export default defineConfig(({ mode }) => {
       build: {
         manifest: true,
         rollupOptions: {
-          input: ["./app/style.css"],
+          input: ["./app/style.css", "./app/client.ts"],
         },
       },
       plugins: [tailwindcss()],
