@@ -47,8 +47,18 @@ export default function FormEnhance() {
     }
     console.log("FormEnhance attached to form:", form); // Log the form it attached to
 
-    // Input validation
+    // Input validation and button state handling
     const handleSubmit = (e: SubmitEvent) => {
+      const submitButton = form.querySelector(
+        'button[type="submit"]'
+      ) as HTMLButtonElement | null;
+
+      // Disable button and change style on submit attempt
+      if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.classList.add("opacity-50", "cursor-not-allowed");
+      }
+
       const mailInput = form.querySelector(
         'input[name="mail"]'
       ) as HTMLInputElement | null;
@@ -66,8 +76,14 @@ export default function FormEnhance() {
             sageと空欄はOKです。
             `
           );
+          // Re-enable button if validation fails
+          if (submitButton) {
+            submitButton.disabled = false;
+            submitButton.classList.remove("opacity-50", "cursor-not-allowed");
+          }
         }
       }
+      // If submission is not prevented, the button remains disabled until page reload/navigation
     };
 
     // Ctrl+Enter to submit
