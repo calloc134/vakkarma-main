@@ -29,6 +29,9 @@ importers:
       neverthrow:
         specifier: ^8.2.0
         version: 8.2.0
+      notyf:
+        specifier: ^3.10.0
+        version: 3.10.0
       pino:
         specifier: ^9.6.0
         version: 9.6.0
@@ -2409,6 +2412,9 @@ packages:
   normalize-path@3.0.0:
     resolution: {integrity: sha512-6eZs5Ls3WtCisHWp9S2GUy8dqkpGi4BVSz3GaqiE6ezub0512ESztXUwUB6C6IKbQkY2Pnb/mD4WYojCRwcwLA==}
     engines: {node: '>=0.10.0'}
+
+  notyf@3.10.0:
+    resolution: {integrity: sha512-Mtnp+0qiZxgrH+TzVlzhWyZceHdAZ/UWK0/ju9U0HQeDpap1mZ8cC7H5wSI5mwgni6yeAjaxsTw0sbMK+aSuHw==}
 
   npmlog@5.0.1:
     resolution: {integrity: sha512-AqZtDUWOMKs1G/8lwylVjrdYgqA4d9nu8hc+0gzRxlDb1I10+FHBGMXs6aiQHFdCUUlqH99MUMuLfzWDNDtfxw==}
@@ -5457,6 +5463,8 @@ snapshots:
       abbrev: 2.0.0
 
   normalize-path@3.0.0: {}
+
+  notyf@3.10.0: {}
 
   npmlog@5.0.1:
     dependencies:

@@ -21,6 +21,7 @@
     "honox": "^0.1.38",
     "iconv-lite": "^0.6.3",
     "neverthrow": "^8.2.0",
+    "notyf": "^3.10.0",
     "pino": "^9.6.0",
     "postgres": "^3.4.5",
     "uuidv7": "^1.0.2"

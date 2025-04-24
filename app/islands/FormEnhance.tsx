@@ -1,9 +1,27 @@
 import { useEffect, useRef } from "hono/jsx"; // Import useRef
+import { Notyf } from "notyf"; // Import Notyf
+import "notyf/notyf.min.css"; // Import Notyf CSS
 
 export default function FormEnhance() {
   const placeholderRef = useRef<HTMLSpanElement>(null); // Create a ref for the span
 
   useEffect(() => {
+    // Instantiate Notyf
+    const notyf = new Notyf({
+      duration: 5000, // 5秒間表示
+      position: {
+        x: "right",
+        y: "top",
+      },
+      types: [
+        {
+          type: "error",
+          background: "indianred",
+          dismissible: true,
+        },
+      ],
+    });
+
     console.log("FormEnhance mounted");
     // Find the closest parent form element
     const findParentForm = (
@@ -42,8 +60,11 @@ export default function FormEnhance() {
         if (mail && !sageOrEmailOrEmpty.test(mail)) {
           // Validate only if not empty
           e.preventDefault();
-          alert(
-            "メールアドレスの形式が正しくないか、「sage」のみを許可します。空欄も許可されます。"
+          // Replace alert with notyf.error
+          notyf.error(
+            `メールアドレスの形式が正しくありません。<br>
+            sageと空欄はOKです。
+            `
           );
         }
       }
