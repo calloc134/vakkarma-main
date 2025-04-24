@@ -18,7 +18,7 @@
     "encoding-japanese": "^2.2.0",
     "hono": "^4.7.4",
     "hono-pino": "^0.8.0",
-    "honox": "^0.1.38",
+    "honox": "^0.1.40",
     "iconv-lite": "^0.6.3",
     "neverthrow": "^8.2.0",
     "notyf": "^3.10.0",
