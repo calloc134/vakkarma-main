@@ -1,5 +1,5 @@
 import { jsxRenderer, useRequestContext } from "hono/jsx-renderer";
-import { Link } from "honox/server";
+import { Link, Script } from "honox/server";
 
 import { getBoardConfigUsecase } from "../../src/config/usecases/getBoardConfigUsecase";
 import { ErrorMessage } from "../components/ErrorMessage";
@@ -25,6 +25,7 @@ export default jsxRenderer(async ({ children }) => {
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>{configResult.value.boardName.val}</title>
         <Link href="/app/style.css" rel="stylesheet" />
+        <Script src="/app/client.ts" />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
       </head>
       <body>

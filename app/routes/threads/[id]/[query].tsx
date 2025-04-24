@@ -9,6 +9,7 @@ import { getResponseByThreadIdAndResNumUsecase } from "../../../../src/conversat
 import { formatDate } from "../../../../src/shared/utils/formatDate";
 import { ErrorMessage } from "../../../components/ErrorMessage";
 import { ResponseContentComponent } from "../../../components/ResponseContent";
+import FormEnhance from "../../../islands/FormEnhance";
 
 import type { ReadThreadWithResponses } from "../../../../src/conversation/domain/read/ReadThreadWithResponses";
 import type { Result } from "neverthrow";
@@ -253,6 +254,8 @@ export default createRoute(async (c) => {
           >
             書き込む
           </button>
+          {/* Add the FormEnhance island */}
+          <FormEnhance />
         </form>
       </section>
     </main>

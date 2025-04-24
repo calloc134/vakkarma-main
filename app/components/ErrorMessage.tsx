@@ -1,3 +1,5 @@
+import ErrorRedirect from "../islands/ErrorRedirect"; // Import the island
+
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const ErrorMessage = ({ error }: { error: Error }) => {
   return (
@@ -10,6 +12,8 @@ export const ErrorMessage = ({ error }: { error: Error }) => {
       >
         戻る
       </a>
+      {/* Add the ErrorRedirect island */}
+      <ErrorRedirect />
     </div>
   );
 };

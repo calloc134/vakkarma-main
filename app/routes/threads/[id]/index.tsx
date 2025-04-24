@@ -6,6 +6,7 @@ import { getAllResponsesByThreadIdUsecase } from "../../../../src/conversation/u
 import { formatDate } from "../../../../src/shared/utils/formatDate";
 import { ErrorMessage } from "../../../components/ErrorMessage";
 import { ResponseContentComponent } from "../../../components/ResponseContent";
+import FormEnhance from "../../../islands/FormEnhance";
 
 export default createRoute(async (c) => {
   const { sql, logger } = c.var;
@@ -174,6 +175,8 @@ export default createRoute(async (c) => {
           >
             書き込む
           </button>
+          {/* Add the FormEnhance island */}
+          <FormEnhance />
         </form>
       </section>
     </main>
