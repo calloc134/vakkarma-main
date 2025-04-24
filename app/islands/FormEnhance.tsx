@@ -1,6 +1,8 @@
-import { useEffect } from "hono/jsx";
+import { useEffect, useRef } from "hono/jsx"; // Import useRef
 
 export default function FormEnhance() {
+  const placeholderRef = useRef<HTMLSpanElement>(null); // Create a ref for the span
+
   useEffect(() => {
     console.log("FormEnhance mounted");
     // Find the closest parent form element
@@ -17,16 +19,15 @@ export default function FormEnhance() {
       return null;
     };
 
-    // Use a unique identifier or a more robust way if multiple forms exist without islands
-    // For this example, we assume the island is placed directly within the form it targets
-    // or we can traverse up to find the parent form.
-    // A simple approach: use a placeholder element to find the form.
-    const placeholder = document.getElementById("form-enhance-placeholder");
-    const form = placeholder
-      ? findParentForm(placeholder)
-      : document.querySelector("form"); // Fallback, might not be specific enough
+    // Use the ref to get the specific placeholder element for this instance
+    const placeholder = placeholderRef.current;
+    const form = placeholder ? findParentForm(placeholder) : null; // Find form relative to this specific placeholder
 
-    if (!form) return;
+    if (!form) {
+      console.warn("FormEnhance could not find parent form."); // Add a warning if form not found
+      return;
+    }
+    console.log("FormEnhance attached to form:", form); // Log the form it attached to
 
     // Input validation
     const handleSubmit = (e: SubmitEvent) => {
@@ -65,18 +66,16 @@ export default function FormEnhance() {
     };
 
     form.addEventListener("submit", handleSubmit);
-    // Add keydown listener to the form itself or document if needed more broadly
     form.addEventListener("keydown", handleKeyDown);
 
     // Cleanup function
     return () => {
+      console.log("FormEnhance cleanup for form:", form); // Log cleanup
       form.removeEventListener("submit", handleSubmit);
       form.removeEventListener("keydown", handleKeyDown);
     };
-  }, []);
+  }, []); // Dependency array remains empty, runs once on mount
 
-  // Add a placeholder element to help locate the form
-  return (
-    <span id="form-enhance-placeholder" style={{ display: "none" }}></span>
-  );
+  // Attach the ref to the placeholder element. Remove the ID as it's no longer needed for lookup.
+  return <span ref={placeholderRef} style={{ display: "none" }}></span>;
 }
