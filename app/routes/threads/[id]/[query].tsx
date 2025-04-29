@@ -145,7 +145,7 @@ export default createRoute(async (c) => {
 
   return c.render(
     <main className="container mx-auto flex-grow py-8 px-4">
-      <ResponseList responses={responsesResult.value.responses} />
+      <ResponseList threadWithResponses={responsesResult.value} />
       <PaginationLinks base={`/threads/${id}`} latest={latestResponseNumber} />
       <ResponseForm action={`/threads/${id}/responses`} />
     </main>

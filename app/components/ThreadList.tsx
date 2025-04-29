@@ -1,10 +1,8 @@
-import type { ReadThreadSummary } from "../../src/conversation/domain/read/ReadThreadSummary";
+import type { ReadThread } from "../../src/conversation/domain/read/ReadThread";
 import type { FC } from "hono/jsx";
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export const ThreadList: FC<{ threads: ReadThreadSummary[] }> = ({
-  threads,
-}) => (
+export const ThreadList: FC<{ threads: ReadThread[] }> = ({ threads }) => (
   <ul className="flex flex-col gap-2">
     {threads.map((thread, index) => (
       <li key={thread.id.val}>

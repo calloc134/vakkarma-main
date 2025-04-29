@@ -73,7 +73,7 @@ export default createRoute(async (c) => {
         <h3 className="text-purple-600 font-bold text-xl mb-4">
           {threadTitle} ({responses.length})
         </h3>
-        <ResponseList responses={responses} />
+        <ResponseList threadWithResponses={allResponsesResult.value} />
       </section>
 
       <PaginationLinks base={`/threads/${id}`} latest={latestResponseNumber} />
