@@ -5,7 +5,9 @@ import { isSage } from "../../src/conversation/domain/write/WriteMail";
 import { getTopPageUsecase } from "../../src/conversation/usecases/getTopPageUsecase";
 import { formatDate } from "../../src/shared/utils/formatDate";
 import { ErrorMessage } from "../components/ErrorMessage";
+import { NewThreadForm } from "../components/NewThreadForm";
 import { ResponseContentComponent } from "../components/ResponseContent";
+import { ThreadList } from "../components/ThreadList";
 import FormEnhance from "../islands/FormEnhance";
 
 export default createRoute(async (c) => {
@@ -52,23 +54,12 @@ export default createRoute(async (c) => {
         <div className="mb-4">
           <h2 className="text-xl font-semibold">人気スレッド</h2>
         </div>
-        <ul className="flex flex-wrap gap-4">
-          {threadTop30.map((thread, index) => (
-            <li key={thread.id.val} className="flex-none">
-              <a
-                className="text-purple-600 underline"
-                href={`/threads/${thread.id.val}/l50`}
-              >
-                {index + 1}: {thread.title.val} ({thread.countResponse})
-              </a>
-            </li>
-          ))}
-        </ul>
         <div className="mt-4">
           <a href="/subback.html" className="text-blue-600 hover:underline">
             全スレッド一覧
           </a>
         </div>
+        <ThreadList threads={threadTop30} />
       </section>
 
       <section className="mb-8">
@@ -185,57 +176,7 @@ export default createRoute(async (c) => {
         </ul>
       </section>
 
-      <section className="bg-white rounded-lg shadow-md p-6">
-        <h2 className="text-2xl font-semibold mb-4">新規スレッド作成</h2>
-        <form method="post" action="/threads" className="flex flex-col gap-2">
-          <div>
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-              スレッドタイトル:
-              <input
-                type="text"
-                name="title"
-                required
-                className="border border-gray-400 rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline"
-              />
-            </label>
-          </div>
-          <div className="flex flex-col md:flex-row gap-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2 md:w-1/2">
-              名前:
-              <input
-                type="text"
-                name="name"
-                className="border border-gray-400 rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline"
-              />
-            </label>
-            <label className="block text-gray-700 text-sm font-bold mb-2 md:w-1/2">
-              メールアドレス:
-              <input
-                name="mail"
-                className="border border-gray-400 rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline"
-              />
-            </label>
-          </div>
-          <div>
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-              本文:
-              <textarea
-                name="content"
-                required
-                className="border border-gray-400 rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline h-32"
-              ></textarea>
-            </label>
-          </div>
-          <button
-            type="submit"
-            className="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-          >
-            新規スレッド作成
-          </button>
-          {/* Add the FormEnhance island */}
-          <FormEnhance />
-        </form>
-      </section>
+      <NewThreadForm action="/threads" />
     </main>
   );
 });
