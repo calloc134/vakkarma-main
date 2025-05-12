@@ -88,6 +88,12 @@ export default function FormEnhance() {
 
     // Ctrl+Enter to submit
     const handleKeyDown = (e: KeyboardEvent) => {
+      const submitButton = form.querySelector(
+        'button[type="submit"]'
+      ) as HTMLButtonElement | null;
+      if (submitButton?.disabled) {
+        return;
+      }
       // Check if the event target is inside the form
       if (form.contains(e.target as Node) && e.ctrlKey && e.key === "Enter") {
         // Allow submission even if the focus is on textarea or input
