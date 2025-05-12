@@ -33,7 +33,9 @@ export default createRoute(async (c) => {
   const title = responsesResult.value.thread.threadTitle.val;
   let text = "";
   for (const resp of responsesResult.value.responses) {
-    const formattedDate = formatDate(resp.postedAt.val);
+    const formattedDate = formatDate(resp.postedAt.val, {
+      acceptLanguage: c.req.header("Accept-Language") ?? undefined,
+    });
     const formattedUserName = formatReadAuthorName(resp.authorName);
 
     text += `${formattedUserName}<>${resp.mail.val}<>${formattedDate} ID:${

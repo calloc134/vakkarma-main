@@ -170,7 +170,10 @@ export default createRoute(async (c) => {
                     {formatReadAuthorName(resp.authorName)}
                   </span>
                   <span className="text-gray-500 text-sm">
-                    {formatDate(resp.postedAt.val)}
+                    {formatDate(resp.postedAt.val, {
+                      acceptLanguage:
+                        c.req.header("Accept-Language") ?? undefined,
+                    })}
                   </span>
                   <span className="text-gray-500 text-sm">
                     ID: {resp.hashId.val}

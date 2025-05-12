@@ -1,22 +1,29 @@
-const padZero = (num: number, len: number = 2): string => {
-  return String(num).padStart(len, "0");
-};
+import { ja, enUS } from "date-fns/locale";
+import { formatInTimeZone } from "date-fns-tz";
 
-// 日時の形式を整えて文字列にする関数
-export function formatDate(date: Date): string {
-  // 2025/02/23(日) 08:41:28.90 など
-  const year = date.getFullYear();
-  const month = padZero(date.getMonth() + 1); // 2桁表示
-  const day = padZero(date.getDate()); // 2桁表示
-  const hour = padZero(date.getHours()); // 2桁表示
-  const minute = padZero(date.getMinutes()); // 2桁表示
-  const second = padZero(date.getSeconds()); // 2桁表示
-  const millisecond = padZero(date.getMilliseconds(), 3); //3桁
-  const getWeekday = (date: Date) => {
-    const weekdays = ["日", "月", "火", "水", "木", "金", "土"];
-    return weekdays[date.getDay()];
-  };
-  return `${year}/${month}/${day}(${getWeekday(
-    date
-  )}) ${hour}:${minute}:${second}.${millisecond.substring(0, 2)}`; //ミリ秒も最初から二桁で表示
+import type { Locale } from "date-fns";
+
+// モジュールロード時に実行環境のタイムゾーンをキャッシュ
+const defaultTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+// Accept-Language ヘッダから言語を判定し、標準的な IANA タイムゾーンを推定
+function inferTimeZone(code: string): string {
+  if (code.startsWith("ja")) return "Asia/Tokyo";
+  if (code.startsWith("en-us")) return "America/New_York";
+  if (code.startsWith("en-gb")) return "Europe/London";
+  return defaultTimeZone;
+}
+
+/**
+ * Accept-Language ヘッダを参照し、対応するロケール／タイムゾーンで日付をフォーマット
+ */
+export function formatDate(
+  date: Date,
+  options?: { acceptLanguage?: string }
+): string {
+  const lang = options?.acceptLanguage?.split(",")[0].toLowerCase() || "";
+  const tz = inferTimeZone(lang);
+  const locale: Locale = lang.startsWith("ja") ? ja : enUS;
+  // 一度の呼び出しで yyyy/MM/dd(E) HH:mm:ss.SS (タイムゾーン) を埋め込む
+  const pattern = `yyyy/MM/dd(E) HH:mm:ss.SS '(${tz})'`;
+  return formatInTimeZone(date, tz, pattern, { locale });
 }
