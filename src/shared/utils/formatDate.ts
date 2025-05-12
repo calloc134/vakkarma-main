@@ -1,22 +1,46 @@
-const padZero = (num: number, len: number = 2): string => {
-  return String(num).padStart(len, "0");
-};
+import { ja, enUS } from "date-fns/locale";
+import { formatInTimeZone } from "date-fns-tz";
 
-// 日時の形式を整えて文字列にする関数
-export function formatDate(date: Date): string {
-  // 2025/02/23(日) 08:41:28.90 など
-  const year = date.getFullYear();
-  const month = padZero(date.getMonth() + 1); // 2桁表示
-  const day = padZero(date.getDate()); // 2桁表示
-  const hour = padZero(date.getHours()); // 2桁表示
-  const minute = padZero(date.getMinutes()); // 2桁表示
-  const second = padZero(date.getSeconds()); // 2桁表示
-  const millisecond = padZero(date.getMilliseconds(), 3); //3桁
-  const getWeekday = (date: Date) => {
-    const weekdays = ["日", "月", "火", "水", "木", "金", "土"];
-    return weekdays[date.getDay()];
-  };
-  return `${year}/${month}/${day}(${getWeekday(
-    date
-  )}) ${hour}:${minute}:${second}.${millisecond.substring(0, 2)}`; //ミリ秒も最初から二桁で表示
+import type { Locale } from "date-fns";
+
+// Accept-Language ヘッダから簡易的にタイムゾーンを推定
+/**
+ * Accept-Language ヘッダから言語を判定し、標準的な IANA タイムゾーンを推定
+ */
+function inferTimeZone(code: string): string {
+  if (code.startsWith("ja")) return "Asia/Tokyo";
+  if (code.startsWith("en-us")) return "America/New_York";
+  if (code.startsWith("en-gb")) return "Europe/London";
+  // その他は実行環境のタイムゾーン
+  return Intl.DateTimeFormat().resolvedOptions().timeZone;
+}
+
+// Accept-Language ヘッダとタイムゾーン対応した日付フォーマット
+/**
+ * Accept-Language ヘッダから言語を判定し、標準的な IANA タイムゾーンを推定してフォーマット
+ */
+export function formatDate(
+  date: Date,
+  options?: { acceptLanguage?: string }
+): string {
+  // 曜日マップ
+  const weekdays = ["日", "月", "火", "水", "木", "金", "土"];
+  // ロケール選択
+  const lang = options?.acceptLanguage?.split(",")[0].toLowerCase() || "";
+  const locale: Locale = lang.startsWith("ja") ? ja : enUS;
+  // タイムゾーン推定
+
+  const tz = inferTimeZone(lang);
+  // yyyy/MM/dd HH:mm:ss.SS までフォーマット
+  const formatted = formatInTimeZone(date, tz, "yyyy/MM/dd HH:mm:ss.SS", {
+    locale,
+  });
+  // フォーマット結果に曜日挿入: formatted例 "2025/02/23 08:41:28.90"
+  const [ymd, hmss] = formatted.split(" ");
+  // タイムゾーン考慮後の週日取得
+  const zonedDate = new Date(
+    formatInTimeZone(date, tz, "yyyy-MM-dd'T'HH:mm:ssXXX")
+  );
+  const dow = weekdays[zonedDate.getDay()];
+  return `${ymd}(${dow}) ${hmss} (${tz})`;
 }
