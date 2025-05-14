@@ -151,7 +151,7 @@ export default createRoute(async (c) => {
         <div>
           <h3 className="text-purple-600 font-bold text-xl mb-4">
             {responsesResult.value.thread.threadTitle.val} (
-            {responsesResult.value.thread.responseCount}件)
+            {responsesResult.value.thread.responseCount})
           </h3>
           {responsesResult.value.responses.map((resp) => {
             return (
