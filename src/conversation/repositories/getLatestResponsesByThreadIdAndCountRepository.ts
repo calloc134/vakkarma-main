@@ -78,7 +78,7 @@ export const getLatestResponsesByThreadIdAndCountRepository = async (
         ORDER BY r.response_number DESC
         LIMIT ${count.val}
       )
-      UNION ALL
+      UNION
       (
         SELECT
           r.id, r.thread_id, r.response_number, r.author_name, r.mail,
