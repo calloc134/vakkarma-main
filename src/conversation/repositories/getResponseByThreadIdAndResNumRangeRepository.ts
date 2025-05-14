@@ -71,39 +71,36 @@ export const getResponseByThreadIdAndResNumRangeRepository = async (
         hash_id: string;
         trip: string | null;
         title: string;
+        total_count: number | null;
       }[]
     >`
-          SELECT
-              r.id,
-              r.thread_id,
-              r.response_number,
-              r.author_name,
-              r.mail,
-              r.posted_at,
-              r.response_content,
-              r.hash_id,
-              r.trip,
-              t.title
-          FROM
-              responses as r
-              JOIN
-                  threads as t
-              ON  r.thread_id = t.id
-          WHERE
-            r.thread_id = ${threadId.val}::uuid
-            AND (
-                -- 範囲指定された場合
-                (
-                    (${isStartNumNull} OR r.response_number >= ${startNumRaw})
-                    AND
-                    (${isEndNumNull} OR r.response_number <= ${endNumRaw})
-                )
-                -- または、レス番号1のレスポンスを取得する条件
-                OR r.response_number = 1
-            )
-          ORDER BY
-              r.response_number
-      `;
+    WITH resp_count AS (
+      SELECT thread_id, COUNT(*)::int AS total_count
+      FROM responses
+      WHERE thread_id = ${threadId.val}::uuid
+      GROUP BY thread_id
+    ),
+    selected AS (
+      SELECT
+        r.id, r.thread_id, r.response_number, r.author_name, r.mail,
+        r.posted_at, r.response_content, r.hash_id, r.trip, t.title
+      FROM responses AS r
+      JOIN threads AS t ON r.thread_id = t.id
+      WHERE
+        r.thread_id = ${threadId.val}::uuid
+        AND (
+          (${isStartNumNull} OR r.response_number >= ${startNumRaw})
+          AND (${isEndNumNull} OR r.response_number <= ${endNumRaw})
+        )
+        OR r.response_number = 1
+      ORDER BY r.response_number
+    )
+    SELECT
+      s.*,
+      rc.total_count
+    FROM selected AS s
+    JOIN resp_count AS rc ON rc.thread_id = s.thread_id
+    `;
 
     if (!result || result.length === 0) {
       logger.info({
@@ -211,11 +208,23 @@ export const getResponseByThreadIdAndResNumRangeRepository = async (
     }
 
     const threadTitle = threadTitleResult.value;
-    // 全レス件数を取得
-    const countRows = await sql<{ total_count: string }[]>`
-      SELECT COUNT(*) AS total_count FROM responses WHERE thread_id = ${threadId.val}::uuid
-    `;
-    const totalCount = parseInt(countRows[0]?.total_count ?? "0", 10);
+    // 全レス件数は CTE で取得済み
+    if (!result[0].total_count) {
+      logger.error({
+        operation: "getResponseByThreadIdAndResNumRange",
+        threadId: threadId.val,
+        startResponseNumber: startResponseNumber?.val ?? "NULL",
+        endResponseNumber: endResponseNumber?.val ?? "NULL",
+        error: new DataNotFoundError(
+          "スレッドの全レス件数が取得できませんでした"
+        ),
+        message: "Failed to retrieve total response count for thread",
+      });
+      return err(
+        new DataNotFoundError("スレッドの全レス件数が取得できませんでした")
+      );
+    }
+    const totalCount = result[0].total_count;
 
     const threadWithResponsesResult = createReadThreadWithResponses(
       threadIdResult.value,
