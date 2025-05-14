@@ -54,37 +54,29 @@ export const getAllResponsesByThreadEpochIdRepository = async (
         hash_id: string;
         trip: string | null;
         title: string;
-        total_count: number | null;
       }[]
     >`
-    WITH resp_count AS (
-      SELECT thread_id, COUNT(*)::int AS total_count 
-      FROM responses
-      WHERE thread_id IN (
-        SELECT id FROM threads WHERE epoch_id = ${threadEpochId.val}
-      )
-      GROUP BY thread_id
-    )
-    SELECT
-      r.id,
-      r.thread_id,
-      r.response_number,
-      r.author_name,
-      r.mail,
-      r.posted_at,
-      r.response_content,
-      r.hash_id,
-      r.trip,
-      t.title,
-      rc.total_count
-    FROM responses AS r
-    JOIN threads AS t
-      ON r.thread_id = t.id
-    JOIN resp_count AS rc
-      ON rc.thread_id = r.thread_id
-    WHERE t.epoch_id = ${threadEpochId.val}
-    ORDER BY r.response_number
-    `;
+          SELECT
+              r.id,
+              r.thread_id,
+              r.response_number,
+              r.author_name,
+              r.mail,
+              r.posted_at,
+              r.response_content,
+              r.hash_id,
+              r.trip,
+              t.title
+          FROM
+              responses as r
+              JOIN
+                  threads as t
+              ON  r.thread_id = t.id
+          WHERE
+            t.epoch_id = ${threadEpochId.val}
+          ORDER BY
+              r.response_number
+      `;
 
     if (!result || result.length === 0) {
       logger.info({
@@ -189,24 +181,9 @@ export const getAllResponsesByThreadEpochIdRepository = async (
       return err(threadTitleResult.error);
     }
 
-    const threadTitle = threadTitleResult.value;
-    if (!result[0].total_count) {
-      logger.error({
-        operation: "getAllResponsesByThreadEpochId",
-        threadEpochId: threadEpochId.val,
-        threadId: threadId.val,
-        message: "Total count is null",
-      });
-      return err(
-        new DataNotFoundError("スレッドのレスポンス数が取得できませんでした")
-      );
-    }
-    const totalCount = result[0].total_count;
-
     const threadWithResponsesResult = createReadThreadWithResponses(
       threadId,
-      threadTitle,
-      totalCount,
+      threadTitleResult.value,
       responses
     );
 
