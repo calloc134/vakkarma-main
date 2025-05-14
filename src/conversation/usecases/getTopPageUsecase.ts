@@ -101,7 +101,7 @@ export const getTopPageUsecase = async (vakContext: VakContext) => {
       responses: ReadResponse[];
     }
   > = new Map();
-  for (const thread of threadsTop30Result.value) {
+  for (const thread of threadsTop30Result.value.slice(0, 10)) {
     threadResponseMap.set(thread.id.val, {
       thread,
       responses: [],
