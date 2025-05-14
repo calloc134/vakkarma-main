@@ -85,7 +85,7 @@ export const getLatestResponsesByThreadIdAndCountUsecase = async (
     threadId: threadIdRaw,
     threadTitle: responsesWithThreadResult.value.thread.threadTitle.val,
     count: countRaw,
-    responseCount: responsesWithThreadResult.value.thread.responseCount,
+    responseCount: responsesWithThreadResult.value.responses.length,
     message: "Successfully retrieved latest thread responses",
   });
 
