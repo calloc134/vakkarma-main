@@ -54,29 +54,35 @@ export const getAllResponsesByThreadIdRepository = async (
         hash_id: string;
         trip: string | null;
         title: string;
+        total_count: number | null;
       }[]
     >`
-          SELECT
-              r.id,
-              r.thread_id,
-              r.response_number,
-              r.author_name,
-              r.mail,
-              r.posted_at,
-              r.response_content,
-              r.hash_id,
-              r.trip,
-              t.title
-          FROM
-              responses as r
-              JOIN
-                  threads as t
-              ON  r.thread_id = t.id
-          WHERE
-              r.thread_id = ${threadId.val}::uuid
-          ORDER BY
-              r.response_number
-      `;
+      WITH resp_count AS (
+        SELECT thread_id, COUNT(*)::int AS total_count
+        FROM responses
+        WHERE thread_id = ${threadId.val}::uuid
+        GROUP BY thread_id
+      )
+      SELECT
+        r.id,
+        r.thread_id,
+        r.response_number,
+        r.author_name,
+        r.mail,
+        r.posted_at,
+        r.response_content,
+        r.hash_id,
+        r.trip,
+        t.title,
+        rc.total_count
+      FROM responses AS r
+      JOIN threads AS t
+        ON r.thread_id = t.id
+      JOIN resp_count AS rc
+        ON rc.thread_id = r.thread_id
+      WHERE r.thread_id = ${threadId.val}::uuid
+      ORDER BY r.response_number
+    `;
 
     if (!result || result.length === 0) {
       logger.info({
@@ -179,9 +185,21 @@ export const getAllResponsesByThreadIdRepository = async (
       return err(threadTitleResult.error);
     }
 
+    if (!result[0].total_count) {
+      logger.error({
+        operation: "getAllResponsesByThreadId",
+        threadId: threadId.val,
+        message: "Total count not found in database result",
+      });
+      return err(
+        new DataNotFoundError("スレッドのレスポンス件数が取得できませんでした")
+      );
+    }
+    const totalCount = result[0].total_count; // from resp_count
     const threadWithResponsesResult = createReadThreadWithResponses(
       threadIdResult.value,
       threadTitleResult.value,
+      totalCount,
       responses
     );
 
