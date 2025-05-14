@@ -172,9 +172,16 @@ export const getResponseByThreadIdAndResNumRepository = async (
     // 単一のレスポンスを配列として渡す
     const responses: ReadResponse[] = [responseResult.value];
 
+    // 全レス件数を取得
+    const countRows = await sql<{ total_count: string }[]>`
+      SELECT COUNT(*) AS total_count FROM responses WHERE thread_id = ${readThreadId.val}::uuid
+    `;
+    const totalCount = parseInt(countRows[0]?.total_count ?? "0", 10);
+
     const threadWithResponsesResult = createReadThreadWithResponses(
       readThreadId,
       threadTitle,
+      totalCount,
       responses
     );
 

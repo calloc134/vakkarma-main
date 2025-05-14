@@ -125,7 +125,7 @@ export const getResponseByThreadIdAndResNumRangeUsecase = async (
     operation: "getResponseByThreadIdAndResNumRange",
     threadId: threadIdRaw,
     threadTitle: responsesWithThreadResult.value.thread.threadTitle.val,
-    responseCount: responsesWithThreadResult.value.responses.length,
+    responseCount: responsesWithThreadResult.value.thread.responseCount,
     startResponseNumber: startResponseNumberRaw,
     endResponseNumber: endResponseNumberRaw,
     message: "Successfully retrieved thread responses in range",

@@ -141,7 +141,7 @@ export default createRoute(async (c) => {
     threadId: id,
     query: queryString,
     threadTitle: responsesResult.value.thread.threadTitle.val,
-    responseCount: responsesResult.value.responses.length,
+    responseCount: responsesResult.value.thread.responseCount,
     message: "Successfully fetched thread responses, rendering page",
   });
 
@@ -151,7 +151,7 @@ export default createRoute(async (c) => {
         <div>
           <h3 className="text-purple-600 font-bold text-xl mb-4">
             {responsesResult.value.thread.threadTitle.val} (
-            {responsesResult.value.responses.length})
+            {responsesResult.value.thread.responseCount}件)
           </h3>
           {responsesResult.value.responses.map((resp) => {
             return (

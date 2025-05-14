@@ -63,7 +63,7 @@ export const getAllResponsesByThreadIdUsecase = async (
     operation: "getAllResponsesByThreadId",
     threadId: threadIdRaw,
     threadTitle: responsesWithThreadResult.value.thread.threadTitle.val,
-    responseCount: responsesWithThreadResult.value.responses.length,
+    responseCount: responsesWithThreadResult.value.thread.responseCount,
     message: "Successfully retrieved thread responses",
   });
 

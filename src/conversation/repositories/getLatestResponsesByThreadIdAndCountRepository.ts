@@ -206,9 +206,17 @@ export const getLatestResponsesByThreadIdAndCountRepository = async (
       return err(threadTitleResult.error);
     }
 
+    const threadTitle = threadTitleResult.value;
+    // 全レス件数を取得
+    const countRows = await sql<{ total_count: string }[]>`
+      SELECT COUNT(*) AS total_count FROM responses WHERE thread_id = ${threadId.val}::uuid
+    `;
+    const totalCount = parseInt(countRows[0]?.total_count ?? "0", 10);
+
     const threadWithResponsesResult = createReadThreadWithResponses(
       threadIdResult.value,
-      threadTitleResult.value,
+      threadTitle,
+      totalCount,
       responses
     );
 
