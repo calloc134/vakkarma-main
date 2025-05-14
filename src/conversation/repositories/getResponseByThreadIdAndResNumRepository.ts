@@ -50,7 +50,7 @@ export const getResponseByThreadIdAndResNumRepository = async (
   });
 
   try {
-    const rows = await sql<
+    const result = await sql<
       {
         id: string;
         thread_id: string;
@@ -89,7 +89,7 @@ export const getResponseByThreadIdAndResNumRepository = async (
     JOIN resp_count AS rc ON rc.thread_id = s.thread_id
     `;
 
-    if (!rows || rows.length !== 1) {
+    if (!result || result.length !== 1) {
       logger.info({
         operation: "getResponseByThreadIdAndResNum",
         threadId: threadId.val,
@@ -110,7 +110,7 @@ export const getResponseByThreadIdAndResNumRepository = async (
     });
 
     // 詰め替え部分
-    const response = rows[0];
+    const response = result[0];
 
     // レスポンスの各フィールドのバリデーションと作成
     const combinedResult = Result.combine([
