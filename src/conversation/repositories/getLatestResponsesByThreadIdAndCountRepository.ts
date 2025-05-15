@@ -138,13 +138,8 @@ export const getLatestResponsesByThreadIdAndCountRepository = async (
       return err(threadIdResult.error);
     }
 
-    // レスポンスを番号順（昇順）に並べ直す
-    const sortedResponses = [...result].sort(
-      (a, b) => a.response_number - b.response_number
-    );
-
     const responses: ReadResponse[] = [];
-    for (const response of sortedResponses) {
+    for (const response of result) {
       const combinedResult = Result.combine([
         createReadResponseId(response.id),
         createReadResponseNumber(response.response_number),
