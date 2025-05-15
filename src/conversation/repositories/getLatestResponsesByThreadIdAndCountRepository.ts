@@ -58,36 +58,44 @@ export const getLatestResponsesByThreadIdAndCountRepository = async (
         hash_id: string | null;
         trip: string | null;
         title: string | null;
+        total_count: number | null;
       }[]
     >`
-    (
+    WITH resp_count AS (
+      SELECT thread_id, COUNT(*)::int AS total_count
+      FROM responses
+      WHERE thread_id = ${threadId.val}::uuid
+      GROUP BY thread_id
+    ),
+    unioned AS (
+      (
         SELECT
-            r.id, r.thread_id, r.response_number, r.author_name, r.mail,
-            r.posted_at, r.response_content, r.hash_id, r.trip, t.title
-        FROM
-            responses as r
-            JOIN threads as t ON r.thread_id = t.id
-        WHERE
-            r.thread_id = ${threadId.val}::uuid
-        ORDER BY
-            r.response_number DESC
+          r.id, r.thread_id, r.response_number, r.author_name, r.mail,
+          r.posted_at, r.response_content, r.hash_id, r.trip, t.title
+        FROM responses AS r
+        JOIN threads AS t ON r.thread_id = t.id
+        WHERE r.thread_id = ${threadId.val}::uuid
+        ORDER BY r.response_number DESC
         LIMIT ${count.val}
-    )
-    UNION
-    (
+      )
+      UNION
+      (
         SELECT
-            r.id, r.thread_id, r.response_number, r.author_name, r.mail,
-            r.posted_at, r.response_content, r.hash_id, r.trip, t.title
-        FROM
-            responses as r
-            JOIN threads as t ON r.thread_id = t.id
-        WHERE
-            r.thread_id = ${threadId.val}::uuid
-            AND r.response_number = 1
+          r.id, r.thread_id, r.response_number, r.author_name, r.mail,
+          r.posted_at, r.response_content, r.hash_id, r.trip, t.title
+        FROM responses AS r
+        JOIN threads AS t ON r.thread_id = t.id
+        WHERE r.thread_id = ${threadId.val}::uuid
+          AND r.response_number = 1
+      )
     )
-    ORDER BY
-        response_number ASC -- または DESC
-`) as {
+    SELECT
+      u.*,
+      rc.total_count
+    FROM unioned AS u
+    JOIN resp_count AS rc ON rc.thread_id = u.thread_id
+    ORDER BY u.response_number ASC
+    `) as {
       id: string;
       thread_id: string;
       response_number: number;
@@ -98,6 +106,7 @@ export const getLatestResponsesByThreadIdAndCountRepository = async (
       hash_id: string;
       trip: string | null;
       title: string;
+      total_count: number | null;
     }[];
 
     if (!result || result.length === 0) {
@@ -129,13 +138,8 @@ export const getLatestResponsesByThreadIdAndCountRepository = async (
       return err(threadIdResult.error);
     }
 
-    // レスポンスを番号順（昇順）に並べ直す
-    const sortedResponses = [...result].sort(
-      (a, b) => a.response_number - b.response_number
-    );
-
     const responses: ReadResponse[] = [];
-    for (const response of sortedResponses) {
+    for (const response of result) {
       const combinedResult = Result.combine([
         createReadResponseId(response.id),
         createReadResponseNumber(response.response_number),
@@ -206,9 +210,26 @@ export const getLatestResponsesByThreadIdAndCountRepository = async (
       return err(threadTitleResult.error);
     }
 
+    const threadTitle = threadTitleResult.value;
+    // 全レス件数は CTE で取得済み
+    if (!firstResponse.total_count) {
+      logger.error({
+        operation: "getLatestResponseByThreadId",
+        threadId: threadId.val,
+        responseId: firstResponse.id,
+        error: new DataNotFoundError(
+          "スレッドの全レス件数が取得できませんでした"
+        ),
+        message: "Failed to create domain objects from database result",
+      });
+      return err(new DataNotFoundError("全レス件数の取得に失敗しました"));
+    }
+    const totalCount = firstResponse.total_count;
+
     const threadWithResponsesResult = createReadThreadWithResponses(
       threadIdResult.value,
-      threadTitleResult.value,
+      threadTitle,
+      totalCount,
       responses
     );
 

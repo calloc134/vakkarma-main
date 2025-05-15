@@ -15,7 +15,5 @@
     ]
   },
 
-  "explicitFolding.notification": "minor",
-
-  "explicitFolding.debug": true
+  "explicitFolding.notification": "minor"
 }

@@ -61,7 +61,7 @@ export const getAllResponsesByThreadEpochIdUsecase = async (
     operation: "getAllResponsesByThreadEpochId",
     threadEpochId: threadEpochIdRaw,
     threadTitle: responsesWithThreadResult.value.thread.threadTitle.val,
-    responseCount: responsesWithThreadResult.value.responses.length,
+    responseCount: responsesWithThreadResult.value.thread.responseCount,
     message: "Successfully retrieved thread responses by epoch ID",
   });
 
