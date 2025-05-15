@@ -93,13 +93,13 @@ export const getResponseByThreadIdAndResNumRangeRepository = async (
           AND (${isEndNumNull} OR r.response_number <= ${endNumRaw})
         )
         OR r.response_number = 1
-      ORDER BY r.response_number
     )
     SELECT
       s.*,
       rc.total_count
     FROM selected AS s
     JOIN resp_count AS rc ON rc.thread_id = s.thread_id
+    ORDER BY s.response_number ASC
     `;
 
     if (!result || result.length === 0) {
