@@ -7,18 +7,23 @@ import type { Result } from "neverthrow";
 
 export type ReadThreadWithResponses = {
   _type: "ReadThreadWithResponses";
-  thread: { threadId: ReadThreadId; threadTitle: ReadThreadTitle };
+  thread: {
+    threadId: ReadThreadId;
+    threadTitle: ReadThreadTitle;
+    responseCount: number;
+  };
   responses: ReadResponse[];
 };
 
 export const createReadThreadWithResponses = (
   threadId: ReadThreadId,
   threadTitle: ReadThreadTitle,
+  responseCount: number,
   responses: ReadResponse[]
 ): Result<ReadThreadWithResponses, never> => {
   return ok({
     _type: "ReadThreadWithResponses",
-    thread: { threadId, threadTitle },
+    thread: { threadId, threadTitle, responseCount },
     responses,
   });
 };

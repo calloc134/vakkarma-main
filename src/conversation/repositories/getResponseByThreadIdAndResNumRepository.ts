@@ -62,29 +62,32 @@ export const getResponseByThreadIdAndResNumRepository = async (
         hash_id: string;
         trip: string | null;
         title: string;
+        total_count: number | null;
       }[]
     >`
-          SELECT
-              r.id,
-              r.thread_id,
-              r.response_number,
-              r.author_name,
-              r.mail,
-              r.posted_at,
-              r.response_content,
-              r.hash_id,
-              r.trip,
-              t.title
-          FROM
-              responses as r
-              JOIN
-                  threads as t
-              ON  r.thread_id = t.id
-          WHERE
-              r.thread_id = ${threadId.val}::uuid
-              AND r.response_number = ${responseNumber.val}
-          LIMIT 1
-      `;
+    WITH resp_count AS (
+      SELECT thread_id, COUNT(*)::int AS total_count
+      FROM responses
+      WHERE thread_id = ${threadId.val}::uuid
+      GROUP BY thread_id
+    ),
+    selected AS (
+      SELECT
+        r.id, r.thread_id, r.response_number, r.author_name, r.mail,
+        r.posted_at, r.response_content, r.hash_id, r.trip, t.title
+      FROM responses AS r
+      JOIN threads AS t ON r.thread_id = t.id
+      WHERE
+        r.thread_id = ${threadId.val}::uuid
+        AND r.response_number = ${responseNumber.val}
+      LIMIT 1
+    )
+    SELECT
+      s.*,
+      rc.total_count
+    FROM selected AS s
+    JOIN resp_count AS rc ON rc.thread_id = s.thread_id
+    `;
 
     if (!result || result.length !== 1) {
       logger.info({
@@ -172,9 +175,27 @@ export const getResponseByThreadIdAndResNumRepository = async (
     // 単一のレスポンスを配列として渡す
     const responses: ReadResponse[] = [responseResult.value];
 
+    // 全レス件数は CTE で取得済み
+    if (!response.total_count) {
+      logger.error({
+        operation: "getResponseByThreadIdAndResNum",
+        threadId: threadId.val,
+        responseNumber: responseNumber.val,
+        error: new DataNotFoundError(
+          "スレッドの全レス件数が取得できませんでした"
+        ),
+        message: "Failed to get total count of responses",
+      });
+      return err(
+        new DataNotFoundError("スレッドの全レス件数が取得できませんでした")
+      );
+    }
+    const totalCount = response.total_count;
+
     const threadWithResponsesResult = createReadThreadWithResponses(
       readThreadId,
       threadTitle,
+      totalCount,
       responses
     );
 

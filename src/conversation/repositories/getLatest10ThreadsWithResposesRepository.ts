@@ -111,12 +111,12 @@ export const getLatest10ThreadsWithResponsesRepository = async (
                     *
                 FROM
                     latest_responses
-                UNION ALL
+                UNION
                 SELECT
                     *
                 FROM
                     first_responses
-                UNION ALL
+                UNION
                 SELECT
                     *
                 FROM

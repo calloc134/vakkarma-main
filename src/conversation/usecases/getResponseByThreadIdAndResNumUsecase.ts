@@ -90,7 +90,7 @@ export const getResponseByThreadIdAndResNumUsecase = async (
     threadId: threadIdRaw,
     responseNumber: responseNumberRaw,
     threadTitle: responseResult.value.thread.threadTitle.val,
-    responseCount: responseResult.value.responses.length,
+    responseCount: responseResult.value.thread.responseCount,
     message: "Successfully retrieved response by thread ID and response number",
   });
 
