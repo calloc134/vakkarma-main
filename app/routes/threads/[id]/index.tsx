@@ -138,7 +138,7 @@ export default createRoute(async (c) => {
           </a>
         </div>
       </section>
-      <section className="bg-white rounded-lg shadow-md p-6">
+      <section id="response-form" className="bg-white rounded-lg shadow-md p-6">
         <h2 className="text-2xl font-semibold mb-4">返信する</h2>
         <form
           method="post"

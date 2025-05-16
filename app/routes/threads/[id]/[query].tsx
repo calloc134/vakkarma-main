@@ -261,6 +261,10 @@ export default createRoute(async (c) => {
           <FormEnhance />
         </form>
       </section>
+      <section
+        id="response-form"
+        className="bg-white rounded-lg shadow-md p-6"
+      ></section>
     </main>
   );
 });
