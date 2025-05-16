@@ -14,3 +14,7 @@
     line-height: 18px;
   }
 }
+
+html {
+  scroll-behavior: smooth;
+}
