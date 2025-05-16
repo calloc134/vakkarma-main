@@ -57,7 +57,11 @@ export default createRoute(async (c) => {
             <li key={thread.id.val} className="flex-none max-w-md">
               <a
                 className="text-purple-600 underline whitespace-normal break-words"
-                href={`/threads/${thread.id.val}/l50`}
+                href={
+                  index < 10
+                    ? `#thread-${thread.id.val}`
+                    : `/threads/${thread.id.val}/l50`
+                }
               >
                 {index + 1}: {thread.title.val} ({thread.countResponse})
               </a>
@@ -75,6 +79,7 @@ export default createRoute(async (c) => {
         <ul className="flex flex-col gap-4">
           {responsesTop10.map((threadResp, threadIndex) => (
             <li
+              id={`thread-${threadResp.thread.id.val}`}
               key={threadResp.thread.id.val}
               className="bg-white rounded-lg shadow-md p-6 pb-4 flex-none "
             >
