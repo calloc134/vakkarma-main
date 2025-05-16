@@ -191,11 +191,12 @@ export default createRoute(async (c) => {
         <a
           href="#response-form"
           className="
-            bg-purple-500 hover:bg-purple-700 text-white
-            p-4 md:p-6
-            rounded-full shadow-lg
-            focus:outline-none transition
+            bg-purple-500 hover:bg-purple-700 text-white 
+            p-4 md:p-6            
+            lg:p-5               
+            rounded-full shadow-lg focus:outline-none transition 
             text-2xl md:text-4xl
+            lg:text-3xl        
           "
         >
           ↓
